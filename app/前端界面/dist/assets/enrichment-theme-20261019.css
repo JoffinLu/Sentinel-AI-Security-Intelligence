@@ -1,0 +1,92 @@
+/* The drawer is rendered in a portal. Scope its tokens on the portal root. */
+.sentinel-enrichment-drawer {
+  --enrichment-panel: #0e1712;
+  --enrichment-link: #6cdbef;
+  --inline-text: #e6eee9;
+  --inline-text-1b: #c8d6cd;
+  --inline-text-2: #b6c8bc;
+  --inline-text-3: #a4b9ac;
+  --inline-text-4: #96ab9e;
+  --inline-surface: #17231d;
+  --inline-surface-2: #142019;
+  --inline-surface-ok: #143323;
+  --inline-surface-warn: #342819;
+  --inline-border: #344b3f;
+  --inline-ok: #53dda0;
+  --inline-warn: #f5c56a;
+  --inline-danger: #ff8295;
+  --text: var(--inline-text);
+  --text-2: var(--inline-text-2);
+  --muted: var(--inline-text-3);
+}
+
+[data-theme="light"] .sentinel-enrichment-drawer {
+  --enrichment-panel: #f5f8f6;
+  --enrichment-link: #0e7490;
+  --inline-text: #12211a;
+  --inline-text-1b: #26362e;
+  --inline-text-2: #46584f;
+  --inline-text-3: #52665a;
+  --inline-text-4: #566760;
+  --inline-surface: #ffffff;
+  --inline-surface-2: #f0f5f2;
+  --inline-surface-ok: #e8f5ee;
+  --inline-surface-warn: #fdf3e3;
+  --inline-border: #cbd9d0;
+  --inline-ok: #047d57;
+  --inline-warn: #956000;
+  --inline-danger: #bd2140;
+}
+
+.sentinel-enrichment-drawer .ant-drawer-content {
+  background: var(--enrichment-panel) !important;
+  color: var(--inline-text);
+}
+
+.sentinel-enrichment-drawer .ant-drawer-header,
+.sentinel-enrichment-drawer .ant-drawer-body {
+  background: var(--enrichment-panel);
+  color: var(--inline-text);
+}
+
+.sentinel-enrichment-drawer .ant-drawer-body a {
+  color: var(--enrichment-link);
+  /* Keep links in sync with the card when the theme changes. */
+  transition: none;
+}
+
+.sentinel-enrichment-drawer .ant-drawer-body a:hover {
+  text-decoration: underline;
+}
+
+.sentinel-enrichment-drawer .ant-descriptions-item-label {
+  color: var(--inline-text-2);
+}
+
+.sentinel-enrichment-drawer .ant-descriptions-item-content {
+  color: var(--inline-text);
+}
+
+.sentinel-enrichment-drawer .ant-tag {
+  color: var(--inline-text-1b) !important;
+  background: var(--inline-surface-2) !important;
+  border-color: var(--inline-border) !important;
+}
+
+.sentinel-enrichment-drawer .ant-alert-message {
+  color: var(--inline-text);
+}
+
+.sentinel-enrichment-drawer .ant-alert-description,
+.sentinel-enrichment-drawer .ant-empty-description {
+  color: var(--inline-text-2);
+}
+
+.sentinel-enrichment-drawer .ant-alert-warning {
+  background: var(--inline-surface-warn);
+  border-color: var(--inline-border);
+}
+
+.sentinel-enrichment-drawer .ant-progress-text {
+  color: var(--inline-ok);
+}

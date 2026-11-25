@@ -1,0 +1,165 @@
+name: aiintel
+
+# AI 安全知识情报系统 —— 全栈编排
+# 一条命令启动：docker compose up -d
+# 覆盖赛题"容器化部署"评分项，同时提供监控与可视化组件。
+
+services:
+  # ---------- 数据层 ----------
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: aiintel-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ai_security_intel}
+      POSTGRES_USER: ${POSTGRES_USER:-aiintel}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aiintel2026}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aiintel} -d ${POSTGRES_DB:-ai_security_intel}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks: [intel-net]
+    restart: unless-stopped
+
+  neo4j:
+    image: neo4j:5-community
+    container_name: aiintel-neo4j
+    environment:
+      NEO4J_AUTH: neo4j/${NEO4J_PASSWORD:-aiintel2026}
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_server_memory_heap_max__size: 1G
+      NEO4J_server_memory_pagecache_size: 512M
+    ports:
+      - "17474:7474"
+      - "17687:7687"
+    volumes:
+      - neo4j_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:7474 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 45s
+    networks: [intel-net]
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: aiintel-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks: [intel-net]
+    restart: unless-stopped
+
+  # ---------- 应用层 ----------
+  api:
+    build:
+      context: ..
+      dockerfile: 运维/Dockerfile.后端
+    container_name: aiintel-api
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-ai_security_intel}
+      POSTGRES_USER: ${POSTGRES_USER:-aiintel}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aiintel2026}
+      REDIS_HOST: redis
+      NEO4J_HOST: neo4j
+      NEO4J_BOLT_PORT: 7687
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:-aiintel2026}
+      LLM_API_BASE: ${LLM_API_BASE:-https://api.openveer.com/v1}
+      LLM_API_KEY: ${LLM_API_KEY}
+      LLM_MODEL: ${LLM_MODEL:-DeepSeek-v4-flash-Free}
+      LLM_ECONOMY_MODEL: ${LLM_ECONOMY_MODEL:-DeepSeek-v4-flash-Free}
+      LOG_FORMAT: json
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/数据
+      - ./charts:/app/图表
+      - ./docs:/app/文档
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+    networks: [intel-net]
+    restart: unless-stopped
+
+  # ---------- 前端 ----------
+  frontend:
+    build:
+      # 上下文为前端目录，package.json / vite.config.ts 都在其中。
+      # nginx.conf 同步复制了一份到该目录供 Dockerfile 引用。
+      context: ../前端界面
+      dockerfile: ../运维/Dockerfile.前端
+    container_name: aiintel-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+    networks: [intel-net]
+    restart: unless-stopped
+
+  # ---------- 监控（对应"日志监控"评分项）----------
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: aiintel-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=15d"
+    depends_on:
+      - api
+    networks: [intel-net]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: aiintel-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-aiintel2026}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana_datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      # 看板自动加载（对应赛题「Grafana 看板 6+ 面板」评分项）
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    depends_on:
+      - prometheus
+    networks: [intel-net]
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  neo4j_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  intel-net:
+    driver: bridge

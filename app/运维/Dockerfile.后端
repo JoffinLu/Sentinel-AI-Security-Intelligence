@@ -1,0 +1,67 @@
+# AI 安全知识情报系统 —— 后端服务镜像
+# 多阶段构建：依赖层与代码层分离，代码变更无需重装依赖
+
+# ---------- 阶段一：依赖 ----------
+# 基础镜像走国内源。直连 Docker Hub 在本环境会超时（registry-1.docker.io
+# 连接失败），而赛题现场的镜像拉取同样可能受限，故使用可配置的国内源。
+# 需要官方源时改为：ARG BASE_REGISTRY=docker.io/library
+ARG BASE_REGISTRY=docker.1ms.run/library
+
+FROM ${BASE_REGISTRY}/python:3.12-slim AS builder
+
+WORKDIR /build
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# pip 同样走国内源，避免 PyPI 连接超时
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
+    && pip config set global.trusted-host pypi.tuna.tsinghua.edu.cn
+
+# 嵌入模型推理只需 CPU，用 CPU 专用 wheel 替代默认版本。
+# 默认 torch 带 CUDA 运行时约 2GB，装完镜像会超赛题 1.5GB 上限；
+# CPU 版仅 200MB 左右。
+COPY requirements.txt .
+
+# torch 用 CPU 专用 wheel：默认版本带 CUDA 运行时约 2GB，
+# 装完镜像会超赛题 1.5GB 上限；CPU 版仅 200MB。
+#
+# 注意必须与下面的 --prefix 用同一安装目标，否则 pip 会分别写入
+# 系统 site-packages 和 /install，两处不合并，运行时反而找不到包
+# （实测 typing_extensions 就是这样丢的）。
+RUN pip install --no-cache-dir --prefix=/install \
+        torch --index-url https://download.pytorch.org/whl/cpu \
+    && pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
+
+# ---------- 阶段二：运行时 ----------
+# 复用 builder 阶段拉取过的基础镜像层，避免二次拉取。
+# ARG 需在每个 FROM 之前重新声明才会生效。
+ARG BASE_REGISTRY=docker.1ms.run/library
+
+FROM ${BASE_REGISTRY}/python:3.12-slim
+
+# 安全加固：非 root 运行（对应"系统安全加固"实践）
+RUN groupadd -r aintel && useradd -r -g aintel -d /app aintel
+
+WORKDIR /app
+
+COPY --from=builder /install /usr/local
+
+COPY 项目源码/ /app/项目源码/
+COPY pyproject.toml /app/
+
+# 预建表结构所需的迁移在应用启动时自动执行（幂等）
+RUN mkdir -p /app/数据 /app/图表 /app/文档 && chown -R aintel:aintel /app
+
+USER aintel
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+    CMD python -c "import urllib.request,sys; \
+sys.exit(0 if urllib.request.urlopen('http://localhost:8000/api/health', timeout=4).status==200 else 1)"
+
+CMD ["uvicorn", "项目源码.后端服务.app:app", "--host", "0.0.0.0", "--port", "8000"]

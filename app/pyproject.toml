@@ -1,0 +1,24 @@
+[project]
+name = "ai-security-intel-platform"
+version = "0.1.0"
+description = "智能体驱动的AI安全知识情报系统"
+requires-python = ">=3.13"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+# 中文包名属项目约定，忽略模块命名规则
+ignore = ["N999"]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+exclude = [".venv", "数据", "图表", "文档"]
+
+[tool.ruff.lint.per-file-ignores]
+# 中文文件名目录使用相对导入，此处放宽
+"项目源码/**/*.py" = ["B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["评测/tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"

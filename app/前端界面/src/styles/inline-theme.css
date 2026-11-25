@@ -1,0 +1,58 @@
+/**
+ * 亮色主题下的「组件内联色」补丁
+ * ------------------------------------------------------------
+ * 为什么需要这个文件
+ *
+ * 项目里有一批组件把颜色直接写在 style={{}} 里（早于主题系统），
+ * 典型如 EnrichmentPanel：白底 + #374151 深字 + #6b7280 灰字 ——
+ * 它本来就是照亮色写的，在暗色主题下反而像个「白卡片」。
+ * 这类写法无法被 CSS 选择器覆盖（内联样式优先级最高），
+ * 只能靠 data-theme 属性 + CSS 变量间接影响。
+ *
+ * 做法：把这类「随主题变」的内联色收敛成 CSS 变量，
+ * 组件内改用 var(--xxx)。变量默认值 = 原硬编码值，
+ * 因此**暗色主题下视觉逐字不变**，只有白天主题才切换。
+ *
+ * ---------- 对比度实测（白天底色 #f3f7f4）----------
+ *   #6b7280 → 4.62:1  AA      #9ca3af → 仅 2.5:1  不合格
+ *   #374151 → 10.4:1  AAA     #d1d5db → 仅 1.7:1  不合格
+ * 白天主题下把 #9ca3af / #d1d5db 这类「装饰性浅灰」
+ * 一律加深到 --muted (#63746b, 4.6:1)。
+ */
+
+:root {
+  /* 内联文字色 */
+  --inline-text: #374151; /* 正文深灰 → 暗色保持原值 */
+  --inline-text-1b: #4b5563; /* 列表正文灰 */
+  --inline-text-2: #6b7280; /* 次级灰 */
+  --inline-text-3: #9ca3af; /* 弱化灰（浅，白天会加深） */
+  --inline-text-4: #d1d5db; /* 极弱灰（毫秒数等） */
+
+  /* 内联表面色 */
+  --inline-surface: #ffffff; /* 成功卡底 */
+  --inline-surface-2: #fafafa; /* 普通卡底 */
+  --inline-surface-ok: #f0fdf4; /* 完整度达标底 */
+  --inline-surface-warn: #fffbeb; /* 完整度不足底 */
+  --inline-border: rgba(0, 0, 0, 0.08);
+
+  /* 内联状态色 */
+  --inline-ok: #10b981;
+  --inline-warn: #f59e0b;
+  --inline-danger: #ef4444;
+}
+
+[data-theme='light'] {
+  --inline-text: #12211a; /* 15.4:1 AAA */
+  --inline-text-1b: #26362e; /* 12.1:1 AAA */
+  --inline-text-2: #46584f; /* 7.0:1 AAA */
+  --inline-text-3: #63746b; /* 4.6:1 AA（原 #9ca3af 仅 2.5） */
+  --inline-text-4: #566760; /* 5.5:1 AA（原 #d1d5db 仅 1.7） */
+  --inline-surface: #ffffff;
+  --inline-surface-2: #f4f7f5;
+  --inline-surface-ok: #e8f5ee;
+  --inline-surface-warn: #fdf3e3;
+  --inline-border: rgba(23, 58, 43, 0.12);
+  --inline-ok: #047d57;
+  --inline-warn: #b45309;
+  --inline-danger: #d81b40;
+}

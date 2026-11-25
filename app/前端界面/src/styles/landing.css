@@ -1,0 +1,730 @@
+/* ============================================================
+   SENTINEL 首屏主页（Landing）
+   ------------------------------------------------------------
+   与看板的区别：看板是「信息密度优先」，
+   首屏是「视觉优先」—— 只有一个光柱在动，内容全是静态的。
+
+   配色全部走设计语言 token，与看板共用同一套色系，
+   这样从首屏进入看板不会有「换了个网站」的割裂感。
+   ============================================================ */
+
+/* ---- 光柱容器 ---- */
+.light-pillar-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* 光柱画布是绝对定位的 canvas，容器不能有 overflow 隐藏外的溢出 */
+  pointer-events: none;
+}
+
+/* ---- 白天主题的静态主视觉（方案 B1）----
+   替代 WebGL 光柱：一团居中的白绿光晕 + 两角淡彩。
+   纯静态、零动画、零 WebGL —— 白天主题不使用任何动态背景。 */
+.landing-static-halo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      620px 620px at 50% 42%,
+      rgba(5, 150, 105, 0.1) 0%,
+      rgba(16, 185, 129, 0.05) 45%,
+      transparent 72%
+    ),
+    radial-gradient(1000px 620px at 50% -10%, rgba(14, 116, 144, 0.07), transparent 62%),
+    radial-gradient(760px 520px at 50% 110%, rgba(5, 150, 105, 0.06), transparent 62%);
+}
+
+/* ---- 无 WebGL 的降级：不显示英文报错，用纯 CSS 光晕保住氛围 ---- */
+.light-pillar-fallback {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.light-pillar-fallback-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 460px;
+  height: 460px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(85, 51, 221, 0.32) 0%,
+    rgba(97, 210, 128, 0.14) 42%,
+    transparent 70%
+  );
+  filter: blur(70px);
+}
+
+/* ============================================================
+   一、首屏骨架
+   ============================================================ */
+.landing-root {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  /* 独立底色：与看板的极光背景层不同，这里是纯近黑 + 一点墨绿 */
+  background:
+    radial-gradient(1100px 700px at 50% -8%, rgba(85, 51, 221, 0.14), transparent 62%),
+    radial-gradient(800px 560px at 50% 108%, rgba(97, 210, 128, 0.09), transparent 62%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+}
+
+/* 主页时把全局极光背景层藏起来 —— 它是常驻动画，
+   与光柱叠加会把 CPU 吃满（本机无 GPU）。
+   用 :has() 而不是给 App 加状态类：这样首屏样式完全自包含。 */
+body:has(.landing-root) #sentinelBgLayer {
+  display: none;
+}
+
+/* ---- 上下柔化：光柱与视口边缘自然衔接 ---- */
+.landing-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.landing-fade-top {
+  top: 0;
+  height: 180px;
+  background: linear-gradient(to bottom, var(--bg), transparent);
+}
+.landing-fade-bottom {
+  bottom: 0;
+  height: 240px;
+  background: linear-gradient(to top, var(--bg) 30%, transparent);
+}
+
+/* ---- 内容层 ---- */
+.landing-content {
+  position: relative;
+  z-index: 2;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* 间距由「层级」决定：同组元素间距小、跨组间距大，
+     视觉上才会分成品牌 / 简介 / 能力 / 行动 四个区块。
+     38 → 44px：跨组留白再加一档，区块间的呼吸感更足。*/
+  gap: 44px;
+  padding: 80px 40px 64px;
+  text-align: center;
+  /* 版心宽度上限 1100 → 1200px。
+     注意：单行文字不能过长，所以「正文」由 .landing-intro 自己
+     限宽（约 660px），这里放宽的只是**版心容器**——
+     让能力卡与简介细线能摊得更开，而不是让每行字变长。*/
+  max-width: 1200px;
+  margin: 0 auto;
+  /* 内容整体极轻微的上浮入场。
+     位移只给 14px 且一次播完 —— 首屏不该有「一直在动」的东西。 */
+  animation: landingRise 760ms cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+@keyframes landingRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   二、品牌区
+   ============================================================ */
+.landing-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Logo 与标题的距离加大：原先 20px 太贴，
+     Logo 像是标题的「上标」而非独立品牌标识。*/
+  gap: 30px;
+}
+.landing-brand-text {
+  display: flex;
+  flex-direction: column;
+  /* 标题与副标题的间距也拉开一点 */
+  gap: 16px;
+}
+.landing-title {
+  margin: 0;
+  /* 字号上限从 50px 提到 64px，大屏上更有分量。
+     clamp 中间值同步提到 5.6vw，让中等屏幕也能拿到更大字号。*/
+  font-size: clamp(34px, 5.6vw, 64px);
+  font-weight: 700;
+  /* 字间距随字号放大而拉开，是「大气」的重要来源。
+     中文标题字间距过大易散，3px 是可读性与气派的平衡点。*/
+  letter-spacing: 3px;
+  line-height: 1.14;
+  /* 纯白（用户指定）。原先是白→黄绿→青的渐变字，
+     在光柱的紫绿辉光上容易被染色、边缘发虚。 */
+  color: #ffffff;
+  /* 保留一点辉光让字从光柱里「浮」出来，但不做blur 糊化 */
+  text-shadow: 0 0 30px rgba(6, 8, 7, 0.95);
+}
+.landing-subtitle {
+  margin: 0;
+  font-family: var(--mono);
+  /* 字号与字距同步放大 */
+  font-size: 13px;
+  letter-spacing: 4.6px;
+  text-transform: uppercase;
+  /* 纯白偏冷，不用荧光绿 —— 绿字在紫绿光柱上会糊成一片 */
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow: 0 0 16px rgba(6, 8, 7, 0.95);
+}
+
+/* ============================================================
+   三、简介
+   ------------------------------------------------------------
+   原来是「圆角卡片 + 深色底」，与下方的能力卡形成两层盒子，
+   视觉上碎、显小。改为**纯文字 + 两侧渐隐细线**：
+   横向的线把这段文字「托」住，比方框更开阔。
+   ============================================================ */
+.landing-intro-wrap {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  width: 100%;
+  /* 随版心一起放宽（900 → 1000），否则版心变宽后
+     细线反而缩在中间，两侧留白不对称。*/
+  max-width: 1000px;
+}
+/* 两侧渐隐细线：向两端淡出，避免硬边界的「框感」 */
+.landing-rule {
+  flex: 1;
+  height: 1px;
+  min-width: 40px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(180, 220, 195, 0.28)
+  );
+}
+.landing-rule:last-child {
+  background: linear-gradient(
+    90deg,
+    rgba(180, 220, 195, 0.28),
+    transparent
+  );
+}
+.landing-intro {
+  margin: 0;
+  /* 620 → 660：略放宽但仍守在「一行约 40 字」的舒适阅读区，
+     不跟着版心无限变长。*/
+  max-width: 660px;
+  /* 字号 14.5 → 16，行高 1.95 → 2.05：
+     简介是首屏的「第二眼」，太小会显得仓促。*/
+  font-size: 16px;
+  line-height: 2.05;
+  color: var(--text-2);
+  /* 不加底色也不加 blur —— 纯文字最开阔。
+     可读性靠两侧细线 + 文字本身的 text-shadow 保证。*/
+  text-shadow: 0 1px 12px rgba(6, 8, 7, 0.9);
+}
+
+/* ============================================================
+   四、能力标签
+   ============================================================ */
+.landing-caps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* 卡间距 10 → 14，卡宽上限 760 → 1000 → 1100：
+       卡片是首屏最宽的元素，若不跟着版心一起放宽，
+       「版心 1200」就只是数字 —— 视觉宽度仍由 1000px 的卡片决定。*/
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+  max-width: 1100px;
+}
+.landing-cap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  /* 内边距 12/14 → 18/20，卡片更饱满 */
+  padding: 18px 20px;
+  border-radius: var(--r-md, 12px);
+  text-align: left;
+  /* 同上：不用 backdrop-filter，避免糊掉光柱 */
+  background: rgba(12, 17, 14, 0.72);
+  border: 1px solid rgba(180, 220, 195, 0.12);
+  transition:
+    border-color var(--dur-hover, 220ms) cubic-bezier(0.22, 0.9, 0.3, 1),
+    background-color var(--dur-hover, 220ms) cubic-bezier(0.22, 0.9, 0.3, 1),
+    transform var(--dur-hover, 220ms) cubic-bezier(0.16, 1, 0.3, 1);
+}
+.landing-cap:hover {
+  /* 幅度刻意小（-2px）：看板那轮反馈「动效宁小勿大」 */
+  transform: translateY(-2px);
+  border-color: rgba(182, 243, 74, 0.26);
+  background: rgba(16, 23, 19, 0.84);
+}
+.landing-cap-ico {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  /* 图标底座 30 → 38，与放大的字号匹配 */
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  font-size: 16px;
+  color: var(--accent);
+  background: rgba(182, 243, 74, 0.1);
+  border: 1px solid rgba(182, 243, 74, 0.22);
+}
+.landing-cap-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.landing-cap-body b {
+  /* 标题 13 → 15，字重保持 600 */
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+}
+.landing-cap-body em {
+  /* 说明 11 → 12 */
+  font-size: 12px;
+  font-style: normal;
+  color: var(--muted);
+  line-height: 1.45;
+  /* 窄屏下允许换行而不是溢出 */
+  white-space: normal;
+}
+
+/* ============================================================
+   五、开始按钮
+   ============================================================ */
+.landing-cta {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  /* 内边距 13/30 → 17/42，字号 15 → 17：
+     主行动点要够大，才有「入口」的重量感。*/
+  padding: 17px 42px;
+  border: 1px solid rgba(182, 243, 74, 0.5);
+  border-radius: 999px;
+  font-family: var(--font);
+  font-size: 17px;
+  font-weight: 600;
+  /* 字间距略加，中文按钮文字不至于松散 */
+  letter-spacing: 2px;
+  color: #0c1408;
+  cursor: pointer;
+  background: linear-gradient(120deg, #d8ff6e, #8ed321 58%, #61d280);
+  box-shadow:
+    0 8px 26px rgba(142, 211, 33, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  transition:
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.landing-cta:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 36px rgba(142, 211, 33, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+/* 按下时下沉而非继续上浮 —— 符合「按下」的物理直觉 */
+.landing-cta:active {
+  transform: translateY(0);
+}
+.landing-cta-arrow {
+  /* 箭头随字号同步放大 */
+  font-size: 15px;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.landing-cta:hover .landing-cta-arrow {
+  transform: translateX(4px);
+}
+/* hover 时斜切扫光掠过（600ms 一次，不循环） */
+.landing-cta-sweep {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 42%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  transform: skewX(-18deg);
+  pointer-events: none;
+}
+.landing-cta:hover .landing-cta-sweep {
+  animation: landingSweep 0.75s cubic-bezier(0.22, 0.9, 0.3, 1);
+}
+@keyframes landingSweep {
+  0% {
+    left: -60%;
+  }
+  100% {
+    left: 130%;
+  }
+}
+
+/* 键盘可达性 */
+.landing-cta:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(6, 8, 7, 0.92),
+    0 0 0 5px rgba(182, 243, 74, 0.55);
+}
+
+/* ============================================================
+   六、响应式
+   ============================================================ */
+
+/* 中屏：版心与卡片收紧，标题略降。
+   断点随版心推导：版心 1100 → 1200px，断点 980 → 1080px
+   （≈ 版心 − 两侧 padding 120px）。窗口窄于此值时
+   内容就会顶到边缘，那时才该收紧。
+   —— 断点跟着版心走，不凭感觉取整。 */
+@media (max-width: 1080px) {
+  .landing-content {
+    gap: 34px;
+    padding: 64px 28px 52px;
+  }
+  .landing-title {
+    font-size: clamp(30px, 5vw, 46px);
+    letter-spacing: 2px;
+  }
+  .landing-subtitle {
+    font-size: 12px;
+    letter-spacing: 3.6px;
+  }
+  /* 进入中屏：卡片与简介细线不再顶满 1100 / 1000px，改为跟随父级宽度 */
+  .landing-caps {
+    max-width: 100%;
+    gap: 11px;
+  }
+  .landing-intro-wrap {
+    max-width: 100%;
+  }
+  .landing-cap {
+    padding: 14px 16px;
+    gap: 11px;
+  }
+  .landing-cap-ico {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    font-size: 14px;
+  }
+  .landing-cap-body b {
+    font-size: 13.5px;
+  }
+  .landing-cap-body em {
+    font-size: 11px;
+  }
+}
+
+/* 窄屏：四列变两列，简介的横向细线改为上下（横线在窄屏会挤压文字） */
+@media (max-width: 720px) {
+  .landing-content {
+    gap: 24px;
+    padding: 56px 18px 44px;
+  }
+  .landing-caps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+  /* 细线在窄屏变成上下分隔，横排会与文字抢横向空间 */
+  .landing-intro-wrap {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .landing-rule {
+    width: 60px;
+    min-width: 0;
+    /* 横向渐变改为纵向 */
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(180, 220, 195, 0.28)
+    );
+  }
+  .landing-rule:last-child {
+    background: linear-gradient(
+      180deg,
+      rgba(180, 220, 195, 0.28),
+      transparent
+    );
+  }
+  .landing-intro {
+    font-size: 14px;
+    line-height: 1.9;
+  }
+  .landing-subtitle {
+    font-size: 10.5px;
+    letter-spacing: 2.2px;
+  }
+  .landing-cta {
+    padding: 15px 32px;
+    font-size: 15px;
+    letter-spacing: 1.4px;
+  }
+}
+
+@media (max-width: 420px) {
+  .landing-caps {
+    /* 极窄屏单列，避免每项被压到换行两次 */
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================================
+   七、降级：尊重系统「减少动态效果」
+   ------------------------------------------------------------
+   注意：光柱的静态帧由 LightPillar 组件内部处理（不启动 rAF），
+   这里只关掉 CSS 侧的动画。
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .landing-content {
+    animation: none;
+  }
+  .landing-cap,
+  .landing-cta,
+  .landing-cta-arrow {
+    transition: none;
+  }
+  .landing-cta:hover,
+  .landing-cap:hover {
+    transform: none;
+  }
+  .landing-cta:hover .landing-cta-sweep {
+    animation: none;
+  }
+}
+/* ============================================================
+   首屏 · 最新情报滚动条
+   ------------------------------------------------------------
+   无缝原理：轨道 width 由内容撑开 → JS 复制到 ≥2 倍容器宽 →
+   位移 translateX(-50%) 正好走过一份内容 → 循环点画面一致 → 无缝。
+   时长 = 内容宽度 ÷ 速度（85px/s），增删条目后速度依然恒定。
+   配色沿用既有令牌，未引入新色值。
+   ============================================================ */
+.landing-ticker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  /* 宽度与下方四张能力卡一致（.landing-caps 的 max-width），
+     两条横向元素左右对齐才不显得ticker 是「外挂的」 */
+  width: 100%;
+  max-width: 1100px;
+  /* 9 → 14 → 21：滚动条是首屏唯一会动的元素，
+     高度给足才「大气」；21px 上下内边距 + 14.5px 字号 ≈ 58px 总高 */
+  padding: 21px 0;
+  border-block: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+  /* 两侧渐隐，让滚动看起来是从边缘淡入淡出 */
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 6%,
+    #000 94%,
+    transparent
+  );
+}
+.landing-ticker-tag {
+  flex-shrink: 0;
+  padding: 0 18px;
+  /* 原先这里有两行 font-size（11.5 后被 10.5 覆盖），只保留一行并放大一号 */
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  border-right: 1px solid var(--border);
+  line-height: 1;
+}
+.landing-ticker-viewport {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+.landing-ticker-track {
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  width: max-content; /* 关键：由内容撑开 */
+  animation: landingMarquee 40s linear infinite; /* 时长被 JS 按宽度覆盖 */
+  will-change: transform;
+}
+.landing-ticker:hover .landing-ticker-track {
+  animation-play-state: paused;
+}
+/* 位移一半 = 一份完整内容的宽度 → 无缝循环 */
+@keyframes landingMarquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.landing-tk {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  /* 12 → 13.5 → 14.5：跟着容器一起再放一号 */
+  font-size: 14.5px;
+  /* 灰 → 青蓝：滚动内容是首屏里唯一「在动」的元素，
+     用 --cyan 与顶栏时钟、链接色统一，也避免灰字在深底上发闷 */
+  color: var(--cyan);
+  white-space: nowrap; /* 关键：条目禁止换行 */
+}
+.landing-tk-chip {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+}
+.landing-tk-chip.crit {
+  color: var(--danger);
+  background: rgba(255, 92, 122, 0.1);
+  border-color: rgba(255, 92, 122, 0.28);
+}
+.landing-tk-chip.warn {
+  color: var(--warn);
+  background: rgba(255, 200, 87, 0.09);
+  border-color: rgba(255, 200, 87, 0.26);
+}
+.landing-tk-chip.med {
+  color: var(--cyan);
+  background: rgba(76, 215, 246, 0.09);
+  border-color: rgba(76, 215, 246, 0.26);
+}
+.landing-tk-chip.info {
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-ticker-track {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   六、亮色主题覆盖（白天主题）
+   ============================================================
+   首屏原本是为「深底 + 光柱」设计的：纯白标题、深色 text-shadow
+   衬底、荧光绿渐变按钮、半透明墨绿卡片。这些在白底上要么看不见、
+   要么对比度不足，所以这里逐项换成亮色值。
+
+   ---------- 对比度实测（底色 #f3f7f4）----------
+     标题 #12211a  15.4:1  AAA
+     副标题 #46584f 7.0:1  AAA
+     正文 #46584f  7.0:1  AAA
+     说明 #63746b   4.6:1  AA
+   深色 text-shadow 衬底在白底上是脏影，一律去掉。
+   ============================================================ */
+[data-theme="light"] .landing-root {
+  background:
+    radial-gradient(1100px 700px at 50% -8%, rgba(5, 150, 105, 0.08), transparent 62%),
+    radial-gradient(800px 560px at 50% 108%, rgba(16, 185, 129, 0.07), transparent 62%),
+    var(--bg);
+}
+
+/* 白标题 → 深墨绿；去掉深底 text-shadow（白底上只会显脏） */
+[data-theme="light"] .landing-title {
+  color: var(--text);
+  text-shadow: none;
+}
+[data-theme="light"] .landing-subtitle {
+  color: var(--text-2);
+  text-shadow: none;
+}
+[data-theme="light"] .landing-intro {
+  color: var(--text-2);
+  text-shadow: none;
+}
+/* 两侧细线：绿灰 → 墨绿透光 */
+[data-theme="light"] .landing-rule {
+  background: linear-gradient(90deg, transparent, rgba(23, 58, 43, 0.22));
+}
+[data-theme="light"] .landing-rule:last-child {
+  background: linear-gradient(90deg, rgba(23, 58, 43, 0.22), transparent);
+}
+
+/* 能力卡：墨绿半透明 → 白玻璃 + 墨绿描边 */
+[data-theme="light"] .landing-cap {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(23, 58, 43, 0.12);
+  box-shadow: 0 2px 10px rgba(23, 58, 43, 0.05);
+}
+[data-theme="light"] .landing-cap:hover {
+  background: #ffffff;
+  border-color: rgba(5, 150, 105, 0.4);
+}
+/* 图标底座：荧光绿淡底 → 深绿淡底（荧光绿在白底只有 1.5:1） */
+[data-theme="light"] .landing-cap-ico {
+  color: var(--accent);
+  background: rgba(5, 150, 105, 0.09);
+  border-color: rgba(5, 150, 105, 0.24);
+}
+[data-theme="light"] .landing-cap-body b {
+  color: var(--text);
+}
+[data-theme="light"] .landing-cap-body em {
+  color: var(--muted);
+}
+
+/* 开始按钮：荧光绿渐变 + 深字 → 深绿渐变 + 白字
+   （原按钮字色 #0c1408 是给亮绿底配的；换成深绿底必须改白字） */
+[data-theme="light"] .landing-cta {
+  color: #ffffff;
+  border-color: rgba(4, 125, 87, 0.5);
+  background: linear-gradient(120deg, #059669, #047d57 58%, #065f46);
+  box-shadow:
+    0 8px 26px rgba(4, 125, 87, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+[data-theme="light"] .landing-cta:hover {
+  background: linear-gradient(120deg, #047d57, #03734f 58%, #065f46);
+  box-shadow:
+    0 12px 32px rgba(4, 125, 87, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+/* 无 WebGL 降级光晕（白天用浅色版） */
+[data-theme="light"] .light-pillar-fallback-glow {
+  background: radial-gradient(
+    circle,
+    rgba(5, 150, 105, 0.18) 0%,
+    rgba(16, 185, 129, 0.09) 42%,
+    transparent 70%
+  );
+}

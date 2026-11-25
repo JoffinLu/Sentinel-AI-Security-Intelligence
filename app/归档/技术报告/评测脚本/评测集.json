@@ -1,0 +1,2482 @@
+[
+  {
+    "case_id": "F001",
+    "category": "fact",
+    "question": "CVE-2021-43831 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2021-43831"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Files on the host computer can be access"
+  },
+  {
+    "case_id": "F002",
+    "category": "fact",
+    "question": "介绍一下 CVE-2022-0736 的情况",
+    "expect_cve_ids": [
+      "CVE-2022-0736"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Insecure Temporary File in mlflow"
+  },
+  {
+    "case_id": "F003",
+    "category": "fact",
+    "question": "CVE-2022-24770 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2022-24770"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Improper Neutralization of Formula Eleme"
+  },
+  {
+    "case_id": "F004",
+    "category": "fact",
+    "question": "CVE-2023-1176 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2023-1176"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Remote file existence check vulnerabilit"
+  },
+  {
+    "case_id": "F005",
+    "category": "fact",
+    "question": "CVE-2023-1177 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2023-1177"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：mlflow is vulnerable to remote file acce"
+  },
+  {
+    "case_id": "F006",
+    "category": "fact",
+    "question": "介绍一下 CVE-2023-2356 的情况",
+    "expect_cve_ids": [
+      "CVE-2023-2356"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Relative path traversal in mlflow"
+  },
+  {
+    "case_id": "F007",
+    "category": "fact",
+    "question": "CVE-2023-25823 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2023-25823"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Update share links to use FRP instead of"
+  },
+  {
+    "case_id": "F008",
+    "category": "fact",
+    "question": "CVE-2023-2780 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2023-2780"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：mlflow Path Traversal vulnerability"
+  },
+  {
+    "case_id": "F009",
+    "category": "fact",
+    "question": "CVE-2023-30172 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2023-30172"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：mflow vulnerable to directory traversal"
+  },
+  {
+    "case_id": "F010",
+    "category": "fact",
+    "question": "介绍一下 CVE-2023-34239 的情况",
+    "expect_cve_ids": [
+      "CVE-2023-34239"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Gradio vulnerable to arbitrary file read"
+  },
+  {
+    "case_id": "F011",
+    "category": "fact",
+    "question": "CVE-2023-3765 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2023-3765"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLflow Path Traversal vulnerability"
+  },
+  {
+    "case_id": "F012",
+    "category": "fact",
+    "question": "CVE-2023-4033 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2023-4033"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：mlflow vulnerable to OS Command Injectio"
+  },
+  {
+    "case_id": "F013",
+    "category": "fact",
+    "question": "CVE-2023-41626 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2023-41626"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Gradio arbitrary file upload vulnerabili"
+  },
+  {
+    "case_id": "F014",
+    "category": "fact",
+    "question": "介绍一下 CVE-2023-43472 的情况",
+    "expect_cve_ids": [
+      "CVE-2023-43472"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Information exposure in MLflow"
+  },
+  {
+    "case_id": "F015",
+    "category": "fact",
+    "question": "CVE-2023-48022 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2023-48022"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Ray has arbitrary code execution via job"
+  },
+  {
+    "case_id": "F016",
+    "category": "fact",
+    "question": "CVE-2023-6014 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2023-6014"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLflow authentication requirement bypass"
+  },
+  {
+    "case_id": "F017",
+    "category": "fact",
+    "question": "CVE-2023-6015 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2023-6015"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLflow allowed arbitrary files to be PUT"
+  },
+  {
+    "case_id": "F018",
+    "category": "fact",
+    "question": "介绍一下 CVE-2023-6018 的情况",
+    "expect_cve_ids": [
+      "CVE-2023-6018"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Remote Code Execution due to Full Contro"
+  },
+  {
+    "case_id": "F019",
+    "category": "fact",
+    "question": "CVE-2023-6019 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2023-6019"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Ray OS Command Injection vulnerability"
+  },
+  {
+    "case_id": "F020",
+    "category": "fact",
+    "question": "CVE-2023-6020 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2023-6020"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Ray Missing Authorization vulnerability"
+  },
+  {
+    "case_id": "F021",
+    "category": "fact",
+    "question": "CVE-2023-6021 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2023-6021"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Ray Path Traversal vulnerability"
+  },
+  {
+    "case_id": "F022",
+    "category": "fact",
+    "question": "介绍一下 CVE-2023-6568 的情况",
+    "expect_cve_ids": [
+      "CVE-2023-6568"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Cross-site Scripting (XSS) in MLflow"
+  },
+  {
+    "case_id": "F023",
+    "category": "fact",
+    "question": "CVE-2023-6572 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2023-6572"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Gradio Exposure of Sensitive Information"
+  },
+  {
+    "case_id": "F024",
+    "category": "fact",
+    "question": "CVE-2023-6709 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2023-6709"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Jinja2 template injection in mlflow"
+  },
+  {
+    "case_id": "F025",
+    "category": "fact",
+    "question": "CVE-2023-6753 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2023-6753"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Path traversal in MLflow"
+  },
+  {
+    "case_id": "F026",
+    "category": "fact",
+    "question": "介绍一下 CVE-2023-6831 的情况",
+    "expect_cve_ids": [
+      "CVE-2023-6831"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Path traversal in MLflow"
+  },
+  {
+    "case_id": "F027",
+    "category": "fact",
+    "question": "CVE-2023-6909 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2023-6909"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLflow Path Traversal Vulnerability"
+  },
+  {
+    "case_id": "F028",
+    "category": "fact",
+    "question": "CVE-2023-6940 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2023-6940"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：mlflow Command Injection vulnerability"
+  },
+  {
+    "case_id": "F029",
+    "category": "fact",
+    "question": "CVE-2023-6974 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2023-6974"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLflow Server-Side Request Forgery (SSRF"
+  },
+  {
+    "case_id": "F030",
+    "category": "fact",
+    "question": "介绍一下 CVE-2023-6975 的情况",
+    "expect_cve_ids": [
+      "CVE-2023-6975"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLFlow Path Traversal Vulnerability"
+  },
+  {
+    "case_id": "F031",
+    "category": "fact",
+    "question": "CVE-2023-6976 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2023-6976"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLflow Path Traversal Vulnerability"
+  },
+  {
+    "case_id": "F032",
+    "category": "fact",
+    "question": "CVE-2023-6977 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2023-6977"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLflow Local File Disclosure Vulnerabili"
+  },
+  {
+    "case_id": "F033",
+    "category": "fact",
+    "question": "CVE-2024-0520 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2024-0520"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Remote code execution in mlflow"
+  },
+  {
+    "case_id": "F034",
+    "category": "fact",
+    "question": "介绍一下 CVE-2024-0964 的情况",
+    "expect_cve_ids": [
+      "CVE-2024-0964"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Gradio Path Traversal vulnerability"
+  },
+  {
+    "case_id": "F035",
+    "category": "fact",
+    "question": "CVE-2024-1183 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2024-1183"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：gradio Server-Side Request Forgery vulne"
+  },
+  {
+    "case_id": "F036",
+    "category": "fact",
+    "question": "CVE-2024-1483 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2024-1483"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：mlflow Path Traversal vulnerability"
+  },
+  {
+    "case_id": "F037",
+    "category": "fact",
+    "question": "CVE-2024-1558 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2024-1558"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：mlflow vulnerable to Path Traversal"
+  },
+  {
+    "case_id": "F038",
+    "category": "fact",
+    "question": "介绍一下 CVE-2024-1560 的情况",
+    "expect_cve_ids": [
+      "CVE-2024-1560"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：mlflow vulnerable to Path Traversal"
+  },
+  {
+    "case_id": "F039",
+    "category": "fact",
+    "question": "CVE-2024-1561 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2024-1561"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：gradio vulnerable to Path Traversal"
+  },
+  {
+    "case_id": "F040",
+    "category": "fact",
+    "question": "CVE-2024-1593 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2024-1593"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：mlflow vulnerable to Path Traversal"
+  },
+  {
+    "case_id": "F041",
+    "category": "fact",
+    "question": "CVE-2024-1594 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2024-1594"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：mlflow vulnerable to Path Traversal"
+  },
+  {
+    "case_id": "F042",
+    "category": "fact",
+    "question": "介绍一下 CVE-2024-1727 的情况",
+    "expect_cve_ids": [
+      "CVE-2024-1727"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Gradio applications running locally vuln"
+  },
+  {
+    "case_id": "F043",
+    "category": "fact",
+    "question": "CVE-2024-1728 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2024-1728"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Gradio allows users to access arbitrary "
+  },
+  {
+    "case_id": "F044",
+    "category": "fact",
+    "question": "CVE-2024-1729 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2024-1729"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Gradio apps vulnerable to timing attacks"
+  },
+  {
+    "case_id": "F045",
+    "category": "fact",
+    "question": "CVE-2024-2206 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2024-2206"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：gradio Server-Side Request Forgery vulne"
+  },
+  {
+    "case_id": "F046",
+    "category": "fact",
+    "question": "介绍一下 CVE-2024-27132 的情况",
+    "expect_cve_ids": [
+      "CVE-2024-27132"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Cross-site Scripting in MLFlow"
+  },
+  {
+    "case_id": "F047",
+    "category": "fact",
+    "question": "CVE-2024-27133 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2024-27133"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLFlow Cross-site Scripting vulnerabilit"
+  },
+  {
+    "case_id": "F048",
+    "category": "fact",
+    "question": "CVE-2024-27134 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2024-27134"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLflow's excessive directory permissions"
+  },
+  {
+    "case_id": "F049",
+    "category": "fact",
+    "question": "CVE-2024-2928 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2024-2928"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Local File Inclusion in mlflow"
+  },
+  {
+    "case_id": "F050",
+    "category": "fact",
+    "question": "介绍一下 CVE-2024-3099 的情况",
+    "expect_cve_ids": [
+      "CVE-2024-3099"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Undefined Behavior in mlflow"
+  },
+  {
+    "case_id": "F051",
+    "category": "fact",
+    "question": "CVE-2024-34511 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2024-34511"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：Gradio's Component Server does not prope"
+  },
+  {
+    "case_id": "F052",
+    "category": "fact",
+    "question": "CVE-2024-3573 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2024-3573"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：mlflow vulnerable to Path Traversal"
+  },
+  {
+    "case_id": "F053",
+    "category": "fact",
+    "question": "CVE-2024-37052 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2024-37052"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLFlow unsafe deserialization"
+  },
+  {
+    "case_id": "F054",
+    "category": "fact",
+    "question": "介绍一下 CVE-2024-37053 的情况",
+    "expect_cve_ids": [
+      "CVE-2024-37053"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLFlow unsafe deserialization"
+  },
+  {
+    "case_id": "F055",
+    "category": "fact",
+    "question": "CVE-2024-37054 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2024-37054"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLFlow unsafe deserialization"
+  },
+  {
+    "case_id": "F056",
+    "category": "fact",
+    "question": "CVE-2024-37055 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2024-37055"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLFlow unsafe deserialization"
+  },
+  {
+    "case_id": "F057",
+    "category": "fact",
+    "question": "CVE-2024-37056 是什么漏洞？",
+    "expect_cve_ids": [
+      "CVE-2024-37056"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLFlow unsafe deserialization"
+  },
+  {
+    "case_id": "F058",
+    "category": "fact",
+    "question": "介绍一下 CVE-2024-37057 的情况",
+    "expect_cve_ids": [
+      "CVE-2024-37057"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLFlow unsafe deserialization"
+  },
+  {
+    "case_id": "F059",
+    "category": "fact",
+    "question": "CVE-2024-37058 的风险等级是多少？",
+    "expect_cve_ids": [
+      "CVE-2024-37058"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLFlow unsafe deserialization"
+  },
+  {
+    "case_id": "F060",
+    "category": "fact",
+    "question": "CVE-2024-37059 属于什么类型的安全问题？",
+    "expect_cve_ids": [
+      "CVE-2024-37059"
+    ],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "事实查询：MLFlow unsafe deserialization"
+  },
+  {
+    "case_id": "R001",
+    "category": "relation",
+    "question": "mlflow 有哪些已知漏洞？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R002",
+    "category": "relation",
+    "question": "Gradio 相关的漏洞有哪些？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R003",
+    "category": "relation",
+    "question": "transformers 组件出现过哪些安全问题？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R004",
+    "category": "relation",
+    "question": "vllm 有什么安全风险？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R005",
+    "category": "relation",
+    "question": "langchain 有哪些漏洞？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R006",
+    "category": "relation",
+    "question": "MCP 相关的漏洞有哪些？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R007",
+    "category": "relation",
+    "question": "PyTorch 生态的安全问题有哪些？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R008",
+    "category": "relation",
+    "question": "Hugging Face 平台上有哪些模型相关漏洞？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R009",
+    "category": "relation",
+    "question": "mlflow 有哪些已知漏洞？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R010",
+    "category": "relation",
+    "question": "Gradio 相关的漏洞有哪些？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R011",
+    "category": "relation",
+    "question": "transformers 组件出现过哪些安全问题？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R012",
+    "category": "relation",
+    "question": "vllm 有什么安全风险？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R013",
+    "category": "relation",
+    "question": "langchain 有哪些漏洞？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R014",
+    "category": "relation",
+    "question": "MCP 相关的漏洞有哪些？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R015",
+    "category": "relation",
+    "question": "PyTorch 生态的安全问题有哪些？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R016",
+    "category": "relation",
+    "question": "Hugging Face 平台上有哪些模型相关漏洞？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R017",
+    "category": "relation",
+    "question": "mlflow 有哪些已知漏洞？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R018",
+    "category": "relation",
+    "question": "Gradio 相关的漏洞有哪些？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R019",
+    "category": "relation",
+    "question": "transformers 组件出现过哪些安全问题？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R020",
+    "category": "relation",
+    "question": "vllm 有什么安全风险？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R021",
+    "category": "relation",
+    "question": "langchain 有哪些漏洞？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R022",
+    "category": "relation",
+    "question": "MCP 相关的漏洞有哪些？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R023",
+    "category": "relation",
+    "question": "PyTorch 生态的安全问题有哪些？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "R024",
+    "category": "relation",
+    "question": "Hugging Face 平台上有哪些模型相关漏洞？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "关联推理：组件→漏洞"
+  },
+  {
+    "case_id": "RP001",
+    "category": "relation",
+    "question": "CVE-2024-4263 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2024-4263"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：MLflow allows low privilege users to del"
+  },
+  {
+    "case_id": "RP002",
+    "category": "relation",
+    "question": "CVE-2025-15036 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2025-15036"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：MLFlow path traversal vulnerability"
+  },
+  {
+    "case_id": "RP003",
+    "category": "relation",
+    "question": "CVE-2023-2780 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2023-2780"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：mlflow Path Traversal vulnerability"
+  },
+  {
+    "case_id": "RP004",
+    "category": "relation",
+    "question": "CVE-2023-6020 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2023-6020"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：Ray Missing Authorization vulnerability"
+  },
+  {
+    "case_id": "RP005",
+    "category": "relation",
+    "question": "CVE-2024-47084 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2024-47084"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：Gradios's CORS origin validation is not "
+  },
+  {
+    "case_id": "RP006",
+    "category": "relation",
+    "question": "CVE-2026-41486 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2026-41486"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：Ray: Remote Code Execution via Parquet A"
+  },
+  {
+    "case_id": "RP007",
+    "category": "relation",
+    "question": "CVE-2024-47871 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2024-47871"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：Gradio uses insecure communication betwe"
+  },
+  {
+    "case_id": "RP008",
+    "category": "relation",
+    "question": "CVE-2024-8966 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2024-8966"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：Gradio DOS in multipart boundry while up"
+  },
+  {
+    "case_id": "RP009",
+    "category": "relation",
+    "question": "CVE-2024-4940 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2024-4940"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：Open redirect in gradio"
+  },
+  {
+    "case_id": "RP010",
+    "category": "relation",
+    "question": "CVE-2023-6014 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2023-6014"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：MLflow authentication requirement bypass"
+  },
+  {
+    "case_id": "RP011",
+    "category": "relation",
+    "question": "CVE-2026-28416 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2026-28416"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：Gradio has SSRF via Malicious `proxy_url"
+  },
+  {
+    "case_id": "RP012",
+    "category": "relation",
+    "question": "CVE-2024-8859 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2024-8859"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：MLflow has a Local File Read/Path Traver"
+  },
+  {
+    "case_id": "RP013",
+    "category": "relation",
+    "question": "CVE-2024-2206 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2024-2206"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：gradio Server-Side Request Forgery vulne"
+  },
+  {
+    "case_id": "RP014",
+    "category": "relation",
+    "question": "CVE-2023-6974 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2023-6974"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：MLflow Server-Side Request Forgery (SSRF"
+  },
+  {
+    "case_id": "RP015",
+    "category": "relation",
+    "question": "CVE-2024-4253 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2024-4253"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：PYSEC-2024-321 漏洞"
+  },
+  {
+    "case_id": "RP016",
+    "category": "relation",
+    "question": "CVE-2024-0520 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2024-0520"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：Remote code execution in mlflow"
+  },
+  {
+    "case_id": "RP017",
+    "category": "relation",
+    "question": "CVE-2026-2393 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2026-2393"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：MLflow Has a Server-Side Request Forgery"
+  },
+  {
+    "case_id": "RP018",
+    "category": "relation",
+    "question": "CVE-2024-6838 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2024-6838"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：MLflow Uncontrolled Resource Consumption"
+  },
+  {
+    "case_id": "RP019",
+    "category": "relation",
+    "question": "CVE-2024-27134 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2024-27134"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：MLflow's excessive directory permissions"
+  },
+  {
+    "case_id": "RP020",
+    "category": "relation",
+    "question": "CVE-2026-2611 有没有可用的 POC？",
+    "expect_cve_ids": [
+      "CVE-2026-2611"
+    ],
+    "expect_keywords": [
+      "POC",
+      "PoC",
+      "poc",
+      "利用"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "POC 关联：MLflow: Improper Origin Validation in ML"
+  },
+  {
+    "case_id": "T001",
+    "category": "trend",
+    "question": "当前情报库收录了多少条 AI 安全漏洞？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 168,
+    "require_graph": false,
+    "note": "趋势分析：当前情报库收录了多少条 AI 安全漏洞？"
+  },
+  {
+    "case_id": "T002",
+    "category": "trend",
+    "question": "有多少条严重（CRITICAL）级别的 AI 漏洞？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 1,
+    "require_graph": false,
+    "note": "趋势分析：有多少条严重（CRITICAL）级别的 AI 漏洞？"
+  },
+  {
+    "case_id": "T003",
+    "category": "trend",
+    "question": "高危（HIGH）级别的 AI 漏洞有多少条？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 1,
+    "require_graph": false,
+    "note": "趋势分析：高危（HIGH）级别的 AI 漏洞有多少条？"
+  },
+  {
+    "case_id": "T004",
+    "category": "trend",
+    "question": "供应链风险类漏洞有多少条？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 30,
+    "require_graph": false,
+    "note": "趋势分析：供应链风险类漏洞有多少条？"
+  },
+  {
+    "case_id": "T005",
+    "category": "trend",
+    "question": "知识库中收录了多少个 ATT&CK 攻击技术？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 170,
+    "require_graph": false,
+    "note": "趋势分析：知识库中收录了多少个 ATT&CK 攻击技术？"
+  },
+  {
+    "case_id": "T006",
+    "category": "trend",
+    "question": "收录了多少篇 AI 安全论文？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 205,
+    "require_graph": false,
+    "note": "趋势分析：收录了多少篇 AI 安全论文？"
+  },
+  {
+    "case_id": "T007",
+    "category": "trend",
+    "question": "当前情报库收录了多少条 AI 安全漏洞？（第2次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 168,
+    "require_graph": false,
+    "note": "趋势分析：当前情报库收录了多少条 AI 安全漏洞？"
+  },
+  {
+    "case_id": "T008",
+    "category": "trend",
+    "question": "有多少条严重（CRITICAL）级别的 AI 漏洞？（第2次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 1,
+    "require_graph": false,
+    "note": "趋势分析：有多少条严重（CRITICAL）级别的 AI 漏洞？"
+  },
+  {
+    "case_id": "T009",
+    "category": "trend",
+    "question": "高危（HIGH）级别的 AI 漏洞有多少条？（第2次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 1,
+    "require_graph": false,
+    "note": "趋势分析：高危（HIGH）级别的 AI 漏洞有多少条？"
+  },
+  {
+    "case_id": "T010",
+    "category": "trend",
+    "question": "供应链风险类漏洞有多少条？（第2次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 30,
+    "require_graph": false,
+    "note": "趋势分析：供应链风险类漏洞有多少条？"
+  },
+  {
+    "case_id": "T011",
+    "category": "trend",
+    "question": "知识库中收录了多少个 ATT&CK 攻击技术？（第2次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 170,
+    "require_graph": false,
+    "note": "趋势分析：知识库中收录了多少个 ATT&CK 攻击技术？"
+  },
+  {
+    "case_id": "T012",
+    "category": "trend",
+    "question": "收录了多少篇 AI 安全论文？（第2次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 205,
+    "require_graph": false,
+    "note": "趋势分析：收录了多少篇 AI 安全论文？"
+  },
+  {
+    "case_id": "T013",
+    "category": "trend",
+    "question": "当前情报库收录了多少条 AI 安全漏洞？（第3次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 168,
+    "require_graph": false,
+    "note": "趋势分析：当前情报库收录了多少条 AI 安全漏洞？"
+  },
+  {
+    "case_id": "T014",
+    "category": "trend",
+    "question": "有多少条严重（CRITICAL）级别的 AI 漏洞？（第3次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 1,
+    "require_graph": false,
+    "note": "趋势分析：有多少条严重（CRITICAL）级别的 AI 漏洞？"
+  },
+  {
+    "case_id": "T015",
+    "category": "trend",
+    "question": "高危（HIGH）级别的 AI 漏洞有多少条？（第3次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 1,
+    "require_graph": false,
+    "note": "趋势分析：高危（HIGH）级别的 AI 漏洞有多少条？"
+  },
+  {
+    "case_id": "T016",
+    "category": "trend",
+    "question": "供应链风险类漏洞有多少条？（第3次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 30,
+    "require_graph": false,
+    "note": "趋势分析：供应链风险类漏洞有多少条？"
+  },
+  {
+    "case_id": "T017",
+    "category": "trend",
+    "question": "知识库中收录了多少个 ATT&CK 攻击技术？（第3次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 170,
+    "require_graph": false,
+    "note": "趋势分析：知识库中收录了多少个 ATT&CK 攻击技术？"
+  },
+  {
+    "case_id": "T018",
+    "category": "trend",
+    "question": "收录了多少篇 AI 安全论文？（第3次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 205,
+    "require_graph": false,
+    "note": "趋势分析：收录了多少篇 AI 安全论文？"
+  },
+  {
+    "case_id": "T019",
+    "category": "trend",
+    "question": "当前情报库收录了多少条 AI 安全漏洞？（第4次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 168,
+    "require_graph": false,
+    "note": "趋势分析：当前情报库收录了多少条 AI 安全漏洞？"
+  },
+  {
+    "case_id": "T020",
+    "category": "trend",
+    "question": "有多少条严重（CRITICAL）级别的 AI 漏洞？（第4次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 1,
+    "require_graph": false,
+    "note": "趋势分析：有多少条严重（CRITICAL）级别的 AI 漏洞？"
+  },
+  {
+    "case_id": "T021",
+    "category": "trend",
+    "question": "高危（HIGH）级别的 AI 漏洞有多少条？（第4次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 1,
+    "require_graph": false,
+    "note": "趋势分析：高危（HIGH）级别的 AI 漏洞有多少条？"
+  },
+  {
+    "case_id": "T022",
+    "category": "trend",
+    "question": "供应链风险类漏洞有多少条？（第4次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 30,
+    "require_graph": false,
+    "note": "趋势分析：供应链风险类漏洞有多少条？"
+  },
+  {
+    "case_id": "T023",
+    "category": "trend",
+    "question": "知识库中收录了多少个 ATT&CK 攻击技术？（第4次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 170,
+    "require_graph": false,
+    "note": "趋势分析：知识库中收录了多少个 ATT&CK 攻击技术？"
+  },
+  {
+    "case_id": "T024",
+    "category": "trend",
+    "question": "收录了多少篇 AI 安全论文？（第4次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 205,
+    "require_graph": false,
+    "note": "趋势分析：收录了多少篇 AI 安全论文？"
+  },
+  {
+    "case_id": "T025",
+    "category": "trend",
+    "question": "当前情报库收录了多少条 AI 安全漏洞？（第5次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 168,
+    "require_graph": false,
+    "note": "趋势分析：当前情报库收录了多少条 AI 安全漏洞？"
+  },
+  {
+    "case_id": "T026",
+    "category": "trend",
+    "question": "有多少条严重（CRITICAL）级别的 AI 漏洞？（第5次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 1,
+    "require_graph": false,
+    "note": "趋势分析：有多少条严重（CRITICAL）级别的 AI 漏洞？"
+  },
+  {
+    "case_id": "T027",
+    "category": "trend",
+    "question": "高危（HIGH）级别的 AI 漏洞有多少条？（第5次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 1,
+    "require_graph": false,
+    "note": "趋势分析：高危（HIGH）级别的 AI 漏洞有多少条？"
+  },
+  {
+    "case_id": "T028",
+    "category": "trend",
+    "question": "供应链风险类漏洞有多少条？（第5次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 30,
+    "require_graph": false,
+    "note": "趋势分析：供应链风险类漏洞有多少条？"
+  },
+  {
+    "case_id": "T029",
+    "category": "trend",
+    "question": "知识库中收录了多少个 ATT&CK 攻击技术？（第5次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 170,
+    "require_graph": false,
+    "note": "趋势分析：知识库中收录了多少个 ATT&CK 攻击技术？"
+  },
+  {
+    "case_id": "T030",
+    "category": "trend",
+    "question": "收录了多少篇 AI 安全论文？（第5次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 205,
+    "require_graph": false,
+    "note": "趋势分析：收录了多少篇 AI 安全论文？"
+  },
+  {
+    "case_id": "T031",
+    "category": "trend",
+    "question": "当前情报库收录了多少条 AI 安全漏洞？（第6次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 168,
+    "require_graph": false,
+    "note": "趋势分析：当前情报库收录了多少条 AI 安全漏洞？"
+  },
+  {
+    "case_id": "T032",
+    "category": "trend",
+    "question": "有多少条严重（CRITICAL）级别的 AI 漏洞？（第6次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 1,
+    "require_graph": false,
+    "note": "趋势分析：有多少条严重（CRITICAL）级别的 AI 漏洞？"
+  },
+  {
+    "case_id": "T033",
+    "category": "trend",
+    "question": "高危（HIGH）级别的 AI 漏洞有多少条？（第6次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 1,
+    "require_graph": false,
+    "note": "趋势分析：高危（HIGH）级别的 AI 漏洞有多少条？"
+  },
+  {
+    "case_id": "T034",
+    "category": "trend",
+    "question": "供应链风险类漏洞有多少条？（第6次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 30,
+    "require_graph": false,
+    "note": "趋势分析：供应链风险类漏洞有多少条？"
+  },
+  {
+    "case_id": "T035",
+    "category": "trend",
+    "question": "知识库中收录了多少个 ATT&CK 攻击技术？（第6次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 170,
+    "require_graph": false,
+    "note": "趋势分析：知识库中收录了多少个 ATT&CK 攻击技术？"
+  },
+  {
+    "case_id": "T036",
+    "category": "trend",
+    "question": "收录了多少篇 AI 安全论文？（第6次统计）",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": 205,
+    "require_graph": false,
+    "note": "趋势分析：收录了多少篇 AI 安全论文？"
+  },
+  {
+    "case_id": "T037",
+    "category": "trend",
+    "question": "当前 AI 安全的整体态势如何？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "开放型趋势题"
+  },
+  {
+    "case_id": "T038",
+    "category": "trend",
+    "question": "AI 安全漏洞主要集中在哪些类型？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "开放型趋势题"
+  },
+  {
+    "case_id": "T039",
+    "category": "trend",
+    "question": "哪些攻击技术出现得最多？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "开放型趋势题"
+  },
+  {
+    "case_id": "T040",
+    "category": "trend",
+    "question": "最受影响的 AI 组件有哪些？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "开放型趋势题"
+  },
+  {
+    "case_id": "T041",
+    "category": "trend",
+    "question": "风险等级分布是怎样的？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "开放型趋势题"
+  },
+  {
+    "case_id": "T042",
+    "category": "trend",
+    "question": "当前 AI 安全的整体态势如何？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "开放型趋势题"
+  },
+  {
+    "case_id": "T043",
+    "category": "trend",
+    "question": "AI 安全漏洞主要集中在哪些类型？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "开放型趋势题"
+  },
+  {
+    "case_id": "T044",
+    "category": "trend",
+    "question": "哪些攻击技术出现得最多？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "开放型趋势题"
+  },
+  {
+    "case_id": "D001",
+    "category": "detail",
+    "question": "CVE-2021-43831 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2021-43831"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Files on the host computer can be access"
+  },
+  {
+    "case_id": "D002",
+    "category": "detail",
+    "question": "CVE-2022-0736 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2022-0736"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Insecure Temporary File in mlflow"
+  },
+  {
+    "case_id": "D003",
+    "category": "detail",
+    "question": "CVE-2022-24770 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2022-24770"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Improper Neutralization of Formula Eleme"
+  },
+  {
+    "case_id": "D004",
+    "category": "detail",
+    "question": "CVE-2023-1176 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-1176"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Remote file existence check vulnerabilit"
+  },
+  {
+    "case_id": "D005",
+    "category": "detail",
+    "question": "CVE-2023-1177 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-1177"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：mlflow is vulnerable to remote file acce"
+  },
+  {
+    "case_id": "D006",
+    "category": "detail",
+    "question": "CVE-2023-2356 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-2356"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Relative path traversal in mlflow"
+  },
+  {
+    "case_id": "D007",
+    "category": "detail",
+    "question": "CVE-2023-25823 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-25823"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Update share links to use FRP instead of"
+  },
+  {
+    "case_id": "D008",
+    "category": "detail",
+    "question": "CVE-2023-2780 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-2780"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：mlflow Path Traversal vulnerability"
+  },
+  {
+    "case_id": "D009",
+    "category": "detail",
+    "question": "CVE-2023-30172 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-30172"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：mflow vulnerable to directory traversal"
+  },
+  {
+    "case_id": "D010",
+    "category": "detail",
+    "question": "CVE-2023-34239 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-34239"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Gradio vulnerable to arbitrary file read"
+  },
+  {
+    "case_id": "D011",
+    "category": "detail",
+    "question": "CVE-2023-3765 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-3765"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：MLflow Path Traversal vulnerability"
+  },
+  {
+    "case_id": "D012",
+    "category": "detail",
+    "question": "CVE-2023-4033 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-4033"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：mlflow vulnerable to OS Command Injectio"
+  },
+  {
+    "case_id": "D013",
+    "category": "detail",
+    "question": "CVE-2023-41626 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-41626"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Gradio arbitrary file upload vulnerabili"
+  },
+  {
+    "case_id": "D014",
+    "category": "detail",
+    "question": "CVE-2023-43472 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-43472"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Information exposure in MLflow"
+  },
+  {
+    "case_id": "D015",
+    "category": "detail",
+    "question": "CVE-2023-48022 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-48022"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Ray has arbitrary code execution via job"
+  },
+  {
+    "case_id": "D016",
+    "category": "detail",
+    "question": "CVE-2023-6014 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6014"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：MLflow authentication requirement bypass"
+  },
+  {
+    "case_id": "D017",
+    "category": "detail",
+    "question": "CVE-2023-6015 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6015"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：MLflow allowed arbitrary files to be PUT"
+  },
+  {
+    "case_id": "D018",
+    "category": "detail",
+    "question": "CVE-2023-6018 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6018"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Remote Code Execution due to Full Contro"
+  },
+  {
+    "case_id": "D019",
+    "category": "detail",
+    "question": "CVE-2023-6019 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6019"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Ray OS Command Injection vulnerability"
+  },
+  {
+    "case_id": "D020",
+    "category": "detail",
+    "question": "CVE-2023-6020 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6020"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Ray Missing Authorization vulnerability"
+  },
+  {
+    "case_id": "D021",
+    "category": "detail",
+    "question": "CVE-2023-6021 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6021"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Ray Path Traversal vulnerability"
+  },
+  {
+    "case_id": "D022",
+    "category": "detail",
+    "question": "CVE-2023-6568 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6568"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Cross-site Scripting (XSS) in MLflow"
+  },
+  {
+    "case_id": "D023",
+    "category": "detail",
+    "question": "CVE-2023-6572 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6572"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Gradio Exposure of Sensitive Information"
+  },
+  {
+    "case_id": "D024",
+    "category": "detail",
+    "question": "CVE-2023-6709 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6709"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Jinja2 template injection in mlflow"
+  },
+  {
+    "case_id": "D025",
+    "category": "detail",
+    "question": "CVE-2023-6753 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6753"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Path traversal in MLflow"
+  },
+  {
+    "case_id": "D026",
+    "category": "detail",
+    "question": "CVE-2023-6831 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6831"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：Path traversal in MLflow"
+  },
+  {
+    "case_id": "D027",
+    "category": "detail",
+    "question": "CVE-2023-6909 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6909"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：MLflow Path Traversal Vulnerability"
+  },
+  {
+    "case_id": "D028",
+    "category": "detail",
+    "question": "CVE-2023-6940 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6940"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：mlflow Command Injection vulnerability"
+  },
+  {
+    "case_id": "D029",
+    "category": "detail",
+    "question": "CVE-2023-6974 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6974"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：MLflow Server-Side Request Forgery (SSRF"
+  },
+  {
+    "case_id": "D030",
+    "category": "detail",
+    "question": "CVE-2023-6975 应该怎么修复？",
+    "expect_cve_ids": [
+      "CVE-2023-6975"
+    ],
+    "expect_keywords": [
+      "修复",
+      "升级",
+      "补丁",
+      "缓解",
+      "处置"
+    ],
+    "expect_number": null,
+    "require_graph": false,
+    "note": "处置建议：MLFlow Path Traversal Vulnerability"
+  },
+  {
+    "case_id": "M001",
+    "category": "multihop",
+    "question": "哪些 AI 组件的漏洞已经有可用 POC？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M002",
+    "category": "multihop",
+    "question": "mlflow 相关漏洞中有哪些已确认被利用？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M003",
+    "category": "multihop",
+    "question": "AI 组件之间的依赖关系是怎样的？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M004",
+    "category": "multihop",
+    "question": "哪些组件同时出现在多个漏洞中？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M005",
+    "category": "multihop",
+    "question": "从组件角度分析，AI 生态的攻击面有多大？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M006",
+    "category": "multihop",
+    "question": "哪些 AI 组件的漏洞已经有可用 POC？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M007",
+    "category": "multihop",
+    "question": "mlflow 相关漏洞中有哪些已确认被利用？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M008",
+    "category": "multihop",
+    "question": "AI 组件之间的依赖关系是怎样的？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M009",
+    "category": "multihop",
+    "question": "哪些组件同时出现在多个漏洞中？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M010",
+    "category": "multihop",
+    "question": "从组件角度分析，AI 生态的攻击面有多大？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M011",
+    "category": "multihop",
+    "question": "哪些 AI 组件的漏洞已经有可用 POC？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M012",
+    "category": "multihop",
+    "question": "mlflow 相关漏洞中有哪些已确认被利用？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M013",
+    "category": "multihop",
+    "question": "AI 组件之间的依赖关系是怎样的？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M014",
+    "category": "multihop",
+    "question": "哪些组件同时出现在多个漏洞中？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M015",
+    "category": "multihop",
+    "question": "从组件角度分析，AI 生态的攻击面有多大？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M016",
+    "category": "multihop",
+    "question": "哪些 AI 组件的漏洞已经有可用 POC？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M017",
+    "category": "multihop",
+    "question": "mlflow 相关漏洞中有哪些已确认被利用？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M018",
+    "category": "multihop",
+    "question": "AI 组件之间的依赖关系是怎样的？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M019",
+    "category": "multihop",
+    "question": "哪些组件同时出现在多个漏洞中？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  },
+  {
+    "case_id": "M020",
+    "category": "multihop",
+    "question": "从组件角度分析，AI 生态的攻击面有多大？",
+    "expect_cve_ids": [],
+    "expect_keywords": [],
+    "expect_number": null,
+    "require_graph": true,
+    "note": "多跳推理：图谱关系查询"
+  }
+]

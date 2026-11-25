@@ -1,0 +1,25 @@
+本目录保存本次Windows EXE启动器源代码和Neo4j启停代码。
+
+Launcher.cs：C#/.NET Framework Windows启动包装器，启动同包嵌入式Python，
+并以Job Object管理本次启动的进程。主逻辑在上一级portable_bootstrap.py。
+它统一准备私有数据库、恢复随包快照、启动后端和前端窗口、保存模块状态及正常退出。
+源项目目录为app，前端运行成品为app\前端界面\dist，不依赖Node开发服务。
+
+本次环境：Python 3.12.10 x64，PostgreSQL 16.15，pgvector 0.8.6，
+Neo4j Community 5.26.32，Temurin Java 21.0.12.1+1，Torch 2.14.1+cpu。
+Python具体库版本可在runtime\python\Lib\site-packages下各dist-info元数据中复核。
+原数据库的pgvector为0.8.7；本次在Windows 0.8.6中完成逻辑恢复、索引和向量查询核验。
+
+在Windows .NET Framework 4.x编译工具存在时，可以在PowerShell中编译Launcher.cs：
+& "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /codepage:65001 /target:winexe /platform:x64 /r:System.Windows.Forms.dll /win32icon:.\portable\sentinel.ico /out:Sentinel.exe .\portable\Launcher.cs
+再将生成的同一个EXE复制命名为“停止系统.exe”。停止模式由EXE文件名称识别。
+实际运行无需重新编译。必须保留所有随包目录和开源许可。
+
+本包以Windows启动器与嵌入式Python运行，没有使用原源码中的Sentinel.spec构建本次EXE。
+
+2026-10-19 窗口及任务栏图标修复：
+portable\sentinel.ico 从当前 Sentinel.exe 的原始图标资源提取，包含16至256像素的10种尺寸。
+portable_bootstrap.py 在创建窗口前为内嵌Python进程设置独立的Windows AppUserModelID，
+并通过webview.start(icon=...)显式设置原生窗口图标，避免默认显示pythonw.exe的Python图标。
+修改后直接重新打开Sentinel.exe即可生效，无需重编译启动器，也不修改Python运行库。
+后续重新编译时保留上述 /win32icon 参数，分发时必须包含portable\sentinel.ico。

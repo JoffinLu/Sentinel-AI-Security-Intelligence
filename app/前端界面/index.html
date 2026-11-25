@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 安全知识情报系统</title>
+    <meta name="description" content="智能体驱动的 AI 安全知识情报系统" />
+    <!-- 主题防闪烁：在样式与 React 加载前先把 data-theme 写到 <html>，
+         否则刷新时会先按默认（黑夜）渲染一帧再跳到白天。
+         只有明确存过 'light' 才用白天，其余一律黑夜；失败静默回退。 -->
+    <script>
+      (function () {
+        var mode = 'dark'
+        try {
+          if (localStorage.getItem('sentinel-theme') === 'light') mode = 'light'
+        } catch (e) {
+          /* 存储不可用时保持默认黑夜 */
+        }
+        document.documentElement.setAttribute('data-theme', mode)
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,67 @@
+# ============================================================
+# 仓库根 .gitignore
+# 仓库结构：根目录 = 运行壳（exe / 启动器 / 运行时），app/ = 完整源码工作区
+# 原则：体积大、可再生成、含密钥的内容一律不入库
+# ============================================================
+
+# ---------- 运行包（约 1.4GB，随 exe 分发，不入库）----------
+/runtime/
+/pgsql/
+/neo4j/
+/java/
+/data/
+/Sentinel.exe
+/停止系统.exe
+/文件校验清单.json
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+
+# ---------- Node / 前端依赖 ----------
+node_modules/
+*.tsbuildinfo
+.vite/
+
+# ---------- 敏感配置（含真实密钥）----------
+.env
+.env.bak
+.env.local
+.env.*.local
+
+# ---------- 模型缓存（91MB，首次运行自动下载）----------
+app/数据/模型缓存/
+
+# ---------- 运行数据 / 日志 ----------
+*.log
+app/数据/*.csv.zip
+
+# ---------- 打包产物（仅保留组装脚本与说明）----------
+app/发布/*
+!app/发布/组装发布包.sh
+!app/发布/README.md
+!app/发布/release-notes.md
+!app/发布/使用说明-内嵌版.txt
+!app/发布/使用说明.txt
+!app/发布/logo.ico
+!app/发布/upload_release.py
+app/build/
+app/*.spec.bak
+
+# ---------- 便携版开发过程的验证素材与源码旧备份 ----------
+portable/qa_general/
+portable/qa_repair/
+portable/theme_fix/
+
+# ---------- 临时文件 ----------
+.tmp/
+.workbuddy/
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*

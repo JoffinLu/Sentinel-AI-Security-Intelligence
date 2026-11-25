@@ -1,0 +1,130 @@
+# 告警规则
+# 对应决赛评分中的"监控告警"能力，三类核心告警：
+#   1. 采集失败率异常
+#   2. 富化置信度跌落
+#   3. LLM 服务降级/超时
+
+groups:
+  # ========== 数据采集告警 ==========
+  - name: intel_collection
+    interval: 60s
+    rules:
+      - alert: 采集失败率过高
+        expr: |
+          (
+            sum(rate(intel_collect_total{status="failed"}[30m]))
+            /
+            sum(rate(intel_collect_total[30m]))
+          ) > 0.3
+        for: 5m
+        labels:
+          severity: critical
+          component: collector
+        annotations:
+          summary: "数据采集失败率超过 30%"
+          description: "近 30 分钟采集失败率 {{ $value | humanizePercentage }}，请检查上游数据源可用性与网络连通性。"
+
+      - alert: 数据源不可用
+        expr: intel_source_available == 0
+        for: 10m
+        labels:
+          severity: warning
+          component: collector
+        annotations:
+          summary: "数据源 {{ $labels.source }} 持续不可用"
+          description: "该数据源已连续 10 分钟采集失败，系统将跳过该源继续处理其他源。"
+
+      - alert: 采集延迟超标
+        expr: |
+          histogram_quantile(
+            0.95, sum(rate(intel_ingest_latency_seconds_bucket[1h])) by (le, source)
+          ) > 43200
+        for: 15m
+        labels:
+          severity: warning
+          component: collector
+        annotations:
+          summary: "数据源 {{ $labels.source }} 采集延迟 P95 超过 12 小时"
+          description: "监测时效性指标劣化，影响系统「延迟 ≤12 小时」的评分目标。"
+
+  # ========== AI 分类告警 ==========
+  - name: intel_classification
+    interval: 60s
+    rules:
+      - alert: 分类器判定异常
+        expr: |
+          rate(intel_classify_total{result="non_ai"}[30m])
+          /
+          sum(rate(intel_classify_total[30m])) > 0.9
+        for: 10m
+        labels:
+          severity: info
+          component: classifier
+        annotations:
+          summary: "AI 安全判定比例异常偏低"
+          description: "近 30 分钟判定为非 AI 的比例超过 90%，可能存在数据源变化或分类规则失效。"
+
+  # ========== LLM 服务告警 ==========
+  - name: intel_llm
+    interval: 30s
+    rules:
+      - alert: LLM处于降级模式
+        expr: intel_llm_degraded_mode == 1
+        for: 2m
+        labels:
+          severity: warning
+          component: llm
+        annotations:
+          summary: "LLM 服务处于降级模式"
+          description: "主备 LLM 均不可用，系统已切换至规则引擎兜底，富化与问答质量将下降。"
+
+      - alert: LLM调用失败率过高
+        expr: |
+          (
+            sum(rate(intel_llm_total{status="fail"}[15m]))
+            /
+            sum(rate(intel_llm_total[15m]))
+          ) > 0.5
+        for: 5m
+        labels:
+          severity: critical
+          component: llm
+        annotations:
+          summary: "LLM 调用失败率超过 50%"
+          description: "请检查 API Key 有效性、额度余额与网关限流情况。"
+
+      - alert: LLM触发限流
+        expr: rate(intel_llm_rate_limited_total[10m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+          component: llm
+        annotations:
+          summary: "LLM 网关触发限流（HTTP 429）"
+          description: "系统已进入冷却期，期间 LLM 相关功能自动降级。建议降低并发或申请更高配额。"
+
+      - alert: LLM响应缓慢
+        expr: |
+          histogram_quantile(0.95, sum(rate(intel_llm_duration_seconds_bucket[10m])) by (le, backend)) > 30
+        for: 5m
+        labels:
+          severity: warning
+          component: llm
+        annotations:
+          summary: "LLM 响应 P95 超过 30 秒"
+          description: "响应缓慢将直接影响问答模块的「响应 ≤5s」评分指标。"
+
+  # ========== 问答服务告警 ==========
+  - name: intel_qa
+    interval: 60s
+    rules:
+      - alert: 问答响应超时
+        expr: |
+          histogram_quantile(0.95, sum(rate(intel_qa_duration_seconds_bucket[10m])) by (le)) > 5
+        for: 5m
+        labels:
+          severity: warning
+          component: qa
+        annotations:
+          summary: "问答响应 P95 超过 5 秒"
+          description: "超出赛题「响应 ≤5s」的合格线，建议检查检索与图谱查询性能。"

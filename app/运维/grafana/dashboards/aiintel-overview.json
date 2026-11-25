@@ -1,0 +1,294 @@
+{
+  "title": "AI 安全情报系统总览",
+  "uid": "aiintel-overview",
+  "tags": ["aiintel"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "datasource",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": { "text": "Prometheus", "value": "Prometheus" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "1. 情报总量",
+      "description": "数据库中已收录的漏洞情报总数（对应赛题「情报监测」评分项）",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 5, "w": 4, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "intel_db_records{table=\"vulnerabilities\"}", "legendFormat": "漏洞" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 100 },
+              { "color": "green", "value": 1000 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "2. AI 安全相关",
+      "description": "经 AI 相关性分类器判定为 AI 安全范畴的情报数",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 5, "w": 4, "x": 4, "y": 0 },
+      "targets": [
+        { "expr": "intel_db_records{table=\"ai_security\"}", "legendFormat": "AI 安全" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "purple" },
+          "unit": "short"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "3. LLM 降级模式",
+      "description": "1 表示 LLM 不可用、已切换规则模式；持续为 1 需检查网关配额",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 5, "w": 4, "x": 8, "y": 0 },
+      "targets": [
+        { "expr": "intel_llm_degraded_mode", "legendFormat": "降级" }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": { "text": "正常", "color": "green" },
+                "1": { "text": "降级中", "color": "red" }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "4. 问答 P95 响应",
+      "description": "赛题性能指标：响应时间 P95 ≤ 5 秒",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 5, "w": 4, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(intel_qa_duration_seconds_bucket[10m])) by (le))",
+          "legendFormat": "P95"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 3 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "5. 采集延迟 P95",
+      "description": "赛题性能指标：监测时效性 P95 ≤ 12 小时（优秀档 ≤6 小时）",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 5, "w": 4, "x": 16, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(intel_ingest_latency_seconds_bucket[1h])) by (le)) / 3600",
+          "legendFormat": "P95"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "h",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 6 },
+              { "color": "red", "value": 12 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "6. 富化置信度",
+      "description": "各维度富化结果的平均置信度，偏低说明需人工核验",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 5, "w": 4, "x": 20, "y": 0 },
+      "targets": [
+        {
+          "expr": "avg(intel_enrich_confidence)",
+          "legendFormat": "均置信度"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 0.5 },
+              { "color": "green", "value": 0.75 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "7. 各数据源采集量趋势",
+      "description": "9 类数据源的采集产出速率，反映监测能力",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 5 },
+      "targets": [
+        {
+          "expr": "sum(rate(intel_collect_items_total[10m])) by (source)",
+          "legendFormat": "{{source}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 10 } }
+      }
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "8. 采集成功率",
+      "description": "采集失败率超 30% 触发告警",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 5 },
+      "targets": [
+        {
+          "expr": "sum(rate(intel_collect_total{status=\"failed\"}[10m])) by (source) / sum(rate(intel_collect_total[10m])) by (source)",
+          "legendFormat": "{{source}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "custom": { "drawStyle": "line", "fillOpacity": 10 }
+        }
+      }
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "9. LLM 调用与限流",
+      "description": "限流频次上升说明配额不足，影响富化质量",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 13 },
+      "targets": [
+        {
+          "expr": "sum(rate(intel_llm_total[5m])) by (backend, status)",
+          "legendFormat": "{{backend}} {{status}}"
+        },
+        {
+          "expr": "sum(rate(intel_llm_rate_limited_total[5m]))",
+          "legendFormat": "限流次数"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 8 } }
+      }
+    },
+    {
+      "id": 13,
+      "type": "bargauge",
+      "title": "10. 富化置信度分布（按维度）",
+      "description": "低置信维度需人工核验后才会用于问答引用",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 13 },
+      "targets": [
+        {
+          "expr": "intel_enrich_confidence",
+          "legendFormat": "{{dimension}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 0.5 },
+              { "color": "green", "value": 0.8 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 14,
+      "type": "timeseries",
+      "title": "11. 问答意图分布",
+      "description": "四类意图的使用情况，反映用户真实需求",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 21 },
+      "targets": [
+        {
+          "expr": "sum(rate(intel_qa_total[30m])) by (intent)",
+          "legendFormat": "{{intent}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "custom": { "drawStyle": "line", "fillOpacity": 15, "stacking": "normal" } }
+      }
+    },
+    {
+      "id": 15,
+      "type": "heatmap",
+      "title": "12. 问答响应时间分布",
+      "description": "赛题性能指标：P95 ≤ 5 秒",
+      "datasource": { "type": "prometheus", "uid": "${datasource}" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 21 },
+      "targets": [
+        {
+          "expr": "sum(rate(intel_qa_duration_seconds_bucket[10m])) by (le)",
+          "format": "heatmap"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "scale": { "scheme": "Spectral" } }
+        }
+      }
+    }
+  ]
+}

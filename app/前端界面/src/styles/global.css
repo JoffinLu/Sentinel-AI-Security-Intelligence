@@ -1,0 +1,105 @@
+/* 全局基础样式
+ *
+ * 主题：SENTINEL 设计语言 · 黑夜主题
+ * 加载顺序（main.tsx 中）：
+ *   1. sentinel-design-tokens.css  设计变量（配色/字体/圆角/缓动）
+ *   2. sentinel-effects.css         视觉与动效
+ *   3. sentinel-theme.cssAntD 组件换肤适配层
+ *   4. global.css                  本文件（基础重置）
+ *   5. sentinel-bg-react.js        极光背景层（WebGL 着色器）
+ */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* 双主题驱动：加 data-theme="light" 即切到亮色。
+     变量默认值即 dark。 */
+  background: var(--bg, #060807);
+}
+
+body {
+  font-family: var(
+    --font,
+    'Inter',
+    'PingFang SC',
+    'Microsoft YaHei',
+    system-ui,
+    sans-serif
+  );
+  background: var(--bg, #060807);
+  color: var(--text-2, #a7b3ab);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* 极光背景层固定在 body 下，body 自身需允许其铺满 */
+  overflow-x: hidden;
+  /* 主题切换时底色/文字平滑过渡，避免闪一下硬切 */
+  transition:
+    background-color 0.3s var(--ease),
+    color 0.3s var(--ease);
+}
+
+/* 表格紧凑化，适配情报列表的信息密度 */
+.ant-table-tbody > tr > td {
+  font-size: 13px;
+}
+
+.ant-table-thead > tr > th {
+  font-size: 12px;
+}
+
+/* 卡片阴影与换色统一交给 sentinel-theme.css，
+   此处只保留克制的基础阴影（sentinel-theme 会覆盖） */
+
+/* 滚动条（sentinel-theme.css 里有更完整的版本，此处兜底） */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(160, 200, 175, 0.14);
+  border-radius: 8px;
+}
+
+/* 白天主题：滚动条要在白底上才看得见 */
+[data-theme='light'] ::-webkit-scrollbar-thumb {
+  background: rgba(23, 58, 43, 0.2);
+}
+[data-theme='light'] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(23, 58, 43, 0.32);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ============================================================
+   降低动效偏好（无障碍）
+   尊重系统设置：开启「减弱动态效果」时停掉极光动画
+   （sentinel-aurora.js 内部也做了检测，会降级为静态单帧）
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .sentinel-aurora {
+    animation: none !important;
+  }
+  #sentinelBgCanvas {
+    display: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

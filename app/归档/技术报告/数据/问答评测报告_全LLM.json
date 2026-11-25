@@ -1,0 +1,3609 @@
+{
+  "summary": {
+    "total": 198,
+    "passed": 158,
+    "accuracy": 79.8,
+    "by_category": {
+      "fact": {
+        "total": 60,
+        "passed": 60,
+        "accuracy": 100.0
+      },
+      "relation": {
+        "total": 44,
+        "passed": 32,
+        "accuracy": 72.7
+      },
+      "trend": {
+        "total": 44,
+        "passed": 16,
+        "accuracy": 36.4
+      },
+      "detail": {
+        "total": 30,
+        "passed": 30,
+        "accuracy": 100.0
+      },
+      "multihop": {
+        "total": 20,
+        "passed": 20,
+        "accuracy": 100.0
+      }
+    },
+    "latency": {
+      "avg_ms": 3095,
+      "p50_ms": 3263,
+      "p95_ms": 3838,
+      "max_ms": 4033,
+      "p95_within_5s": true
+    },
+    "multihop_accuracy": 100.0,
+    "degraded_count": 91,
+    "generated_at": "2026-10-10T05:05:25.628449+00:00"
+  },
+  "results": [
+    {
+      "case_id": "F001",
+      "category": "fact",
+      "question": "CVE-2021-43831 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 2623,
+      "reason": "命中 CVE-2021-43831",
+      "returned_cves": [
+        "CVE-2021-43831"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2021-43831 是 Gradio 库中的一个严重信息泄露漏洞 [CVE-2021-43831]。  **核心问题**：攻击者可通过公开的 Gradio 界面访问主机计算机上的文件 [CVE-2021-43831]。  **受影响范围**：使用版本低于 2.4.8 的 Gradio 创建",
+      "note": "事实查询：Files on the host computer can be access"
+    },
+    {
+      "case_id": "F002",
+      "category": "fact",
+      "question": "介绍一下 CVE-2022-0736 的情况",
+      "passed": true,
+      "elapsed_ms": 3143,
+      "reason": "命中 CVE-2022-0736",
+      "returned_cves": [
+        "CVE-2022-0736"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "**CVE-2022-0736** 是 mlflow 中的一个不安全的临时文件漏洞 [CVE-2022-0736]。  - **漏洞成因**：mlflow 1.23.1 之前的版本使用了已弃用的 `tempfile.mktemp()` 函数，存在不安全的临时文件处理机制，建议改用 `mkstemp(",
+      "note": "事实查询：Insecure Temporary File in mlflow"
+    },
+    {
+      "case_id": "F003",
+      "category": "fact",
+      "question": "CVE-2022-24770 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 1516,
+      "reason": "命中 CVE-2022-24770",
+      "returned_cves": [
+        "CVE-2022-24770"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2022-24770 的风险等级为 HIGH [CVE-2022-24770]。该漏洞的 CVSS 评分为 8.8 [CVE-2022-24770]。AI 分类将其归类为“模型与数据层风险” [CVE-2022-24770]。",
+      "note": "事实查询：Improper Neutralization of Formula Eleme"
+    },
+    {
+      "case_id": "F004",
+      "category": "fact",
+      "question": "CVE-2022-45907 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 3625,
+      "reason": "命中 CVE-2022-45907",
+      "returned_cves": [
+        "CVE-2022-45907"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 1 条相关情报，主要涉及 1 个组件——torch（2 条）。**   ### [CVE-2022-45907] PyTorch vulnerable to arbitrary code execution 　严重度 CRITICAL | CVSS 9.8 | 分",
+      "note": "事实查询：PyTorch vulnerable to arbitrary code exe"
+    },
+    {
+      "case_id": "F005",
+      "category": "fact",
+      "question": "CVE-2023-1176 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 3169,
+      "reason": "命中 CVE-2023-1176",
+      "returned_cves": [
+        "CVE-2023-1176"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-1176 是 MLflow 开源项目中的一个远程文件存在检查漏洞 [CVE-2023-1176]。该漏洞影响使用 `mlflow server` 或 `mlflow ui` 命令托管 MLflow 模型注册表的用户 [CVE-2023-1176]。  漏洞严重度为 MEDIUM，C",
+      "note": "事实查询：Remote file existence check vulnerabilit"
+    },
+    {
+      "case_id": "F006",
+      "category": "fact",
+      "question": "介绍一下 CVE-2023-1177 的情况",
+      "passed": true,
+      "elapsed_ms": 3202,
+      "reason": "命中 CVE-2023-1177",
+      "returned_cves": [
+        "CVE-2023-1177"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-1177 是 MLflow 开源项目中的严重安全漏洞 [CVE-2023-1177]。  **影响范围**：使用该漏洞相关命令部署 MLflow Model Registry 的用户，具体涉及通过 `mlflow server` 或 `mlflow ui` 命令运行的环境 [CVE",
+      "note": "事实查询：mlflow is vulnerable to remote file acce"
+    },
+    {
+      "case_id": "F007",
+      "category": "fact",
+      "question": "CVE-2023-2356 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 3610,
+      "reason": "命中 CVE-2023-2356",
+      "returned_cves": [
+        "CVE-2023-2356"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-2356] Relative path traversal in mlflow 　严重度 HIGH | CVSS 10.0 | 分类 供应链风险 　Relative Path Traversal in GitHub repository mlflow/",
+      "note": "事实查询：Relative path traversal in mlflow"
+    },
+    {
+      "case_id": "F008",
+      "category": "fact",
+      "question": "CVE-2023-25823 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 3615,
+      "reason": "命中 CVE-2023-25823",
+      "returned_cves": [
+        "CVE-2023-25823"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 1 条相关情报，主要涉及 1 个组件——gradio（2 条）。**   ### [CVE-2023-25823] Update share links to use FRP instead of SSH tunneling 　严重度 MEDIUM | CVSS ",
+      "note": "事实查询：Update share links to use FRP instead of"
+    },
+    {
+      "case_id": "F009",
+      "category": "fact",
+      "question": "CVE-2023-2780 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 2752,
+      "reason": "命中 CVE-2023-2780",
+      "returned_cves": [
+        "CVE-2023-2780"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-2780 是 MLflow 的路径遍历漏洞 [CVE-2023-2780]。该漏洞存在于 2.3.0 版本之前的 MLflow 中，原因是存在针对  修复方案的绕过机制 [CVE-2023-2780]。  关键信息如下： *   **漏洞类型**：路径遍历（Path Travers",
+      "note": "事实查询：mlflow Path Traversal vulnerability"
+    },
+    {
+      "case_id": "F010",
+      "category": "fact",
+      "question": "介绍一下 CVE-2023-2800 的情况",
+      "passed": true,
+      "elapsed_ms": 3166,
+      "reason": "命中 CVE-2023-2800",
+      "returned_cves": [
+        "CVE-2023-2800"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "**CVE-2023-2800 情况概述**  **漏洞类型**：不安全临时文件（Insecure Temporary File）[CVE-2023-2800]  **影响范围**：GitHub 仓库 huggingface/transformers，版本 4.29.2 及更早版本 [CVE-202",
+      "note": "事实查询：transformers has Insecure Temporary File"
+    },
+    {
+      "case_id": "F011",
+      "category": "fact",
+      "question": "CVE-2023-29374 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 3604,
+      "reason": "命中 CVE-2023-29374",
+      "returned_cves": [
+        "CVE-2023-29374"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-29374] LangChain vulnerable to code injection 　严重度 CRITICAL | CVSS 9.8 | 分类 AI应用与智能体风险 　In LangChain through 0.0.131, the `LLM",
+      "note": "事实查询：LangChain vulnerable to code injection"
+    },
+    {
+      "case_id": "F012",
+      "category": "fact",
+      "question": "CVE-2023-30172 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 3611,
+      "reason": "命中 CVE-2023-30172",
+      "returned_cves": [
+        "CVE-2023-30172"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 1 条相关情报，主要涉及 1 个组件——mlflow（2 条）。**   ### [CVE-2023-30172] mflow vulnerable to directory traversal 　严重度 HIGH | CVSS 7.5 | 分类 模型与数据层风险",
+      "note": "事实查询：mflow vulnerable to directory traversal"
+    },
+    {
+      "case_id": "F013",
+      "category": "fact",
+      "question": "CVE-2023-32785 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 3598,
+      "reason": "命中 CVE-2023-32785",
+      "returned_cves": [
+        "CVE-2023-32785"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-32785] Langchain SQL Injection vulnerability 　严重度 CRITICAL | CVSS 9.8 | 分类 AI应用与智能体风险 　In Langchain before 0.0.247, prompt inj",
+      "note": "事实查询：Langchain SQL Injection vulnerability"
+    },
+    {
+      "case_id": "F014",
+      "category": "fact",
+      "question": "介绍一下 CVE-2023-32786 的情况",
+      "passed": true,
+      "elapsed_ms": 3621,
+      "reason": "命中 CVE-2023-32786",
+      "returned_cves": [
+        "CVE-2023-32786"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-32786] Langchain Server-Side Request Forgery vulnerability 　严重度 HIGH | CVSS 7.5 | 分类 AI应用与智能体风险 　In Langchain before 0.0.329, ",
+      "note": "事实查询：Langchain Server-Side Request Forgery vu"
+    },
+    {
+      "case_id": "F015",
+      "category": "fact",
+      "question": "CVE-2023-34239 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 3631,
+      "reason": "命中 CVE-2023-34239",
+      "returned_cves": [
+        "CVE-2023-34239"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-34239] Gradio vulnerable to arbitrary file read and proxying of arbitrary URLs 　严重度 MEDIUM | CVSS 7.3 | 分类 模型与数据层风险 　### Impac",
+      "note": "事实查询：Gradio vulnerable to arbitrary file read"
+    },
+    {
+      "case_id": "F016",
+      "category": "fact",
+      "question": "CVE-2023-34540 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 3598,
+      "reason": "命中 CVE-2023-34540",
+      "returned_cves": [
+        "CVE-2023-34540"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "**CVE-2023-34540 安全问题类型**  | 维度 | 说明 | |------|------| | **漏洞类型** | OS 命令注入（OS Command Injection） | | **攻击效果** | 远程代码执行（RCE） | | **受影响组件** | Langchain",
+      "note": "事实查询：Langchain OS Command Injection vulnerabi"
+    },
+    {
+      "case_id": "F017",
+      "category": "fact",
+      "question": "CVE-2023-34541 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 3596,
+      "reason": "命中 CVE-2023-34541",
+      "returned_cves": [
+        "CVE-2023-34541"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-34541] Langchain vulnerable to arbitrary code execution 　严重度 CRITICAL | CVSS 9.8 | 分类 AI应用与智能体风险 　Langchain 0.0.171 is vulnera",
+      "note": "事实查询：Langchain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "F018",
+      "category": "fact",
+      "question": "介绍一下 CVE-2023-36095 的情况",
+      "passed": true,
+      "elapsed_ms": 2346,
+      "reason": "命中 CVE-2023-36095",
+      "returned_cves": [
+        "CVE-2023-36095"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-36095 是 langchain 的严重代码注入漏洞 [CVE-2023-36095]。该漏洞由 Harrison Chase 维护，允许攻击者通过 PALChain 执行任意代码 [CVE-2023-36095]。具体利用方式为调用 `from_math_prompt(llm)",
+      "note": "事实查询：langchain Code Injection vulnerability"
+    },
+    {
+      "case_id": "F019",
+      "category": "fact",
+      "question": "CVE-2023-36188 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 3598,
+      "reason": "命中 CVE-2023-36188",
+      "returned_cves": [
+        "CVE-2023-36188"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-36188] langchain vulnerable to arbitrary code execution 　严重度 CRITICAL | CVSS 9.8 | 分类 模型与数据层风险 　An issue in langchain allows a",
+      "note": "事实查询：langchain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "F020",
+      "category": "fact",
+      "question": "CVE-2023-36189 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 2878,
+      "reason": "命中 CVE-2023-36189",
+      "returned_cves": [
+        "CVE-2023-36189"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "CVE-2023-36189 是 SQL 注入漏洞 [CVE-2023-36189]。该漏洞存在于 langchain 的 SQLDatabaseChain 组件中，攻击者可通过构造恶意输入获取敏感信息 [CVE-2023-36189]。严重程度为 HIGH，CVSS 评分 7.5 [CVE-202",
+      "note": "事实查询：langchain SQL Injection vulnerability"
+    },
+    {
+      "case_id": "F021",
+      "category": "fact",
+      "question": "CVE-2023-36258 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 3519,
+      "reason": "命中 CVE-2023-36258",
+      "returned_cves": [
+        "CVE-2023-36258"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-36258 是 LangChain 库中的任意代码执行漏洞 [CVE-2023-36258]。  **漏洞详情：** *   **影响组件**：Python 中的 `PALChain`，攻击者可通过 `python exec` 方法触发执行 [CVE-2023-36258]。 * ",
+      "note": "事实查询：langchain arbitrary code execution vulne"
+    },
+    {
+      "case_id": "F022",
+      "category": "fact",
+      "question": "介绍一下 CVE-2023-36281 的情况",
+      "passed": true,
+      "elapsed_ms": 2671,
+      "reason": "命中 CVE-2023-36281",
+      "returned_cves": [
+        "CVE-2023-36281"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "**CVE-2023-36281** 是针对 LangChain 库的远程代码执行漏洞 [CVE-2023-36281]。  1. **受影响版本**：LangChain v0.0.171 [CVE-2023-36281]。 2. **漏洞成因**：攻击者可通过向 `load_prompt` 参数传",
+      "note": "事实查询：langchain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "F023",
+      "category": "fact",
+      "question": "CVE-2023-3765 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 3606,
+      "reason": "命中 CVE-2023-3765",
+      "returned_cves": [
+        "CVE-2023-3765"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-3765] MLflow Path Traversal vulnerability 　严重度 CRITICAL | CVSS 10.0 | 分类 供应链风险 　Absolute Path Traversal in GitHub repository m",
+      "note": "事实查询：MLflow Path Traversal vulnerability"
+    },
+    {
+      "case_id": "F024",
+      "category": "fact",
+      "question": "CVE-2023-38860 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 3610,
+      "reason": "命中 CVE-2023-38860",
+      "returned_cves": [
+        "CVE-2023-38860"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 1 条相关情报，主要涉及 1 个组件——langchain（2 条）。**   ### [CVE-2023-38860] LangChain vulnerable to arbitrary code execution 　严重度 CRITICAL | CVSS 9",
+      "note": "事实查询：LangChain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "F025",
+      "category": "fact",
+      "question": "CVE-2023-38896 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 2983,
+      "reason": "命中 CVE-2023-38896",
+      "returned_cves": [
+        "CVE-2023-38896"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-38896 是 LangChain 框架中的远程任意代码执行漏洞 [CVE-2023-38896]。该漏洞存在于 Harrison Chase 维护的 LangChain 版本低于 0.0.236 的软件中 [CVE-2023-38896]。攻击者可通过构造恶意的 `from_ma",
+      "note": "事实查询：LangChain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "F026",
+      "category": "fact",
+      "question": "介绍一下 CVE-2023-39631 的情况",
+      "passed": true,
+      "elapsed_ms": 3598,
+      "reason": "命中 CVE-2023-39631",
+      "returned_cves": [
+        "CVE-2023-39631"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-39631] Langchain vulnerable to arbitrary code execution via the evaluate function in the numexpr library 　严重度 CRITICAL | CVSS ",
+      "note": "事实查询：Langchain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "F027",
+      "category": "fact",
+      "question": "CVE-2023-39659 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 2001,
+      "reason": "命中 CVE-2023-39659",
+      "returned_cves": [
+        "CVE-2023-39659"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-39659 的风险等级为严重（CRITICAL）[CVE-2023-39659]。其 CVSS 评分为 9.8，AI 分类属于模型与数据层风险 [CVE-2023-39659]。  该漏洞存在于 langchain-ai 版本低于 0.0.325 的 LangChain 中，攻击者",
+      "note": "事实查询：LangChain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "F028",
+      "category": "fact",
+      "question": "CVE-2023-39662 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 3575,
+      "reason": "命中 CVE-2023-39662",
+      "returned_cves": [
+        "CVE-2023-39662"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "CVE-2023-39662 属于**任意代码执行漏洞** [CVE-2023-39662]。该漏洞存在于 llama_index ≤0.7.13 的 `PandasQueryEngine` 函数中，攻击者可通过构造的 `exec` 参数实现远程任意代码执行 [CVE-2023-39662]。其 C",
+      "note": "事实查询：llama-index vulnerable to arbitrary code"
+    },
+    {
+      "case_id": "F029",
+      "category": "fact",
+      "question": "CVE-2023-4033 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 3654,
+      "reason": "命中 CVE-2023-4033",
+      "returned_cves": [
+        "CVE-2023-4033"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-4033] mlflow vulnerable to OS Command Injection 　严重度 HIGH | CVSS 8.8 | 分类 供应链风险 　OS Command Injection in GitHub repository mlf",
+      "note": "事实查询：mlflow vulnerable to OS Command Injectio"
+    },
+    {
+      "case_id": "F030",
+      "category": "fact",
+      "question": "介绍一下 CVE-2023-41626 的情况",
+      "passed": true,
+      "elapsed_ms": 2594,
+      "reason": "命中 CVE-2023-41626",
+      "returned_cves": [
+        "CVE-2023-41626"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-41626 是 Gradio 框架中的任意文件上传漏洞 [CVE-2023-41626]。  **受影响版本**：Gradio v3.27.0 [CVE-2023-41626]  **漏洞详情**：攻击者可通过 `/upload` 接口实现任意文件上传 [CVE-2023-4162",
+      "note": "事实查询：Gradio arbitrary file upload vulnerabili"
+    },
+    {
+      "case_id": "F031",
+      "category": "fact",
+      "question": "CVE-2023-43472 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 3340,
+      "reason": "命中 CVE-2023-43472",
+      "returned_cves": [
+        "CVE-2023-43472"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-43472 的风险等级为 **HIGH（高危）** [CVE-2023-43472]。具体指标如下：  - **CVSS 评分**：7.5 [CVE-2023-43472]   - **严重度**：HIGH [CVE-2023-43472]   - **AI 分类**：模型与数据层",
+      "note": "事实查询：Information exposure in MLflow"
+    },
+    {
+      "case_id": "F032",
+      "category": "fact",
+      "question": "CVE-2023-46229 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 2689,
+      "reason": "命中 CVE-2023-46229",
+      "returned_cves": [
+        "CVE-2023-46229"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "CVE-2023-46229 属于服务端请求伪造（SSRF）漏洞 [CVE-2023-46229]。  该漏洞存在于 LangChain 0.0.317 版本之前，攻击者可通过 `document_loaders/recursive_url_loader.py` 模块触发 SSRF 攻击。其核心利用",
+      "note": "事实查询：LangChain Server Side Request Forgery vu"
+    },
+    {
+      "case_id": "F033",
+      "category": "fact",
+      "question": "CVE-2023-48022 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 3133,
+      "reason": "命中 CVE-2023-48022",
+      "returned_cves": [
+        "CVE-2023-48022"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-48022 是 Anyscale Ray 中的一个严重漏洞 [CVE-2023-48022]。攻击者可通过 Jobs Submission API 远程执行任意代码，导致完全控制 [CVE-2023-48022]。  关键指标如下： - **严重度**：CRITICAL [CVE-",
+      "note": "事实查询：Ray has arbitrary code execution via job"
+    },
+    {
+      "case_id": "F034",
+      "category": "fact",
+      "question": "介绍一下 CVE-2023-6014 的情况",
+      "passed": true,
+      "elapsed_ms": 3181,
+      "reason": "命中 CVE-2023-6014",
+      "returned_cves": [
+        "CVE-2023-6014"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-6014 是 MLflow 平台存在的关键级认证绕过漏洞 [CVE-2023-6014]。攻击者可利用该漏洞绕过所有身份验证机制，任意创建账户 [CVE-2023-6014]。  该漏洞严重度评级为 CRITICAL，CVSS 评分为 9.1 [CVE-2023-6014]。AI ",
+      "note": "事实查询：MLflow authentication requirement bypass"
+    },
+    {
+      "case_id": "F035",
+      "category": "fact",
+      "question": "CVE-2023-6015 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 3619,
+      "reason": "命中 CVE-2023-6015",
+      "returned_cves": [
+        "CVE-2023-6015"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-6015] MLflow allowed arbitrary files to be PUT onto the server 　严重度 CRITICAL | CVSS 10.0 | 分类 模型与数据层风险 　MLflow allowed arbitra",
+      "note": "事实查询：MLflow allowed arbitrary files to be PUT"
+    },
+    {
+      "case_id": "F036",
+      "category": "fact",
+      "question": "CVE-2023-6018 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 2423,
+      "reason": "命中 CVE-2023-6018",
+      "returned_cves": [
+        "CVE-2023-6018"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "CVE-2023-6018 属于远程代码执行（Remote Code Execution）类型的安全问题 [CVE-2023-6018]。  具体而言，该漏洞源于 mlflow 中存在的“完全受控文件写入”（Full Controlled File Write）缺陷 [CVE-2023-6018]。",
+      "note": "事实查询：Remote Code Execution due to Full Contro"
+    },
+    {
+      "case_id": "F037",
+      "category": "fact",
+      "question": "CVE-2023-6019 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 3641,
+      "reason": "命中 CVE-2023-6019",
+      "returned_cves": [
+        "CVE-2023-6019"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-6019] Ray OS Command Injection vulnerability 　严重度 CRITICAL | CVSS 9.8 | 分类 模型与数据层风险 　A command injection exists in Ray's cpu_p",
+      "note": "事实查询：Ray OS Command Injection vulnerability"
+    },
+    {
+      "case_id": "F038",
+      "category": "fact",
+      "question": "介绍一下 CVE-2023-6020 的情况",
+      "passed": true,
+      "elapsed_ms": 3628,
+      "reason": "命中 CVE-2023-6020",
+      "returned_cves": [
+        "CVE-2023-6020"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-6020] Ray Missing Authorization vulnerability 　严重度 CRITICAL | CVSS 9.3 | 分类 模型与数据层风险 　LFI in Ray's /static/ directory allows a",
+      "note": "事实查询：Ray Missing Authorization vulnerability"
+    },
+    {
+      "case_id": "F039",
+      "category": "fact",
+      "question": "CVE-2023-6021 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 3619,
+      "reason": "命中 CVE-2023-6021",
+      "returned_cves": [
+        "CVE-2023-6021"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-6021] Ray Path Traversal vulnerability 　严重度 CRITICAL | CVSS 9.3 | 分类 模型与数据层风险 　LFI in Ray's log API endpoint allows attackers ",
+      "note": "事实查询：Ray Path Traversal vulnerability"
+    },
+    {
+      "case_id": "F040",
+      "category": "fact",
+      "question": "CVE-2023-6568 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 2795,
+      "reason": "命中 CVE-2023-6568",
+      "returned_cves": [
+        "CVE-2023-6568"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "CVE-2023-6568 属于跨站脚本（XSS）漏洞，具体为反射型 XSS [CVE-2023-6568]。该漏洞存在于 mlflow/mlflow 仓库中，由 POST 请求的 Content-Type 头处理不当引发 [CVE-2023-6568]。从分类维度看，AI 将其归类为供应链风险 [",
+      "note": "事实查询：Cross-site Scripting (XSS) in MLflow"
+    },
+    {
+      "case_id": "F041",
+      "category": "fact",
+      "question": "CVE-2023-6572 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 2451,
+      "reason": "命中 CVE-2023-6572",
+      "returned_cves": [
+        "CVE-2023-6572"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-6572 是 Gradio 仓库中存在的信息泄露漏洞 [CVE-2023-6572]。该漏洞属于“向未经授权的行为者暴露敏感信息”类型 [CVE-2023-6572]。其受影响范围为 GitHub 仓库 gradio-app/gradio 的 main 分支主版本之前 [CVE-2",
+      "note": "事实查询：Gradio Exposure of Sensitive Information"
+    },
+    {
+      "case_id": "F042",
+      "category": "fact",
+      "question": "介绍一下 CVE-2023-6709 的情况",
+      "passed": true,
+      "elapsed_ms": 2448,
+      "reason": "命中 CVE-2023-6709",
+      "returned_cves": [
+        "CVE-2023-6709"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-6709 涉及 Jinja2 模板注入漏洞，存在于 GitHub 仓库 mlflow/mlflow（版本 prior to 2.9.2）中 [CVE-2023-6709]。该漏洞属于“模板引擎中特殊元素的不当中性化”类型 [CVE-2023-6709]。其严重度为 HIGH，CVS",
+      "note": "事实查询：Jinja2 template injection in mlflow"
+    },
+    {
+      "case_id": "F043",
+      "category": "fact",
+      "question": "CVE-2023-6730 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 3694,
+      "reason": "命中 CVE-2023-6730",
+      "returned_cves": [
+        "CVE-2023-6730"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-6730] transformers has a Deserialization of Untrusted Data vulnerability 　严重度 CRITICAL | CVSS 9.0 | 分类 供应链风险 　Deserialization ",
+      "note": "事实查询：transformers has a Deserialization of Un"
+    },
+    {
+      "case_id": "F044",
+      "category": "fact",
+      "question": "CVE-2023-6753 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 3681,
+      "reason": "命中 CVE-2023-6753",
+      "returned_cves": [
+        "CVE-2023-6753"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 1 条相关情报，主要涉及 1 个组件——mlflow（2 条）。**   ### [CVE-2023-6753] Path traversal in MLflow 　严重度 HIGH | CVSS 8.8 | 分类 供应链风险 　Path Traversal in",
+      "note": "事实查询：Path traversal in MLflow"
+    },
+    {
+      "case_id": "F045",
+      "category": "fact",
+      "question": "CVE-2023-6831 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 3637,
+      "reason": "命中 CVE-2023-6831",
+      "returned_cves": [
+        "CVE-2023-6831"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-6831] Path traversal in MLflow 　严重度 CRITICAL | CVSS 10.0 | 分类 供应链风险 　Path Traversal: '\\..\\filename' in GitHub repository mlflo",
+      "note": "事实查询：Path traversal in MLflow"
+    },
+    {
+      "case_id": "F046",
+      "category": "fact",
+      "question": "介绍一下 CVE-2023-6909 的情况",
+      "passed": true,
+      "elapsed_ms": 2257,
+      "reason": "命中 CVE-2023-6909",
+      "returned_cves": [
+        "CVE-2023-6909"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-6909 是 MLflow 中的一个路径穿越漏洞 [CVE-2023-6909]。该漏洞存在于 GitHub 仓库 mlflow/mlflow 中，版本号低于 2.9.2，具体表现为对 '\\..\\filename' 类型的路径处理存在缺陷 [CVE-2023-6909]。其严重度评",
+      "note": "事实查询：MLflow Path Traversal Vulnerability"
+    },
+    {
+      "case_id": "F047",
+      "category": "fact",
+      "question": "CVE-2023-6940 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 2373,
+      "reason": "命中 CVE-2023-6940",
+      "returned_cves": [
+        "CVE-2023-6940"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-6940 的风险等级为 **HIGH（高）** [CVE-2023-6940]。  根据情报数据，该漏洞的 CVSS 评分为 **8.8** [CVE-2023-6940]。AI 自动分类将其归入“模型与数据层风险”类别 [CVE-2023-6940]。  该漏洞属于 MLflow",
+      "note": "事实查询：mlflow Command Injection vulnerability"
+    },
+    {
+      "case_id": "F048",
+      "category": "fact",
+      "question": "CVE-2023-6974 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 2825,
+      "reason": "命中 CVE-2023-6974",
+      "returned_cves": [
+        "CVE-2023-6974"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "CVE-2023-6974 属于**服务端请求伪造（SSRF）**类型的安全问题 [CVE-2023-6974]。  该漏洞存在于 MLflow 中，允许恶意用户利用此问题访问内部 HTTP(s) 服务器 [CVE-2023-6974]。在 AWS 实例等 worst-case 场景下，攻击者可滥用",
+      "note": "事实查询：MLflow Server-Side Request Forgery (SSRF"
+    },
+    {
+      "case_id": "F049",
+      "category": "fact",
+      "question": "CVE-2023-6975 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 3699,
+      "reason": "命中 CVE-2023-6975",
+      "returned_cves": [
+        "CVE-2023-6975"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-6975] MLFlow Path Traversal Vulnerability 　严重度 CRITICAL | CVSS 9.8 | 分类 模型与数据层风险 　A malicious user could use this issue to get",
+      "note": "事实查询：MLFlow Path Traversal Vulnerability"
+    },
+    {
+      "case_id": "F050",
+      "category": "fact",
+      "question": "介绍一下 CVE-2023-6976 的情况",
+      "passed": true,
+      "elapsed_ms": 2260,
+      "reason": "命中 CVE-2023-6976",
+      "returned_cves": [
+        "CVE-2023-6976"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "**CVE-2023-6976 漏洞概览**  该漏洞为 MLflow 路径遍历漏洞 [CVE-2023-6976]。攻击者可利用此漏洞，以服务器进程上下文身份将任意文件写入远程文件系统的任意位置 [CVE-2023-6976]。  根据数据，该漏洞严重度评级为 **HIGH**，CVSS 评分为 ",
+      "note": "事实查询：MLflow Path Traversal Vulnerability"
+    },
+    {
+      "case_id": "F051",
+      "category": "fact",
+      "question": "CVE-2023-6977 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 2228,
+      "reason": "命中 CVE-2023-6977",
+      "returned_cves": [
+        "CVE-2023-6977"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2023-6977 的风险等级为 **HIGH** [CVE-2023-6977]。  该漏洞属于 MLflow 本地文件披露漏洞，允许恶意用户读取服务器上的敏感文件 [CVE-2023-6977]。其 CVSS 评分为 **7.5**，AI 分类归属于“模型与数据层风险” [CVE-202",
+      "note": "事实查询：MLflow Local File Disclosure Vulnerabili"
+    },
+    {
+      "case_id": "F052",
+      "category": "fact",
+      "question": "CVE-2023-7018 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 3705,
+      "reason": "命中 CVE-2023-7018",
+      "returned_cves": [
+        "CVE-2023-7018"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 1 条相关情报，主要涉及 1 个组件——transformers（2 条）。**   ### [CVE-2023-7018] transformers has a Deserialization of Untrusted Data vulnerability 　严",
+      "note": "事实查询：transformers has a Deserialization of Un"
+    },
+    {
+      "case_id": "F053",
+      "category": "fact",
+      "question": "CVE-2024-0243 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 3122,
+      "reason": "命中 CVE-2024-0243",
+      "returned_cves": [
+        "CVE-2024-0243"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2024-0243 是 LangChain 中的服务端请求伪造（SSRF）漏洞 [CVE-2024-0243]。该漏洞源于 `RecursiveUrlLoader` 在使用如 `https://example.com` 等 URL 进行爬取配置时存在安全风险 [CVE-2024-0243]。",
+      "note": "事实查询：langchain Server-Side Request Forgery vu"
+    },
+    {
+      "case_id": "F054",
+      "category": "fact",
+      "question": "介绍一下 CVE-2024-0520 的情况",
+      "passed": true,
+      "elapsed_ms": 3418,
+      "reason": "命中 CVE-2024-0520",
+      "returned_cves": [
+        "CVE-2024-0520"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "**CVE-2024-0520** 是 mlflow 中的一个严重安全漏洞 [CVE-2024-0520]。  *   **影响组件**：mlflow/mlflow 版本 8.2.1 [CVE-2024-0520]。 *   **漏洞类型**：远程代码执行 (RCE) [CVE-2024-0520]",
+      "note": "事实查询：Remote code execution in mlflow"
+    },
+    {
+      "case_id": "F055",
+      "category": "fact",
+      "question": "CVE-2024-0964 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 2052,
+      "reason": "命中 CVE-2024-0964",
+      "returned_cves": [
+        "CVE-2024-0964"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2024-0964 的风险等级为 **HIGH**，CVSS 评分为 **7.5** [CVE-2024-0964]。  该漏洞属于 Gradio 的路径遍历漏洞，本地文件包含可通过 API 请求中易受攻击的用户提供 JSON 值远程触发 [CVE-2024-0964]。AI 分类将其归类为",
+      "note": "事实查询：Gradio Path Traversal vulnerability"
+    },
+    {
+      "case_id": "F056",
+      "category": "fact",
+      "question": "CVE-2024-10940 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 2619,
+      "reason": "命中 CVE-2024-10940",
+      "returned_cves": [
+        "CVE-2024-10940"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "CVE-2024-10940 属于 **AI应用与智能体风险** 类型的安全问题 [CVE-2024-10940]。  该漏洞存在于 langchain-core 库（受影响版本：>=0.1.17,<0.1.53；>=0.2.0,<0.2.43；>=0.3.0,<0.3.15）中 [CVE-2024",
+      "note": "事实查询：langchain-core allows unauthorized users"
+    },
+    {
+      "case_id": "F057",
+      "category": "fact",
+      "question": "CVE-2024-11041 是什么漏洞？",
+      "passed": true,
+      "elapsed_ms": 3635,
+      "reason": "命中 CVE-2024-11041",
+      "returned_cves": [
+        "CVE-2024-11041"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2024-11041] vLLM Deserialization of Untrusted Data vulnerability 　严重度 CRITICAL | CVSS 9.8 | 分类 AI基础设施/推理框架风险 　vllm-project vllm ver",
+      "note": "事实查询：vLLM Deserialization of Untrusted Data v"
+    },
+    {
+      "case_id": "F058",
+      "category": "fact",
+      "question": "介绍一下 CVE-2024-11392 的情况",
+      "passed": true,
+      "elapsed_ms": 3600,
+      "reason": "命中 CVE-2024-11392",
+      "returned_cves": [
+        "CVE-2024-11392"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2024-11392] Deserialization of Untrusted Data in Hugging Face Transformers 　严重度 HIGH | CVSS 7.5 | 分类 AI应用与智能体风险 　Hugging Face Trans",
+      "note": "事实查询：Deserialization of Untrusted Data in Hug"
+    },
+    {
+      "case_id": "F059",
+      "category": "fact",
+      "question": "CVE-2024-11393 的风险等级是多少？",
+      "passed": true,
+      "elapsed_ms": 3269,
+      "reason": "命中 CVE-2024-11393",
+      "returned_cves": [
+        "CVE-2024-11393"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": false,
+      "answer_preview": "CVE-2024-11393 的风险等级为 **HIGH** [CVE-2024-11393]。  该漏洞存在于 Hugging Face Transformers 的 MaskFormer 模型中，属于反序列化不可信数据导致的远程代码执行（RCE）漏洞 [CVE-2024-11393]。具体指标如",
+      "note": "事实查询：Deserialization of Untrusted Data in Hug"
+    },
+    {
+      "case_id": "F060",
+      "category": "fact",
+      "question": "CVE-2024-11394 属于什么类型的安全问题？",
+      "passed": true,
+      "elapsed_ms": 2455,
+      "reason": "命中 CVE-2024-11394",
+      "returned_cves": [
+        "CVE-2024-11394"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "CVE-2024-11394 属于**反序列化不受信任数据**类型的安全问题 [CVE-2024-11394]。具体表现为 Hugging Face Transformers 库中的 Trax 模型在处理反序列化时存在漏洞，可导致远程代码执行（RCE）[CVE-2024-11394]。该漏洞允许远程",
+      "note": "事实查询：Deserialization of Untrusted Data in Hug"
+    },
+    {
+      "case_id": "R001",
+      "category": "relation",
+      "question": "mlflow 有哪些已知漏洞？",
+      "passed": true,
+      "elapsed_ms": 3724,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2021-36948",
+        "CVE-2026-2651",
+        "CVE-2022-42948",
+        "CVE-2024-37059",
+        "GHSA-gqvg-gmmx-x4hm"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 1 个组件——mlflow（6 条）。**   ### [CVE-2021-36948] CVE-2021-36948 已被在野利用 　严重度 HIGH 　Microsoft Windows Update Medic Service Pr",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R002",
+      "category": "relation",
+      "question": "Gradio 相关的漏洞有哪些？",
+      "passed": true,
+      "elapsed_ms": 3783,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "rss:xianzhi:8bab075d44b5690a",
+        "CVE-2026-28416",
+        "CVE-2012-0158",
+        "CVE-2024-39236",
+        "CVE-2012-0151"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 1 个组件——gradio（4 条）。**   ### [rss:xianzhi:8bab075d44b5690a] 从 ZCode Trust Folder Bypass 0day 漏洞看 Coding Agent 的 Trust Fo",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R003",
+      "category": "relation",
+      "question": "transformers 组件出现过哪些安全问题？",
+      "passed": true,
+      "elapsed_ms": 3034,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2023-7018",
+        "CVE-2023-6730",
+        "CVE-2023-2800",
+        "CVE-2024-11393",
+        "CVE-2026-4372"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "transformers 组件存在以下三类安全问题：  1. **不信任数据反序列化**：在 4.36 版本之前存在此类漏洞。其中 CVE-2023-6730 严重度为 CRITICAL（CVSS 9.0）[CVE-2023-6730]，CVE-2023-7018 严重度为 HIGH（CVSS 7.",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R004",
+      "category": "relation",
+      "question": "vllm 有什么安全风险？",
+      "passed": true,
+      "elapsed_ms": 2884,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-9540",
+        "CVE-2024-11041",
+        "rss:xianzhi:917e060294eacd9e",
+        "CVE-2025-62164",
+        "CVE-2026-105757"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "vLLM 主要存在以下安全风险：  1. **不安全的反序列化**：v0.6.2 版本中 MessageQueue.dequeue() API 使用 pickle.loads 解析接收的 socket 数据，允许远程代码执行。该漏洞严重度为 CRITICAL（CVSS 9.8）[CVE-2024-1",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R005",
+      "category": "relation",
+      "question": "langchain 有哪些漏洞？",
+      "passed": true,
+      "elapsed_ms": 2975,
+      "reason": "召回 6 条",
+      "returned_cves": [
+        "CVE-2025-68665",
+        "CVE-2022-43769",
+        "CVE-2023-32785",
+        "CVE-2024-34102",
+        "CVE-2023-32786",
+        "CVE-2021-41277"
+      ],
+      "graph_paths": 2,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "LangChain 主要存在以下漏洞：  1. **反序列化注入漏洞**：CVE-2025-68665，严重度为 High，可利用序列化注入实现密钥提取 [CVE-2025-68665]。  2. **SQL 注入漏洞**：CVE-2023-32785，严重度为 Critical（CVSS 9.8）",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R006",
+      "category": "relation",
+      "question": "MCP 相关的漏洞有哪些？",
+      "passed": true,
+      "elapsed_ms": 2911,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-104850",
+        "CVE-2026-107824",
+        "CVE-2026-107820",
+        "CVE-2026-101063",
+        "CVE-2026-76286"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 2 个组件——@modelcontextprotocol/sdk（2 条）、@modelcontextprotocol/client（2 条）。**   ### [CVE-2026-104850] MCP TypeScript SDK: ",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R007",
+      "category": "relation",
+      "question": "PyTorch 生态的安全问题有哪些？",
+      "passed": true,
+      "elapsed_ms": 3857,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2024-37059",
+        "CVE-2025-55557",
+        "CVE-2026-57516",
+        "rss:xianzhi:52c0a7a8e7f18bf3",
+        "CVE-2023-6753"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 3 个组件——mlflow（4 条）、torch（2 条）、ray（2 条）。**   ### [CVE-2024-37059] MLFlow unsafe deserialization 　严重度 HIGH | CVSS 8.8 | 分",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R008",
+      "category": "relation",
+      "question": "Hugging Face 平台上有哪些模型相关漏洞？",
+      "passed": true,
+      "elapsed_ms": 3725,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2026-76286",
+        "poc:omniversodigital/godmode-ai",
+        "rss:xianzhi:8bab075d44b5690a",
+        "CVE-2020-2021"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 1 个组件——ray（2 条）。**   ### [CVE-2026-57516] Ray: Arbitrary code execution via ray.data.read_webdataset default decoder: p",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R009",
+      "category": "relation",
+      "question": "mlflow 有哪些已知漏洞？",
+      "passed": true,
+      "elapsed_ms": 3680,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2021-36948",
+        "CVE-2026-2651",
+        "CVE-2022-42948",
+        "CVE-2024-37059",
+        "GHSA-gqvg-gmmx-x4hm"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 1 个组件——mlflow（6 条）。**   ### [CVE-2021-36948] CVE-2021-36948 已被在野利用 　严重度 HIGH 　Microsoft Windows Update Medic Service Pr",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R010",
+      "category": "relation",
+      "question": "Gradio 相关的漏洞有哪些？",
+      "passed": true,
+      "elapsed_ms": 3051,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "rss:xianzhi:8bab075d44b5690a",
+        "CVE-2026-28416",
+        "CVE-2012-0158",
+        "CVE-2026-28415",
+        "CVE-2012-0151"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "根据情报数据，与 Gradio 相关的漏洞如下：  1. **CVE-2026-28416**：Gradio 在 `gr.load()` 配置处理过程中存在 SSRF 漏洞 [CVE-2026-28416]。攻击者可通过注入恶意的 `proxy_url`，诱导受害者服务器发起任意 HTTP 请求 [",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R011",
+      "category": "relation",
+      "question": "transformers 组件出现过哪些安全问题？",
+      "passed": true,
+      "elapsed_ms": 3704,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2023-7018",
+        "CVE-2026-4372",
+        "CVE-2024-11393",
+        "CVE-2026-5241",
+        "CVE-2023-6730"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 1 个组件——transformers（10 条）。**   ### [CVE-2023-7018] transformers has a Deserialization of Untrusted Data vulnerability 　",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R012",
+      "category": "relation",
+      "question": "vllm 有什么安全风险？",
+      "passed": true,
+      "elapsed_ms": 3400,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-9540",
+        "CVE-2024-11041",
+        "rss:xianzhi:917e060294eacd9e",
+        "CVE-2025-62164",
+        "CVE-2026-105757"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "vllm 主要存在以下安全风险：  1. **反序列化漏洞（严重）**：CVE-2024-11041 指出 v0.6.2 版本中 `MessageQueue.dequeue()` API 使用 `pickle.loads` 解析接收的 socket 数据，存在反序列化不可信数据风险，CVSS 9.8",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R013",
+      "category": "relation",
+      "question": "langchain 有哪些漏洞？",
+      "passed": true,
+      "elapsed_ms": 2688,
+      "reason": "召回 6 条",
+      "returned_cves": [
+        "CVE-2025-68665",
+        "CVE-2022-43769",
+        "CVE-2023-32785",
+        "CVE-2024-34102",
+        "CVE-2023-32786",
+        "CVE-2021-41277"
+      ],
+      "graph_paths": 2,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "LangChain 存在以下漏洞：  1. **序列化注入漏洞** [CVE-2025-68665]：严重度 High。攻击者可利用序列化注入机制提取机密信息，威胁数据安全风险。  2. **SQL 注入漏洞** [CVE-2023-32785]：严重度 Critical (CVSS 9.8)，属于",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R014",
+      "category": "relation",
+      "question": "MCP 相关的漏洞有哪些？",
+      "passed": true,
+      "elapsed_ms": 2740,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-104850",
+        "CVE-2026-107824",
+        "CVE-2026-107820",
+        "CVE-2026-101063",
+        "CVE-2026-76286"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "基于情报数据，MCP 相关漏洞如下：  1. **MCP TypeScript SDK 凭证泄露** [CVE-2026-104850]    OAuth 客户端存在设计缺陷，允许 MCP 服务器决定凭证发送至哪个授权服务，严重度 HIGH（CVSS 7.5），属于 AI 应用与智能体风险。  2.",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R015",
+      "category": "relation",
+      "question": "PyTorch 生态的安全问题有哪些？",
+      "passed": true,
+      "elapsed_ms": 3695,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2024-37059",
+        "CVE-2025-55557",
+        "CVE-2026-57516",
+        "rss:xianzhi:52c0a7a8e7f18bf3",
+        "CVE-2023-6753"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 3 个组件——mlflow（4 条）、torch（2 条）、ray（2 条）。**   ### [CVE-2024-37059] MLFlow unsafe deserialization 　严重度 HIGH | CVSS 8.8 | 分",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R016",
+      "category": "relation",
+      "question": "Hugging Face 平台上有哪些模型相关漏洞？",
+      "passed": true,
+      "elapsed_ms": 3688,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2026-76286",
+        "poc:omniversodigital/godmode-ai",
+        "rss:xianzhi:8bab075d44b5690a",
+        "CVE-2020-2021"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 1 个组件——ray（2 条）。**   ### [CVE-2026-57516] Ray: Arbitrary code execution via ray.data.read_webdataset default decoder: p",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R017",
+      "category": "relation",
+      "question": "mlflow 有哪些已知漏洞？",
+      "passed": true,
+      "elapsed_ms": 2375,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2021-36948",
+        "CVE-2026-2651",
+        "CVE-2022-42948",
+        "CVE-2024-37059",
+        "GHSA-gqvg-gmmx-x4hm"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "根据情报数据，MLflow 已知漏洞如下：  **CVE-2026-2651 [CVE-2026-2651]** *   **风险等级**：CRITICAL（CVSS 9.0），AI分类为供应链风险。 *   **影响范围**：MLflow 版本 <=3.10.1.dev0。 *   **漏洞详情*",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R018",
+      "category": "relation",
+      "question": "Gradio 相关的漏洞有哪些？",
+      "passed": true,
+      "elapsed_ms": 3061,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "rss:xianzhi:8bab075d44b5690a",
+        "CVE-2026-28416",
+        "CVE-2012-0158",
+        "CVE-2026-28415",
+        "CVE-2012-0151"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "基于提供的情报数据，与 Gradio 相关的漏洞仅有一项：  **CVE-2026-28416** *   **类型**：服务端请求伪造（SSRF）[CVE-2026-28416] *   **描述**：攻击者可通过在 `gr.load()` 配置中注入恶意的 `proxy_url`，诱导受害者服务",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R019",
+      "category": "relation",
+      "question": "transformers 组件出现过哪些安全问题？",
+      "passed": true,
+      "elapsed_ms": 3706,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2023-7018",
+        "CVE-2026-4372",
+        "CVE-2024-11393",
+        "CVE-2026-5241",
+        "CVE-2023-6730"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 1 个组件——transformers（10 条）。**   ### [CVE-2023-7018] transformers has a Deserialization of Untrusted Data vulnerability 　",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R020",
+      "category": "relation",
+      "question": "vllm 有什么安全风险？",
+      "passed": true,
+      "elapsed_ms": 3195,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-9540",
+        "CVE-2024-11041",
+        "rss:xianzhi:917e060294eacd9e",
+        "CVE-2025-62164",
+        "CVE-2026-105757"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "基于现有情报，vllm 主要存在以下安全风险：  1. **反序列化漏洞（高危）**：CVE-2024-11041 指出 v0.6.2 版本中 `MessageQueue.dequeue()` 函数使用 `pickle.loads` 解析接收到的 socket 数据，存在不信任数据反序列化风险，CV",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R021",
+      "category": "relation",
+      "question": "langchain 有哪些漏洞？",
+      "passed": true,
+      "elapsed_ms": 3205,
+      "reason": "召回 6 条",
+      "returned_cves": [
+        "CVE-2025-68665",
+        "CVE-2022-43769",
+        "CVE-2023-32785",
+        "CVE-2024-34102",
+        "CVE-2023-32786",
+        "CVE-2021-41277"
+      ],
+      "graph_paths": 2,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "LangChain 存在以下两类已知漏洞：  1. **反序列化注入漏洞** [CVE-2025-68665]，严重度为高。该漏洞允许攻击者通过恶意序列化数据提取密钥 [CVE-2025-68665]。  2. **SQL 注入漏洞** [CVE-2023-32785]，严重度为危急（CVSS 9.",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R022",
+      "category": "relation",
+      "question": "MCP 相关的漏洞有哪些？",
+      "passed": true,
+      "elapsed_ms": 3675,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-104850",
+        "CVE-2026-107824",
+        "CVE-2026-107820",
+        "CVE-2026-101063",
+        "CVE-2026-76286"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 2 个组件——@modelcontextprotocol/sdk（2 条）、@modelcontextprotocol/client（2 条）。**   ### [CVE-2026-104850] MCP TypeScript SDK: ",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R023",
+      "category": "relation",
+      "question": "PyTorch 生态的安全问题有哪些？",
+      "passed": true,
+      "elapsed_ms": 3719,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2024-37059",
+        "CVE-2025-55557",
+        "CVE-2026-57516",
+        "rss:xianzhi:52c0a7a8e7f18bf3",
+        "CVE-2023-6753"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 3 个组件——mlflow（4 条）、torch（2 条）、ray（2 条）。**   ### [CVE-2024-37059] MLFlow unsafe deserialization 　严重度 HIGH | CVSS 8.8 | 分",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "R024",
+      "category": "relation",
+      "question": "Hugging Face 平台上有哪些模型相关漏洞？",
+      "passed": true,
+      "elapsed_ms": 2877,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2026-76286",
+        "poc:omniversodigital/godmode-ai",
+        "rss:xianzhi:8bab075d44b5690a",
+        "CVE-2020-2021"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "现有情报数据中**未提及任何专门属于 Hugging Face 平台的模型漏洞**。  提供的三条数据仅涉及其他组件： 1. **CVE-2026-57516**：Apache Ray 的 `read_webdataset` 默认解码器存在任意代码执行风险 [CVE-2026-57516]。 2. ",
+      "note": "关联推理：组件→漏洞"
+    },
+    {
+      "case_id": "RP001",
+      "category": "relation",
+      "question": "poc:gazalguler/llm-prompt-injection-playground 有没有可用的 POC？",
+      "passed": false,
+      "elapsed_ms": 2342,
+      "reason": "未召回目标 CVE（返回 ['CVE-2015-5123', 'CVE-2015-5122', 'CVE-2013-3993']）",
+      "returned_cves": [
+        "CVE-2015-5123",
+        "CVE-2015-5122",
+        "CVE-2013-3993",
+        "CVE-2021-20028",
+        "CVE-2021-45382"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "根据提供的情报数据，无法回答该问题。  提供的三则情报（[CVE-2015-5123]、[CVE-2015-5122]、[CVE-2013-3993]）均涉及 Adobe Flash Player 和 IBM InfoSphere BigInsights 的历史漏洞，未包含任何关于 `gazalgu",
+      "note": "POC 关联：gazalguler/llm-prompt-injection-playgrou"
+    },
+    {
+      "case_id": "RP002",
+      "category": "relation",
+      "question": "poc:pleyva2004/redloop 有没有可用的 POC？",
+      "passed": false,
+      "elapsed_ms": 3945,
+      "reason": "未召回目标 CVE（返回 ['CVE-2022-40799', 'CVE-2020-25078', 'CVE-2023-50224']）",
+      "returned_cves": [
+        "CVE-2022-40799",
+        "CVE-2020-25078",
+        "CVE-2023-50224",
+        "CVE-2023-37580",
+        "CVE-2023-33063"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，但均未发现公开的 POC（概念验证代码）。**  说明这类漏洞目前未见公开利用代码，但不代表不可利用——建议关注厂商公告与社区动态。   ### [CVE-2022-40799] CVE-2022-40799 已被在野利用 　严重度 HIGH 　D",
+      "note": "POC 关联：pleyva2004/redloop：Automated LLM red-tea"
+    },
+    {
+      "case_id": "RP003",
+      "category": "relation",
+      "question": "CVE-2026-108113 有没有可用的 POC？",
+      "passed": true,
+      "elapsed_ms": 3638,
+      "reason": "命中 CVE-2026-108113，关键词 ['POC', 'PoC']",
+      "returned_cves": [
+        "CVE-2026-108113"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 1 条相关情报，其中 1 条有可用的 POC（概念验证代码）。**  - [CVE-2026-108113] 可用 POC：Tencent/AI-Infra-Guard、0sec-labs/0  ### [CVE-2026-108113] CVE-2026-108",
+      "note": "POC 关联：CVE-2026-108113: ILIAS before 9.24, 10.1"
+    },
+    {
+      "case_id": "RP004",
+      "category": "relation",
+      "question": "poc:Abhinav-1890/nexashield 有没有可用的 POC？",
+      "passed": false,
+      "elapsed_ms": 2890,
+      "reason": "未召回目标 CVE（返回 ['CVE-2021-45382', 'CVE-2018-10561', 'CVE-2023-41061']）",
+      "returned_cves": [
+        "CVE-2021-45382",
+        "CVE-2018-10561",
+        "CVE-2023-41061",
+        "CVE-2021-40655",
+        "CVE-2014-100005"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "提供的三条情报数据（[CVE-2021-45382]、[CVE-2018-10561]、[CVE-2023-41061]）中，均未提及 `Abhinav-1890/nexashield` 或与之相关的 POC 信息。  因此，基于当前可用数据，**无法判断**是否存在该漏洞的 POC。  缺失信息：",
+      "note": "POC 关联：Abhinav-1890/nexashield：Modular risk-ada"
+    },
+    {
+      "case_id": "RP005",
+      "category": "relation",
+      "question": "CVE-2026-105872 有没有可用的 POC？",
+      "passed": true,
+      "elapsed_ms": 3627,
+      "reason": "命中 CVE-2026-105872，关键词 ['POC', 'PoC']",
+      "returned_cves": [
+        "CVE-2026-105872"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 1 条相关情报，其中 1 条有可用的 POC（概念验证代码）。**  - [CVE-2026-105872] 可用 POC：NVIDIA/SkillSpector、Goochbeater/Spiritual-Spell-Red-Teaming  ### [CVE-",
+      "note": "POC 关联：CVE-2026-105872: Deserialization of Untr"
+    },
+    {
+      "case_id": "RP006",
+      "category": "relation",
+      "question": "CVE-2026-33367 有没有可用的 POC？",
+      "passed": true,
+      "elapsed_ms": 3621,
+      "reason": "命中 CVE-2026-33367，关键词 ['POC', 'PoC']",
+      "returned_cves": [
+        "CVE-2026-33367"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 1 条相关情报，其中 1 条有可用的 POC（概念验证代码）。**  - [CVE-2026-33367] 可用 POC：Tencent/AI-Infra-Guard、0sec-labs/0  ### [CVE-2026-33367] CVE-2026-33367",
+      "note": "POC 关联：CVE-2026-33367: SNMP can be used to perf"
+    },
+    {
+      "case_id": "RP007",
+      "category": "relation",
+      "question": "poc:yash-gupta05/llm-redteam-lab 有没有可用的 POC？",
+      "passed": false,
+      "elapsed_ms": 2947,
+      "reason": "未召回目标 CVE（返回 ['CVE-2020-9377', 'CVE-2020-25079', 'CVE-2021-29256']）",
+      "returned_cves": [
+        "CVE-2020-9377",
+        "CVE-2020-25079",
+        "CVE-2021-29256",
+        "CVE-2022-40799",
+        "CVE-2013-5223"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "根据提供的三段情报数据，均无法回答该问题。  1. 数据 [1] 仅涉及 D-Link DIR-610 设备的 CVE-2020-9377 [CVE-2020-9377]。 2. 数据 [2] 仅涉及 D-Link 摄像头的 CVE-2020-25079 [CVE-2020-25079]。 3. 数",
+      "note": "POC 关联：yash-gupta05/llm-redteam-lab：Multi-agent"
+    },
+    {
+      "case_id": "RP008",
+      "category": "relation",
+      "question": "CVE-2026-101094 有没有可用的 POC？",
+      "passed": true,
+      "elapsed_ms": 2962,
+      "reason": "命中 CVE-2026-101094，关键词 ['POC', 'PoC']",
+      "returned_cves": [
+        "CVE-2026-101094"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "根据提供的 CVE-2026-101094 情报数据，仅包含漏洞描述（不完整 UTF-8 序列处理问题）、严重度（Low）和 CVSS 评分（3.6）[CVE-2026-101094]。数据中未提及任何 PoC 相关信息，无法判断是否存在可用的利用代码。建议查阅漏洞厂商公告、第三方漏洞平台（如 Ex",
+      "note": "POC 关联：CVE-2026-101094: The Affinity by Canva a"
+    },
+    {
+      "case_id": "RP009",
+      "category": "relation",
+      "question": "poc:saheb26/rag-redteam 有没有可用的 POC？",
+      "passed": false,
+      "elapsed_ms": 3928,
+      "reason": "未召回目标 CVE（返回 ['CVE-2013-5223', 'CVE-2020-2509', 'CVE-2020-5902']）",
+      "returned_cves": [
+        "CVE-2013-5223",
+        "CVE-2020-2509",
+        "CVE-2020-5902",
+        "CVE-2022-40799",
+        "CVE-2017-15944"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，但均未发现公开的 POC（概念验证代码）。**  说明这类漏洞目前未见公开利用代码，但不代表不可利用——建议关注厂商公告与社区动态。   ### [CVE-2013-5223] CVE-2013-5223 已被在野利用 　严重度 HIGH 　D-L",
+      "note": "POC 关联：saheb26/rag-redteam：Open-source RAG prom"
+    },
+    {
+      "case_id": "RP010",
+      "category": "relation",
+      "question": "CVE-2026-105883 有没有可用的 POC？",
+      "passed": true,
+      "elapsed_ms": 2380,
+      "reason": "命中 CVE-2026-105883，关键词 ['POC', 'PoC']",
+      "returned_cves": [
+        "CVE-2026-105883"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "根据情报数据，**无法确认** CVE-2026-105883 是否有可用的 POC [CVE-2026-105883]。  **原因：** 提供的信息仅包含漏洞描述、受影响组件（ThemeHunk Th Shop Mania）、严重度（High）、CVSS 评分（7.1）及 AI 分类（模型与数据",
+      "note": "POC 关联：CVE-2026-105883: Missing Authorization v"
+    },
+    {
+      "case_id": "RP011",
+      "category": "relation",
+      "question": "poc:Deekshith2023/RAG-Security-Lab 有没有可用的 POC？",
+      "passed": false,
+      "elapsed_ms": 3945,
+      "reason": "未召回目标 CVE（返回 ['CVE-2022-26258', 'CVE-2021-45382', 'CVE-2020-9377']）",
+      "returned_cves": [
+        "CVE-2022-26258",
+        "CVE-2021-45382",
+        "CVE-2020-9377",
+        "CVE-2016-11021",
+        "CVE-2019-16057"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，但均未发现公开的 POC（概念验证代码）。**  说明这类漏洞目前未见公开利用代码，但不代表不可利用——建议关注厂商公告与社区动态。   ### [CVE-2022-26258] CVE-2022-26258 已被在野利用 　严重度 HIGH 　D",
+      "note": "POC 关联：Deekshith2023/RAG-Security-Lab：A hands-o"
+    },
+    {
+      "case_id": "RP012",
+      "category": "relation",
+      "question": "poc:Salty43/azure-sdk-csv-review-poc 有没有可用的 POC？",
+      "passed": false,
+      "elapsed_ms": 422,
+      "reason": "未召回目标 CVE（返回 ['CVE-2025-9377', 'CVE-2025-30154', 'CVE-2020-24363']）",
+      "returned_cves": [
+        "CVE-2025-9377",
+        "CVE-2025-30154",
+        "CVE-2020-24363",
+        "CVE-2025-43529",
+        "CVE-2025-48543"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "## 政策法规解答  **依据知识库中 3 条相关政策文件：**  ### Unsloth Studio Flaw Turns Routine Model Inspection Into Code Execution *类型 政策　|　发布机构 DarkReading　|　适用地区 国际* A pa",
+      "note": "POC 关联：Salty43/azure-sdk-csv-review-poc：Non-des"
+    },
+    {
+      "case_id": "RP013",
+      "category": "relation",
+      "question": "poc:Yahy5715/jailbreak-defense 有没有可用的 POC？",
+      "passed": false,
+      "elapsed_ms": 2632,
+      "reason": "未召回目标 CVE（返回 ['CVE-2021-40655', 'CVE-2021-45382', 'CVE-2013-5223']）",
+      "returned_cves": [
+        "CVE-2021-40655",
+        "CVE-2021-45382",
+        "CVE-2013-5223",
+        "CVE-2025-66376",
+        "CVE-2023-0266"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "提供的情报数据中**未包含**关于 `poc:Yahy5715/jailbreak-defense` 的任何信息，因此无法判断其是否有可用的 POC。  现有情报仅涉及 D-Link 路由器的三个 CVE（[CVE-2021-40655]、[CVE-2021-45382]、[CVE-2013-522",
+      "note": "POC 关联：Yahy5715/jailbreak-defense：Detect and pr"
+    },
+    {
+      "case_id": "RP014",
+      "category": "relation",
+      "question": "CVE-2026-94485 有没有可用的 POC？",
+      "passed": true,
+      "elapsed_ms": 3627,
+      "reason": "命中 CVE-2026-94485，关键词 ['POC', 'PoC']",
+      "returned_cves": [
+        "CVE-2026-94485"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 1 条相关情报，其中 1 条有可用的 POC（概念验证代码）。**  - [CVE-2026-94485] 可用 POC：Goochbeater/Spiritual-Spell-Red-Teaming、0sec-labs/0  ### [CVE-2026-9448",
+      "note": "POC 关联：CVE-2026-94485: Next.js is a React frame"
+    },
+    {
+      "case_id": "RP015",
+      "category": "relation",
+      "question": "poc:520coder1314/FIA 有没有可用的 POC？",
+      "passed": false,
+      "elapsed_ms": 3921,
+      "reason": "未召回目标 CVE（返回 ['rss:xianzhi:e628652ccbdcfeb9', 'CVE-2021-30666', 'CVE-2022-26138']）",
+      "returned_cves": [
+        "rss:xianzhi:e628652ccbdcfeb9",
+        "CVE-2021-30666",
+        "CVE-2022-26138",
+        "CVE-2021-42013",
+        "CVE-2023-50224"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，但均未发现公开的 POC（概念验证代码）。**  说明这类漏洞目前未见公开利用代码，但不代表不可利用——建议关注厂商公告与社区动态。   ### [rss:xianzhi:e628652ccbdcfeb9] 从一个辅助 API 看资源边界：CVE-",
+      "note": "POC 关联：520coder1314/FIA：An effective and persis"
+    },
+    {
+      "case_id": "RP016",
+      "category": "relation",
+      "question": "CVE-2026-22061 有没有可用的 POC？",
+      "passed": true,
+      "elapsed_ms": 3551,
+      "reason": "命中 CVE-2026-22061，关键词 ['POC', 'PoC']",
+      "returned_cves": [
+        "CVE-2026-22061"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "## 回答  根据提供的CVE情报数据，**无法确认CVE-2026-22061是否存在可用的POC** [CVE-2026-22061]。  情报数据仅包含以下信息： - 漏洞描述：Trident v25.02.1至v26.06.1存在漏洞，允许已认证攻击者通过debug logs访问LUKS -",
+      "note": "POC 关联：CVE-2026-22061: Trident versions v25.02."
+    },
+    {
+      "case_id": "RP017",
+      "category": "relation",
+      "question": "CVE-2026-108474 有没有可用的 POC？",
+      "passed": true,
+      "elapsed_ms": 3684,
+      "reason": "命中 CVE-2026-108474，关键词 ['POC', 'PoC']",
+      "returned_cves": [
+        "CVE-2026-108474"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 1 条相关情报，其中 1 条有可用的 POC（概念验证代码）。**  - [CVE-2026-108474] 可用 POC：NVIDIA/SkillSpector、Tencent/AI-Infra-Guard  ### [CVE-2026-108474] CVE-",
+      "note": "POC 关联：CVE-2026-108474: In JetBrains Exposed be"
+    },
+    {
+      "case_id": "RP018",
+      "category": "relation",
+      "question": "poc:AnthonyHerman/ai-security-corpus 有没有可用的 POC？",
+      "passed": false,
+      "elapsed_ms": 535,
+      "reason": "未召回目标 CVE（返回 ['rss:xianzhi:05ca2001de1ddc41', 'CVE-2025-66376', 'CVE-2025-9377']）",
+      "returned_cves": [
+        "rss:xianzhi:05ca2001de1ddc41",
+        "CVE-2025-66376",
+        "CVE-2025-9377",
+        "CVE-2025-48543",
+        "CVE-2025-1316"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "## 政策法规解答  **依据知识库中 3 条相关政策文件：**  ### As AI Reshapes the SOC Career Ladder, Satisfaction Rises for 91%, but Entry Gets Harder for Nearly Half *类型 政策　|",
+      "note": "POC 关联：AnthonyHerman/ai-security-corpus：5,660 A"
+    },
+    {
+      "case_id": "RP019",
+      "category": "relation",
+      "question": "poc:Erdos-Projects/fall-2026-llm-resisting-jailbreaking 有没有可用的 POC？",
+      "passed": false,
+      "elapsed_ms": 4033,
+      "reason": "未召回目标 CVE（返回 ['poc:jabesotienobecky-maker/Worm-GPT-LLM-2026', 'CVE-2025-20333', 'poc:NamitaB164/secure-rag-poc']）",
+      "returned_cves": [
+        "poc:jabesotienobecky-maker/Worm-GPT-LLM-2026",
+        "CVE-2025-20333",
+        "poc:NamitaB164/secure-rag-poc",
+        "CVE-2025-20362",
+        "CVE-2026-20245"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，但均未发现公开的 POC（概念验证代码）。**  说明这类漏洞目前未见公开利用代码，但不代表不可利用——建议关注厂商公告与社区动态。   ### [poc:jabesotienobecky-maker/Worm-GPT-LLM-2026] jabe",
+      "note": "POC 关联：Erdos-Projects/fall-2026-llm-resisting-j"
+    },
+    {
+      "case_id": "RP020",
+      "category": "relation",
+      "question": "poc:habib-analyst/rag-shield 有没有可用的 POC？",
+      "passed": false,
+      "elapsed_ms": 2452,
+      "reason": "未召回目标 CVE（返回 ['CVE-2021-45382', 'CVE-2020-9377', 'CVE-2022-26258']）",
+      "returned_cves": [
+        "CVE-2021-45382",
+        "CVE-2020-9377",
+        "CVE-2022-26258",
+        "CVE-2017-6334",
+        "CVE-2021-40655"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "提供的 CVE 情报数据（CVE-2021-45382、CVE-2020-9377、CVE-2022-26258）仅包含 D-Link 路由器/设备的远程代码执行漏洞信息，未提及 `rag-shield` 或相关 POC。因此无法从现有数据中确认是否存在可用的 POC。  如需评估，请补充关于 `h",
+      "note": "POC 关联：habib-analyst/rag-shield：Prompt-injectio"
+    },
+    {
+      "case_id": "T001",
+      "category": "trend",
+      "question": "当前情报库收录了多少条 AI 安全漏洞？",
+      "passed": false,
+      "elapsed_ms": 3039,
+      "reason": "答案未包含期望数值 489",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2025-6204",
+        "CVE-2025-6205",
+        "CVE-2026-2651",
+        "CVE-2025-24054"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "当前情报库收录了 **3条** AI 安全漏洞。具体分布如下：  1. **供应链风险类**：CVE-2026-57516，涉及 Ray 框架任意代码执行，严重度 HIGH [CVE-2026-57516]。 2. **在野利用类**：CVE-2025-6204 和 CVE-2025-6205，均涉",
+      "note": "趋势分析：当前情报库收录了多少条 AI 安全漏洞？"
+    },
+    {
+      "case_id": "T002",
+      "category": "trend",
+      "question": "有多少条严重（CRITICAL）级别的 AI 漏洞？",
+      "passed": true,
+      "elapsed_ms": 3668,
+      "reason": "数值正确（83）",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2004-1464",
+        "CVE-2012-1723",
+        "CVE-2026-2651",
+        "CVE-2011-3544"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **严重（CRITICAL）级别漏洞：88 条**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Medium 44 条，",
+      "note": "趋势分析：有多少条严重（CRITICAL）级别的 AI 漏洞？"
+    },
+    {
+      "case_id": "T003",
+      "category": "trend",
+      "question": "高危（HIGH）级别的 AI 漏洞有多少条？",
+      "passed": false,
+      "elapsed_ms": 3838,
+      "reason": "答案未包含期望数值 148",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2022-41091",
+        "CVE-2022-41049",
+        "CVE-2026-2651",
+        "rss:xianzhi:8bab075d44b5690a"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **高危（HIGH）级别漏洞：185 条**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Medium 44 条，Cri",
+      "note": "趋势分析：高危（HIGH）级别的 AI 漏洞有多少条？"
+    },
+    {
+      "case_id": "T004",
+      "category": "trend",
+      "question": "供应链风险类漏洞有多少条？",
+      "passed": false,
+      "elapsed_ms": 2876,
+      "reason": "答案未包含期望数值 77",
+      "returned_cves": [
+        "CVE-2025-31201",
+        "CVE-2025-31200",
+        "CVE-2025-24813",
+        "CVE-2025-14174",
+        "CVE-2025-24054"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "**0 条**。  情报数据中未提供任何被归类为\"供应链风险类\"的漏洞：  - [CVE-2025-31201] 为 Apple 产品在野利用漏洞（任意读写）[HIGH] - [CVE-2025-31200] 为 Apple 内存腐蚀漏洞 [HIGH] - [CVE-2025-24813] 为 Ap",
+      "note": "趋势分析：供应链风险类漏洞有多少条？"
+    },
+    {
+      "case_id": "T005",
+      "category": "trend",
+      "question": "知识库中收录了多少个 ATT&CK 攻击技术？",
+      "passed": false,
+      "elapsed_ms": 2372,
+      "reason": "答案未包含期望数值 170",
+      "returned_cves": [
+        "poc:Marklu0509/threat-intel-rag",
+        "CVE-2022-26501",
+        "poc:nsasoft/nsauditor-ai",
+        "poc:wearetyomsmnv/Autonomous-Agent-Defense-Matrix",
+        "CVE-2022-26500"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "根据提供的 3 条情报数据，**无法回答**该问题。  原因如下： 1. 数据中仅有一条提及 MITRE ATT&CK [1]，但内容是关于一个 RAG 项目，未提供技术数量。 2. 其余两条数据分别为 CVE-2022-26501 [2] 和 NSAuditor AI 工具 [3]，均不涉及 AT",
+      "note": "趋势分析：知识库中收录了多少个 ATT&CK 攻击技术？"
+    },
+    {
+      "case_id": "T006",
+      "category": "trend",
+      "question": "收录了多少篇 AI 安全论文？",
+      "passed": true,
+      "elapsed_ms": 1716,
+      "reason": "数值正确（273）",
+      "returned_cves": [
+        "CVE-2026-106222",
+        "CVE-2026-106195",
+        "CVE-2026-106244",
+        "CVE-2026-106183",
+        "CVE-2026-106324"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **知识库共收录 273 篇 AI 安全学术论文**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Medium 44 条",
+      "note": "趋势分析：收录了多少篇 AI 安全论文？"
+    },
+    {
+      "case_id": "T007",
+      "category": "trend",
+      "question": "当前情报库收录了多少条 AI 安全漏洞？（第2次统计）",
+      "passed": false,
+      "elapsed_ms": 3673,
+      "reason": "答案未包含期望数值 489",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2025-6204",
+        "CVE-2025-24054",
+        "CVE-2026-2651",
+        "CVE-2025-14174"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "基于当前情报数据，**情报库收录 1 条 AI 安全漏洞** [CVE-2026-57516]。  该漏洞为 Ray 框架供应链风险，默认 decoder 参数存在任意代码执行风险，CVSS 8.8 [CVE-2026-57516]。  其余 2 条条目（CVE-2025-6204、CVE-2025",
+      "note": "趋势分析：当前情报库收录了多少条 AI 安全漏洞？"
+    },
+    {
+      "case_id": "T008",
+      "category": "trend",
+      "question": "有多少条严重（CRITICAL）级别的 AI 漏洞？（第2次统计）",
+      "passed": true,
+      "elapsed_ms": 3711,
+      "reason": "数值正确（83）",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2021-20022",
+        "CVE-2004-1464",
+        "CVE-2026-2651",
+        "CVE-2010-3333"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **严重（CRITICAL）级别漏洞：88 条**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Medium 44 条，",
+      "note": "趋势分析：有多少条严重（CRITICAL）级别的 AI 漏洞？"
+    },
+    {
+      "case_id": "T009",
+      "category": "trend",
+      "question": "高危（HIGH）级别的 AI 漏洞有多少条？（第2次统计）",
+      "passed": false,
+      "elapsed_ms": 2066,
+      "reason": "答案未包含期望数值 148",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2024-48063",
+        "CVE-2010-3333",
+        "CVE-2026-2651",
+        "CVE-2021-20022"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "根据提供的情报数据，高危（HIGH）级别的 AI 漏洞共 **2** 条。  具体如下：  1. **CVE-2026-57516**：Ray 框架反序列化任意代码执行漏洞，严重度标记为 HIGH（CVSS 8.8）[CVE-2026-57516]。 2. **CVE-2010-3333**：Mic",
+      "note": "趋势分析：高危（HIGH）级别的 AI 漏洞有多少条？"
+    },
+    {
+      "case_id": "T010",
+      "category": "trend",
+      "question": "供应链风险类漏洞有多少条？（第2次统计）",
+      "passed": false,
+      "elapsed_ms": 2348,
+      "reason": "答案未包含期望数值 77",
+      "returned_cves": [
+        "CVE-2025-31201",
+        "CVE-2025-31200",
+        "CVE-2025-24813",
+        "CVE-2025-30400",
+        "CVE-2025-4632"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "基于提供的三条情报数据，无法回答“供应链风险类漏洞”的数量。原因如下：  1. **分类维度缺失**：情报仅提供了 CVE 编号、漏洞名称及在野利用状态，未包含任何“供应链风险”的分类标签或判定依据 [CVE-2025-31201] [CVE-2025-31200] [CVE-2025-24813]",
+      "note": "趋势分析：供应链风险类漏洞有多少条？"
+    },
+    {
+      "case_id": "T011",
+      "category": "trend",
+      "question": "知识库中收录了多少个 ATT&CK 攻击技术？（第2次统计）",
+      "passed": true,
+      "elapsed_ms": 3876,
+      "reason": "数值正确（170）",
+      "returned_cves": [
+        "poc:Marklu0509/threat-intel-rag",
+        "CVE-2022-26501",
+        "poc:nsasoft/nsauditor-ai",
+        "poc:wearetyomsmnv/Autonomous-Agent-Defense-Matrix",
+        "CVE-2022-26500"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **知识库共收录 170 个 MITRE ATT&CK 攻击技术**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Med",
+      "note": "趋势分析：知识库中收录了多少个 ATT&CK 攻击技术？"
+    },
+    {
+      "case_id": "T012",
+      "category": "trend",
+      "question": "收录了多少篇 AI 安全论文？（第2次统计）",
+      "passed": false,
+      "elapsed_ms": 1706,
+      "reason": "答案未包含期望数值 273",
+      "returned_cves": [
+        "CVE-2026-106222",
+        "CVE-2026-106195",
+        "CVE-2026-106244",
+        "CVE-2026-106324",
+        "CVE-2026-106183"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "无法回答该问题。所提供的 CVE 情报数据（CVE-2026-106222、CVE-2026-106195、CVE-2026-106244）仅记录了 Google Chrome 浏览器的授权错误漏洞，未包含任何关于 AI 安全论文收录数量或统计趋势的信息。数据不足以支撑“AI 安全论文收录篇数”的趋",
+      "note": "趋势分析：收录了多少篇 AI 安全论文？"
+    },
+    {
+      "case_id": "T013",
+      "category": "trend",
+      "question": "当前情报库收录了多少条 AI 安全漏洞？（第3次统计）",
+      "passed": false,
+      "elapsed_ms": 2837,
+      "reason": "答案未包含期望数值 489",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "rss:xianzhi:8bab075d44b5690a",
+        "CVE-2022-21882",
+        "CVE-2026-2651",
+        "CVE-2022-21971"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "基于提供的情报数据，**无法统计**“AI 安全漏洞”的总收录条数。原因如下：  1.  **样本不完整**：仅提供 3 条数据，非完整库记录 [CVE-2026-57516]、[rss:xianzhi:8bab075d44b5690a]、[CVE-2022-21882]。 2.  **定义模糊**",
+      "note": "趋势分析：当前情报库收录了多少条 AI 安全漏洞？"
+    },
+    {
+      "case_id": "T014",
+      "category": "trend",
+      "question": "有多少条严重（CRITICAL）级别的 AI 漏洞？（第3次统计）",
+      "passed": false,
+      "elapsed_ms": 2667,
+      "reason": "答案未包含期望数值 83",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2010-3333",
+        "CVE-2012-1723",
+        "CVE-2026-2651",
+        "CVE-2004-1464"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "根据提供的情报数据，严重（CRITICAL）级别的 AI 漏洞仅有 **1 条**。  具体统计如下： - [CVE-2012-1723]：严重度=CRITICAL，Oracle Java SE Runtime Environment (JRE) 任意代码执行漏洞，已被在野利用 [CVE-2012-",
+      "note": "趋势分析：有多少条严重（CRITICAL）级别的 AI 漏洞？"
+    },
+    {
+      "case_id": "T015",
+      "category": "trend",
+      "question": "高危（HIGH）级别的 AI 漏洞有多少条？（第3次统计）",
+      "passed": false,
+      "elapsed_ms": 3686,
+      "reason": "答案未包含期望数值 148",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2010-3333",
+        "CVE-2012-1723",
+        "CVE-2026-2651",
+        "CVE-2022-39197"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **高危（HIGH）级别漏洞：185 条**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Medium 44 条，Cri",
+      "note": "趋势分析：高危（HIGH）级别的 AI 漏洞有多少条？"
+    },
+    {
+      "case_id": "T016",
+      "category": "trend",
+      "question": "供应链风险类漏洞有多少条？（第3次统计）",
+      "passed": true,
+      "elapsed_ms": 3754,
+      "reason": "数值正确（77）",
+      "returned_cves": [
+        "CVE-2025-31201",
+        "CVE-2025-30397",
+        "CVE-2025-31200",
+        "CVE-2025-14174",
+        "CVE-2025-31277"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **供应链风险类漏洞：77 条**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 185 条，MEDIUM 173 条，CRITICAL 88 条，Medium 48 条，LOW 29 条，High 21 条，None 7 条，Critical 6 条，L",
+      "note": "趋势分析：供应链风险类漏洞有多少条？"
+    },
+    {
+      "case_id": "T017",
+      "category": "trend",
+      "question": "知识库中收录了多少个 ATT&CK 攻击技术？（第3次统计）",
+      "passed": false,
+      "elapsed_ms": 2233,
+      "reason": "答案未包含期望数值 170",
+      "returned_cves": [
+        "poc:Marklu0509/threat-intel-rag",
+        "CVE-2022-26501",
+        "poc:nsasoft/nsauditor-ai",
+        "poc:wearetyomsmnv/Autonomous-Agent-Defense-Matrix",
+        "CVE-2022-26500"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "提供的情报数据不足以回答该问题。  现有资料仅涉及 GitHub 项目（[1], [3]）及单个 CVE 漏洞（[2]），未包含 MITRE ATT&CK 知识库中攻击技术的具体收录数量统计。因此，无法基于给定信息得出第3次统计的技术总数。",
+      "note": "趋势分析：知识库中收录了多少个 ATT&CK 攻击技术？"
+    },
+    {
+      "case_id": "T018",
+      "category": "trend",
+      "question": "收录了多少篇 AI 安全论文？（第3次统计）",
+      "passed": false,
+      "elapsed_ms": 2033,
+      "reason": "答案未包含期望数值 273",
+      "returned_cves": [
+        "CVE-2026-106222",
+        "CVE-2026-106195",
+        "CVE-2026-106244",
+        "CVE-2026-106183",
+        "CVE-2026-106324"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "无法回答。情报数据仅收录了3篇CVE漏洞记录（CVE-2026-106222 [CVE-2026-106222]、CVE-2026-106195 [CVE-2026-106195]、CVE-2026-106244 [CVE-2026-106244]），均为Google Chrome授权问题，未提供任",
+      "note": "趋势分析：收录了多少篇 AI 安全论文？"
+    },
+    {
+      "case_id": "T019",
+      "category": "trend",
+      "question": "当前情报库收录了多少条 AI 安全漏洞？（第4次统计）",
+      "passed": false,
+      "elapsed_ms": 2792,
+      "reason": "答案未包含期望数值 489",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "rss:xianzhi:8bab075d44b5690a",
+        "CVE-2009-4324",
+        "CVE-2026-2651",
+        "CVE-2022-29464"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "根据情报数据分析，当前收录了 **2 条** AI 安全漏洞。  具体构成如下： 1. **CVE-2026-57516**：Ray 框架 WebDataset 读取器存在任意代码执行漏洞，严重度 HIGH [CVE-2026-57516]。 2. **CVE-2009-4324**：Adobe A",
+      "note": "趋势分析：当前情报库收录了多少条 AI 安全漏洞？"
+    },
+    {
+      "case_id": "T020",
+      "category": "trend",
+      "question": "有多少条严重（CRITICAL）级别的 AI 漏洞？（第4次统计）",
+      "passed": false,
+      "elapsed_ms": 2396,
+      "reason": "答案未包含期望数值 83",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2004-1464",
+        "CVE-2011-3544",
+        "CVE-2026-2651",
+        "CVE-2019-1214"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "根据提供的三则情报数据，严重度为 CRITICAL（严重）级别的 AI 漏洞数量为 **0 条**。  具体统计如下： 1. CVE-2026-57516：严重度 = HIGH [CVE-2026-57516] 2. CVE-2004-1464：严重度 = HIGH [CVE-2004-1464] ",
+      "note": "趋势分析：有多少条严重（CRITICAL）级别的 AI 漏洞？"
+    },
+    {
+      "case_id": "T021",
+      "category": "trend",
+      "question": "高危（HIGH）级别的 AI 漏洞有多少条？（第4次统计）",
+      "passed": false,
+      "elapsed_ms": 3687,
+      "reason": "答案未包含期望数值 148",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2004-1464",
+        "CVE-2010-3333",
+        "CVE-2026-2651",
+        "CVE-2022-39197"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **高危（HIGH）级别漏洞：185 条**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Medium 44 条，Cri",
+      "note": "趋势分析：高危（HIGH）级别的 AI 漏洞有多少条？"
+    },
+    {
+      "case_id": "T022",
+      "category": "trend",
+      "question": "供应链风险类漏洞有多少条？（第4次统计）",
+      "passed": true,
+      "elapsed_ms": 3766,
+      "reason": "数值正确（77）",
+      "returned_cves": [
+        "CVE-2025-31201",
+        "CVE-2025-24054",
+        "CVE-2025-14174",
+        "CVE-2025-48595",
+        "CVE-2025-31200"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **供应链风险类漏洞：77 条**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 185 条，MEDIUM 173 条，CRITICAL 88 条，Medium 48 条，LOW 29 条，High 21 条，None 7 条，Critical 6 条，L",
+      "note": "趋势分析：供应链风险类漏洞有多少条？"
+    },
+    {
+      "case_id": "T023",
+      "category": "trend",
+      "question": "知识库中收录了多少个 ATT&CK 攻击技术？（第4次统计）",
+      "passed": true,
+      "elapsed_ms": 3935,
+      "reason": "数值正确（170）",
+      "returned_cves": [
+        "poc:Marklu0509/threat-intel-rag",
+        "CVE-2022-26501",
+        "poc:nsasoft/nsauditor-ai",
+        "poc:wearetyomsmnv/Autonomous-Agent-Defense-Matrix",
+        "CVE-2022-26500"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **知识库共收录 170 个 MITRE ATT&CK 攻击技术**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Med",
+      "note": "趋势分析：知识库中收录了多少个 ATT&CK 攻击技术？"
+    },
+    {
+      "case_id": "T024",
+      "category": "trend",
+      "question": "收录了多少篇 AI 安全论文？（第4次统计）",
+      "passed": false,
+      "elapsed_ms": 3646,
+      "reason": "答案未包含期望数值 273",
+      "returned_cves": [
+        "CVE-2026-106195",
+        "CVE-2026-106222",
+        "CVE-2026-106244",
+        "CVE-2026-106324",
+        "CVE-2026-106250"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "基于提供的三条情报数据，无法统计收录的 AI 安全论文总数。  1. 数据仅包含 3 个 Chrome 浏览器的 CVE 漏洞记录（CVE-2026-106195 [CVE-2026-106195]、CVE-2026-106222 [CVE-2026-106222]、CVE-2026-106244 ",
+      "note": "趋势分析：收录了多少篇 AI 安全论文？"
+    },
+    {
+      "case_id": "T025",
+      "category": "trend",
+      "question": "当前情报库收录了多少条 AI 安全漏洞？（第5次统计）",
+      "passed": false,
+      "elapsed_ms": 3705,
+      "reason": "答案未包含期望数值 489",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "rss:xianzhi:8bab075d44b5690a",
+        "CVE-2022-21882",
+        "CVE-2026-2651",
+        "CVE-2022-29464"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **当前情报库共收录 584 条 AI 安全相关情报**  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Medium 44 条，Critical 39 条，Low ",
+      "note": "趋势分析：当前情报库收录了多少条 AI 安全漏洞？"
+    },
+    {
+      "case_id": "T026",
+      "category": "trend",
+      "question": "有多少条严重（CRITICAL）级别的 AI 漏洞？（第5次统计）",
+      "passed": false,
+      "elapsed_ms": 3251,
+      "reason": "答案未包含期望数值 83",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2004-1464",
+        "CVE-2019-1315",
+        "CVE-2026-2651",
+        "CVE-2010-3333"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "## 回答  在提供的三条情报中，**仅 1 条**为 CRITICAL 级别：  - [CVE-2019-1315] CRITICAL，已被在野利用，涉及 Microsoft Windows Error Reporting Manager 权限提升漏洞。  其余两条均为 HIGH 级别（[CVE-",
+      "note": "趋势分析：有多少条严重（CRITICAL）级别的 AI 漏洞？"
+    },
+    {
+      "case_id": "T027",
+      "category": "trend",
+      "question": "高危（HIGH）级别的 AI 漏洞有多少条？（第5次统计）",
+      "passed": false,
+      "elapsed_ms": 3238,
+      "reason": "答案未包含期望数值 148",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2010-3333",
+        "CVE-2004-1464",
+        "CVE-2026-2651",
+        "CVE-2022-41091"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "## HIGH级别漏洞统计  共 **3条** 高危漏洞：  | # | CVE编号 | 严重度 | 关键特征 | |---|---------|--------|----------| | 1 | CVE-2026-57516 | HIGH | AI供应链风险，CVSS=8.8，Ray webda",
+      "note": "趋势分析：高危（HIGH）级别的 AI 漏洞有多少条？"
+    },
+    {
+      "case_id": "T028",
+      "category": "trend",
+      "question": "供应链风险类漏洞有多少条？（第5次统计）",
+      "passed": false,
+      "elapsed_ms": 2232,
+      "reason": "答案未包含期望数值 77",
+      "returned_cves": [
+        "CVE-2025-31201",
+        "CVE-2025-24054",
+        "CVE-2025-3935",
+        "CVE-2025-24813",
+        "CVE-2025-31200"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "根据提供的情报数据，无法回答“供应链风险类漏洞有多少条”。  当前提供的 3 条情报（[CVE-2025-31201]、[CVE-2025-24054]、[CVE-2025-3935]）仅包含严重度、在野利用状态及处置建议，**均未明确标注其所属的风险类别**（如供应链风险、逻辑错误、配置错误等）。",
+      "note": "趋势分析：供应链风险类漏洞有多少条？"
+    },
+    {
+      "case_id": "T029",
+      "category": "trend",
+      "question": "知识库中收录了多少个 ATT&CK 攻击技术？（第5次统计）",
+      "passed": false,
+      "elapsed_ms": 3818,
+      "reason": "答案未包含期望数值 170",
+      "returned_cves": [
+        "poc:Marklu0509/threat-intel-rag",
+        "CVE-2023-27532",
+        "poc:nsasoft/nsauditor-ai",
+        "poc:wearetyomsmnv/Autonomous-Agent-Defense-Matrix",
+        "CVE-2025-22457"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "根据提供的第5次统计数据，**无法回答**知识库中收录了多少个 ATT&CK 攻击技术。  原因如下： 1. 情报数据 [1] 和 [3] 仅提及项目涉及 MITRE ATT&CK 映射或问答功能，未提供具体的技术条目数量。 2. 情报数据 [2] 仅描述了一个特定的 CVE 漏洞利用情况，与 AT",
+      "note": "趋势分析：知识库中收录了多少个 ATT&CK 攻击技术？"
+    },
+    {
+      "case_id": "T030",
+      "category": "trend",
+      "question": "收录了多少篇 AI 安全论文？（第5次统计）",
+      "passed": true,
+      "elapsed_ms": 3685,
+      "reason": "数值正确（273）",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2024-39236",
+        "CVE-2024-48063",
+        "CVE-2026-2651",
+        "CVE-2026-60004"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **知识库共收录 273 篇 AI 安全学术论文**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Medium 44 条",
+      "note": "趋势分析：收录了多少篇 AI 安全论文？"
+    },
+    {
+      "case_id": "T031",
+      "category": "trend",
+      "question": "当前情报库收录了多少条 AI 安全漏洞？（第6次统计）",
+      "passed": false,
+      "elapsed_ms": 3707,
+      "reason": "答案未包含期望数值 489",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "rss:xianzhi:8bab075d44b5690a",
+        "CVE-2022-21971",
+        "CVE-2026-2651",
+        "CVE-2022-21882"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **当前情报库共收录 584 条 AI 安全相关情报**  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Medium 44 条，Critical 39 条，Low ",
+      "note": "趋势分析：当前情报库收录了多少条 AI 安全漏洞？"
+    },
+    {
+      "case_id": "T032",
+      "category": "trend",
+      "question": "有多少条严重（CRITICAL）级别的 AI 漏洞？（第6次统计）",
+      "passed": false,
+      "elapsed_ms": 1837,
+      "reason": "答案未包含期望数值 83",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2004-1464",
+        "CVE-2021-28664",
+        "CVE-2026-2651",
+        "CVE-2021-20022"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "0条。  提供的3条情报数据中，无严重（CRITICAL）级别AI漏洞： - [CVE-2026-57516] 为HIGH级别，属供应链风险 [1] - [CVE-2004-1464] 为HIGH级别 [2] - [CVE-2021-28664] 为HIGH级别 [3]  当前数据集覆盖的漏洞最高等",
+      "note": "趋势分析：有多少条严重（CRITICAL）级别的 AI 漏洞？"
+    },
+    {
+      "case_id": "T033",
+      "category": "trend",
+      "question": "高危（HIGH）级别的 AI 漏洞有多少条？（第6次统计）",
+      "passed": false,
+      "elapsed_ms": 2101,
+      "reason": "答案未包含期望数值 148",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2004-1464",
+        "CVE-2010-3333",
+        "CVE-2026-2651",
+        "CVE-2022-24682"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "根据提供的情报数据，高危（HIGH）级别漏洞共 **3** 条，统计如下：  1. CVE-2026-57516：严重度=HIGH，CVSS=8.8，涉及 Ray 供应链风险 [CVE-2026-57516] 2. CVE-2004-1464：严重度=HIGH，存在在野利用 [CVE-2004-14",
+      "note": "趋势分析：高危（HIGH）级别的 AI 漏洞有多少条？"
+    },
+    {
+      "case_id": "T034",
+      "category": "trend",
+      "question": "供应链风险类漏洞有多少条？（第6次统计）",
+      "passed": false,
+      "elapsed_ms": 2845,
+      "reason": "答案未包含期望数值 77",
+      "returned_cves": [
+        "CVE-2025-24054",
+        "CVE-2025-4632",
+        "CVE-2025-14174",
+        "CVE-2025-31201",
+        "CVE-2025-24813"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "根据提供的三条情报数据，未检测到任何明确标注为“供应链风险”类的漏洞。  具体分析如下： 1. [CVE-2025-24054] 描述为 Windows NTLM Hash Disclosure Spoofing Vulnerability（NTLM 哈希披露欺骗漏洞），未提及供应链属性。 2. [",
+      "note": "趋势分析：供应链风险类漏洞有多少条？"
+    },
+    {
+      "case_id": "T035",
+      "category": "trend",
+      "question": "知识库中收录了多少个 ATT&CK 攻击技术？（第6次统计）",
+      "passed": false,
+      "elapsed_ms": 2634,
+      "reason": "答案未包含期望数值 170",
+      "returned_cves": [
+        "poc:Marklu0509/threat-intel-rag",
+        "CVE-2025-39682",
+        "CVE-2026-41940",
+        "poc:nsasoft/nsauditor-ai",
+        "poc:wearetyomsmnv/Autonomous-Agent-Defense-Matrix"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "无法回答该问题。  所提供的资料 [1][2][3] 仅包含 1 个 GitHub 项目与 2 个 CVE 漏洞（CVE-2025-39682、CVE-2026-41940），并未记录任何 MITRE ATT&CK 技术的入库数量或统计时间线信息。缺失第 6 次统计的相关数据来源。",
+      "note": "趋势分析：知识库中收录了多少个 ATT&CK 攻击技术？"
+    },
+    {
+      "case_id": "T036",
+      "category": "trend",
+      "question": "收录了多少篇 AI 安全论文？（第6次统计）",
+      "passed": false,
+      "elapsed_ms": 2192,
+      "reason": "答案未包含期望数值 273",
+      "returned_cves": [
+        "CVE-2026-106195",
+        "CVE-2026-106222",
+        "CVE-2026-106250",
+        "CVE-2026-95300",
+        "CVE-2026-106244"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "无法回答。  提供的数据仅包含3条漏洞公告（CVE-2026-106195 [CVE-2026-106195]、CVE-2026-106222 [CVE-2026-106222]、CVE-2026-106250 [CVE-2026-106250]），均为Google Chrome浏览器的权限缺陷，与",
+      "note": "趋势分析：收录了多少篇 AI 安全论文？"
+    },
+    {
+      "case_id": "T037",
+      "category": "trend",
+      "question": "当前 AI 安全的整体态势如何？",
+      "passed": true,
+      "elapsed_ms": 2666,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "rss:xianzhi:8bab075d44b5690a",
+        "rss:xianzhi:917e060294eacd9e",
+        "CVE-2026-2651",
+        "CVE-2022-21971"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": false,
+      "answer_preview": "当前 AI 安全整体呈现供应链与系统权限两类高风险态势，主要风险入口集中于提示词注入、供应链攻击及数据/模型投毒 [1][3]。  在供应链方面，Ray 框架存在高危漏洞（CVE-2026-57516），CVSS 8.8 分，因 `read_webdataset` 默认解码器引发任意代码执行，属典型",
+      "note": "开放型趋势题"
+    },
+    {
+      "case_id": "T038",
+      "category": "trend",
+      "question": "AI 安全漏洞主要集中在哪些类型？",
+      "passed": true,
+      "elapsed_ms": 3668,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "rss:xianzhi:8bab075d44b5690a",
+        "CVE-2025-55557",
+        "CVE-2026-2651",
+        "CVE-2025-46152"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 3 个组件——torch（4 条）、ray（2 条）、mlflow（2 条）。**   ### [CVE-2026-57516] Ray: Arbitrary code execution via ray.data.read_webdat",
+      "note": "开放型趋势题"
+    },
+    {
+      "case_id": "T039",
+      "category": "trend",
+      "question": "哪些攻击技术出现得最多？",
+      "passed": true,
+      "elapsed_ms": 3769,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2025-22457",
+        "CVE-2025-25249",
+        "rss:xianzhi:52c0a7a8e7f18bf3",
+        "CVE-2019-18935",
+        "CVE-2017-11317"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **知识库共收录 170 个 MITRE ATT&CK 攻击技术**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Med",
+      "note": "开放型趋势题"
+    },
+    {
+      "case_id": "T040",
+      "category": "trend",
+      "question": "最受影响的 AI 组件有哪些？",
+      "passed": true,
+      "elapsed_ms": 2608,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2024-34510",
+        "CVE-2023-6909",
+        "CVE-2026-2651",
+        "CVE-2023-6572"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "基于情报数据，受影响最严重的 AI 组件为 **Ray** 和 **MLflow**。  1. **Ray** [CVE-2026-57516]：存在高危任意代码执行漏洞（CVSS 8.8）。`ray.data.read_webdataset` API 默认解码器存在缺陷，被归类为供应链风险。 2.",
+      "note": "开放型趋势题"
+    },
+    {
+      "case_id": "T041",
+      "category": "trend",
+      "question": "风险等级分布是怎样的？",
+      "passed": true,
+      "elapsed_ms": 3798,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2023-6014",
+        "CVE-2024-27134",
+        "CVE-2023-6753",
+        "CVE-2023-6977",
+        "CVE-2025-55552"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **风险等级分布**：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Medium 44 条，Critical 39 条，Low 8 条，MODERATE 3 条，None 2 条  （",
+      "note": "开放型趋势题"
+    },
+    {
+      "case_id": "T042",
+      "category": "trend",
+      "question": "当前 AI 安全的整体态势如何？",
+      "passed": true,
+      "elapsed_ms": 3675,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "rss:xianzhi:8bab075d44b5690a",
+        "rss:xianzhi:917e060294eacd9e",
+        "CVE-2026-2651",
+        "CVE-2022-21971"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **当前情报库共收录 584 条 AI 安全相关情报**  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Medium 44 条，Critical 39 条，Low ",
+      "note": "开放型趋势题"
+    },
+    {
+      "case_id": "T043",
+      "category": "trend",
+      "question": "AI 安全漏洞主要集中在哪些类型？",
+      "passed": true,
+      "elapsed_ms": 3692,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "rss:xianzhi:8bab075d44b5690a",
+        "CVE-2025-55557",
+        "CVE-2026-2651",
+        "CVE-2025-46152"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 3 个组件——torch（4 条）、ray（2 条）、mlflow（2 条）。**   ### [CVE-2026-57516] Ray: Arbitrary code execution via ray.data.read_webdat",
+      "note": "开放型趋势题"
+    },
+    {
+      "case_id": "T044",
+      "category": "trend",
+      "question": "哪些攻击技术出现得最多？",
+      "passed": true,
+      "elapsed_ms": 3957,
+      "reason": "召回 5 条",
+      "returned_cves": [
+        "CVE-2025-22457",
+        "CVE-2025-25249",
+        "rss:xianzhi:52c0a7a8e7f18bf3",
+        "CVE-2019-18935",
+        "CVE-2017-11317"
+      ],
+      "graph_paths": 0,
+      "intent": "trend",
+      "degraded": true,
+      "answer_preview": "## 统计概览  **知识库共收录 170 个 MITRE ATT&CK 攻击技术**  （其中 AI 安全相关共 584 条）  - 风险等级分布：HIGH 652 条，MEDIUM 644 条，Unknown 399 条，CRITICAL 196 条，LOW 83 条，High 73 条，Med",
+      "note": "开放型趋势题"
+    },
+    {
+      "case_id": "D001",
+      "category": "detail",
+      "question": "CVE-2021-43831 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 2430,
+      "reason": "命中 CVE-2021-43831，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2021-43831"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "该情报数据未提供具体的修复方案。  已知信息如下： 1. **影响范围**：使用 `gradio<2.4.8` 版本并公开分享 Gradio 接口的用户 [CVE-2021-43831]。 2. **漏洞性质**：主机上的文件可从 Gradio 接口访问 [CVE-2021-43831]。 3. *",
+      "note": "处置建议：Files on the host computer can be access"
+    },
+    {
+      "case_id": "D002",
+      "category": "detail",
+      "question": "CVE-2022-0736 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3797,
+      "reason": "命中 CVE-2022-0736，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2022-0736"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2022-0736] Insecure Temporary File in mlflow 　严重度 HIGH | CVSS 8.2 | 分类 模型与数据层风险 　mlflow prior to 1.23.1 contains an insecure tempor",
+      "note": "处置建议：Insecure Temporary File in mlflow"
+    },
+    {
+      "case_id": "D003",
+      "category": "detail",
+      "question": "CVE-2022-24770 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 1964,
+      "reason": "命中 CVE-2022-24770，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2022-24770"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "根据现有情报数据，无法提供 CVE-2022-24770 的具体修复步骤。  当前数据仅包含漏洞描述（Gradio Flagging 功能在 CSV 中存在公式注入风险）及严重度评级（HIGH，CVSS 8.8），但缺少补丁版本、临时缓解措施或官方修复指南等信息 [CVE-2022-24770]。 ",
+      "note": "处置建议：Improper Neutralization of Formula Eleme"
+    },
+    {
+      "case_id": "D004",
+      "category": "detail",
+      "question": "CVE-2022-45907 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3629,
+      "reason": "命中 CVE-2022-45907，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2022-45907"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2022-45907] PyTorch vulnerable to arbitrary code execution 　严重度 CRITICAL | CVSS 9.8 | 分类 模型与数据层风险 　In PyTorch before trunk/89695, t",
+      "note": "处置建议：PyTorch vulnerable to arbitrary code exe"
+    },
+    {
+      "case_id": "D005",
+      "category": "detail",
+      "question": "CVE-2023-1176 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3629,
+      "reason": "命中 CVE-2023-1176，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-1176"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-1176] Remote file existence check vulnerability in `mlflow server` and `mlflow ui` CLIs 　严重度 MEDIUM | CVSS 3.3 | 分类 模型与数据层风险 　",
+      "note": "处置建议：Remote file existence check vulnerabilit"
+    },
+    {
+      "case_id": "D006",
+      "category": "detail",
+      "question": "CVE-2023-1177 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3638,
+      "reason": "命中 CVE-2023-1177，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-1177"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-1177] mlflow is vulnerable to remote file access in `mlflow server` and `mlflow ui` CLIs 　严重度 CRITICAL | CVSS 9.8 | 分类 模型与数据层风",
+      "note": "处置建议：mlflow is vulnerable to remote file acce"
+    },
+    {
+      "case_id": "D007",
+      "category": "detail",
+      "question": "CVE-2023-2356 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3263,
+      "reason": "命中 CVE-2023-2356，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-2356"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "根据情报数据，CVE-2023-2356 是 mlflow/mlflow 仓库中存在于 2.3.1 版本之前的相对路径遍历漏洞 [CVE-2023-2356]。建议立即升级 mlflow 至 2.3.1 或更高版本以修复此漏洞 [CVE-2023-2356]。该漏洞严重性高（CVSS 10.0），属",
+      "note": "处置建议：Relative path traversal in mlflow"
+    },
+    {
+      "case_id": "D008",
+      "category": "detail",
+      "question": "CVE-2023-25823 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 2919,
+      "reason": "命中 CVE-2023-25823，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-25823"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "针对 CVE-2023-25823 的修复建议如下：  1. 升级 Gradio 至安全版本。该漏洞影响设置 `share=True` 使用分享链接的用户 [CVE-2023-25823]。 2. 确保应用更新后分享链接改用 FRP 而非 SSH 隧道建立连接 [CVE-2023-25823]。  ",
+      "note": "处置建议：Update share links to use FRP instead of"
+    },
+    {
+      "case_id": "D009",
+      "category": "detail",
+      "question": "CVE-2023-2780 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 2115,
+      "reason": "命中 CVE-2023-2780，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-2780"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "针对 CVE-2023-2780 的修复措施为：将 mlflow 升级至 2.3.0 及以上版本 [CVE-2023-2780]。  该漏洞属于路径穿越风险，严重度为 CRITICAL（CVSS 9.8），系对  修复方案的绕过 [CVE-2023-2780]。当前情报未提供临时缓解措施或补丁详情，",
+      "note": "处置建议：mlflow Path Traversal vulnerability"
+    },
+    {
+      "case_id": "D010",
+      "category": "detail",
+      "question": "CVE-2023-2800 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 2588,
+      "reason": "命中 CVE-2023-2800，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-2800"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "关于 CVE-2023-2800 的修复，情报数据提供了明确的技术路径 [CVE-2023-2800]。  该漏洞属于 `huggingface/transformers` 库中的不安全临时文件处理问题，影响 4.29.2 及更早版本，严重度为中等（CVSS 4.7），被 AI 分类为供应链风险 [",
+      "note": "处置建议：transformers has Insecure Temporary File"
+    },
+    {
+      "case_id": "D011",
+      "category": "detail",
+      "question": "CVE-2023-29374 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3628,
+      "reason": "命中 CVE-2023-29374，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-29374"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-29374] LangChain vulnerable to code injection 　严重度 CRITICAL | CVSS 9.8 | 分类 AI应用与智能体风险 　In LangChain through 0.0.131, the `LLM",
+      "note": "处置建议：LangChain vulnerable to code injection"
+    },
+    {
+      "case_id": "D012",
+      "category": "detail",
+      "question": "CVE-2023-30172 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3711,
+      "reason": "命中 CVE-2023-30172，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-30172"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-30172] mflow vulnerable to directory traversal 　严重度 HIGH | CVSS 7.5 | 分类 模型与数据层风险 　A directory traversal vulnerability in the ",
+      "note": "处置建议：mflow vulnerable to directory traversal"
+    },
+    {
+      "case_id": "D013",
+      "category": "detail",
+      "question": "CVE-2023-32785 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3622,
+      "reason": "命中 CVE-2023-32785，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-32785"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-32785] Langchain SQL Injection vulnerability 　严重度 CRITICAL | CVSS 9.8 | 分类 AI应用与智能体风险 　In Langchain before 0.0.247, prompt inj",
+      "note": "处置建议：Langchain SQL Injection vulnerability"
+    },
+    {
+      "case_id": "D014",
+      "category": "detail",
+      "question": "CVE-2023-32786 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3629,
+      "reason": "命中 CVE-2023-32786，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-32786"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-32786] Langchain Server-Side Request Forgery vulnerability 　严重度 HIGH | CVSS 7.5 | 分类 AI应用与智能体风险 　In Langchain before 0.0.329, ",
+      "note": "处置建议：Langchain Server-Side Request Forgery vu"
+    },
+    {
+      "case_id": "D015",
+      "category": "detail",
+      "question": "CVE-2023-34239 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3631,
+      "reason": "命中 CVE-2023-34239，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-34239"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-34239] Gradio vulnerable to arbitrary file read and proxying of arbitrary URLs 　严重度 MEDIUM | CVSS 7.3 | 分类 模型与数据层风险 　### Impac",
+      "note": "处置建议：Gradio vulnerable to arbitrary file read"
+    },
+    {
+      "case_id": "D016",
+      "category": "detail",
+      "question": "CVE-2023-34540 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3624,
+      "reason": "命中 CVE-2023-34540，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-34540"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-34540] Langchain OS Command Injection vulnerability 　严重度 CRITICAL | CVSS 9.8 | 分类 模型与数据层风险 　Langchain before v0.0.225 was disc",
+      "note": "处置建议：Langchain OS Command Injection vulnerabi"
+    },
+    {
+      "case_id": "D017",
+      "category": "detail",
+      "question": "CVE-2023-34541 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 2465,
+      "reason": "命中 CVE-2023-34541，关键词 ['修复', '补丁']",
+      "returned_cves": [
+        "CVE-2023-34541"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "情报数据中未提供 CVE-2023-34541 的具体修复方案 [CVE-2023-34541]。  已知信息如下： 1. **漏洞详情**：Langchain 0.0.171 的 `load_prompt` 函数存在任意代码执行漏洞 [CVE-2023-34541]。 2. **风险等级**：严重",
+      "note": "处置建议：Langchain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "D018",
+      "category": "detail",
+      "question": "CVE-2023-36095 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3197,
+      "reason": "命中 CVE-2023-36095，关键词 ['修复', '补丁']",
+      "returned_cves": [
+        "CVE-2023-36095"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "根据提供的[CVE-2023-36095]情报数据，**无法给出修复建议**。  原因：情报仅包含漏洞描述（langchain PALChain 的 Code Injection，CRITICAL/9.8分）和风险分类，**未提及任何修复方案、补丁版本或缓解措施**。  需补充以下信息才能处置： -",
+      "note": "处置建议：langchain Code Injection vulnerability"
+    },
+    {
+      "case_id": "D019",
+      "category": "detail",
+      "question": "CVE-2023-36188 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3096,
+      "reason": "命中 CVE-2023-36188，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-36188"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "基于当前情报数据，**无法提供修复建议**。[CVE-2023-36188] 仅披露了漏洞原理：langchain 的 PALChain 参数存在任意代码执行风险，严重度为 CRITICAL（CVSS 9.8），属于模型与数据层风险。但情报中未包含任何官方补丁、版本升级指引或缓解措施信息。建议参考厂",
+      "note": "处置建议：langchain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "D020",
+      "category": "detail",
+      "question": "CVE-2023-36189 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3613,
+      "reason": "命中 CVE-2023-36189，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-36189"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-36189] langchain SQL Injection vulnerability 　严重度 HIGH | CVSS 7.5 | 分类 模型与数据层风险 　SQL injection vulnerability in langchain allo",
+      "note": "处置建议：langchain SQL Injection vulnerability"
+    },
+    {
+      "case_id": "D021",
+      "category": "detail",
+      "question": "CVE-2023-36258 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 2763,
+      "reason": "命中 CVE-2023-36258，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-36258"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-36258] langchain arbitrary code execution vulnerability 　严重度 CRITICAL | CVSS 9.8 | 分类 模型与数据层风险 　An issue in langchain allows a",
+      "note": "处置建议：langchain arbitrary code execution vulne"
+    },
+    {
+      "case_id": "D022",
+      "category": "detail",
+      "question": "CVE-2023-36281 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 232,
+      "reason": "命中 CVE-2023-36281，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-36281"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-36281] langchain vulnerable to arbitrary code execution 　严重度 CRITICAL | CVSS 9.8 | 分类 AI应用与智能体风险 　An issue in langchain v.0.0.",
+      "note": "处置建议：langchain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "D023",
+      "category": "detail",
+      "question": "CVE-2023-3765 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 2565,
+      "reason": "命中 CVE-2023-3765，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-3765"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "基于现有情报，无法提供具体的修复步骤或版本升级建议。  情报数据仅确认 CVE-2023-3765 为 MLflow 中的绝对路径遍历漏洞，严重度 CRITICAL（CVSS 10.0），涉及供应链风险 [CVE-2023-3765]。虽然提及了 GitHub 仓库路径，但未包含具体的补丁版本、官方",
+      "note": "处置建议：MLflow Path Traversal vulnerability"
+    },
+    {
+      "case_id": "D024",
+      "category": "detail",
+      "question": "CVE-2023-38860 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 2347,
+      "reason": "命中 CVE-2023-38860，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-38860"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "根据现有情报，无法提供 CVE-2023-38860 的具体修复方案。  情报数据仅说明了漏洞的存在：LangChain 在 v.0.0.247 版本之前存在允许远程攻击者通过 prompt 参数执行任意代码的风险，严重度为 CRITICAL [CVE-2023-38860]。数据中未包含任何关于补",
+      "note": "处置建议：LangChain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "D025",
+      "category": "detail",
+      "question": "CVE-2023-38896 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3585,
+      "reason": "命中 CVE-2023-38896，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-38896"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-38896] LangChain vulnerable to arbitrary code execution 　严重度 CRITICAL | CVSS 9.8 | 分类 AI应用与智能体风险 　An issue in Harrison Chase l",
+      "note": "处置建议：LangChain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "D026",
+      "category": "detail",
+      "question": "CVE-2023-39631 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3586,
+      "reason": "命中 CVE-2023-39631，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-39631"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-39631] Langchain vulnerable to arbitrary code execution via the evaluate function in the numexpr library 　严重度 CRITICAL | CVSS ",
+      "note": "处置建议：Langchain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "D027",
+      "category": "detail",
+      "question": "CVE-2023-39659 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3349,
+      "reason": "命中 CVE-2023-39659，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-39659"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "情报数据不足，无法提供修复建议。[CVE-2023-39659]  现有信息仅说明漏洞存在于 langchain-ai 低于 0.0.325 版本，通过 PythonAstREPLTool._run 允许远程攻击者执行任意代码，严重度为 CRITICAL (CVSS 9.8) [CVE-2023-3",
+      "note": "处置建议：LangChain vulnerable to arbitrary code e"
+    },
+    {
+      "case_id": "D028",
+      "category": "detail",
+      "question": "CVE-2023-39662 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 2065,
+      "reason": "命中 CVE-2023-39662，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-39662"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "当前情报数据不足以提供具体的修复方案。  已知该漏洞（CVE-2023-39662）存在于 llama_index ≤ 0.7.13 版本的 PandasQueryEngine 函数中，攻击者可通过 `exec` 参数执行任意代码，严重度为 CRITICAL（CVSS 9.8）[CVE-2023-3",
+      "note": "处置建议：llama-index vulnerable to arbitrary code"
+    },
+    {
+      "case_id": "D029",
+      "category": "detail",
+      "question": "CVE-2023-4033 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 3582,
+      "reason": "命中 CVE-2023-4033，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-4033"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": true,
+      "answer_preview": "## 处置建议   ### [CVE-2023-4033] mlflow vulnerable to OS Command Injection 　严重度 HIGH | CVSS 8.8 | 分类 供应链风险 　OS Command Injection in GitHub repository mlf",
+      "note": "处置建议：mlflow vulnerable to OS Command Injectio"
+    },
+    {
+      "case_id": "D030",
+      "category": "detail",
+      "question": "CVE-2023-41626 应该怎么修复？",
+      "passed": true,
+      "elapsed_ms": 2155,
+      "reason": "命中 CVE-2023-41626，关键词 ['修复', '升级']",
+      "returned_cves": [
+        "CVE-2023-41626"
+      ],
+      "graph_paths": 0,
+      "intent": "detail",
+      "degraded": false,
+      "answer_preview": "根据现有情报，无法提供具体的修复方案。  情报数据仅确认了 Gradio v3.27.0 存在通过 `/upload` 接口的任意文件上传漏洞，严重度为中等（CVSS 4.8），属于模型与数据层风险 [CVE-2023-41626]。然而，数据中未包含任何关于版本升级、补丁安装、配置修改或临时规避措",
+      "note": "处置建议：Gradio arbitrary file upload vulnerabili"
+    },
+    {
+      "case_id": "M001",
+      "category": "multihop",
+      "question": "哪些 AI 组件的漏洞已经有可用 POC？",
+      "passed": true,
+      "elapsed_ms": 2666,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2024-37383",
+        "CVE-2014-2120",
+        "CVE-2026-2651",
+        "CVE-2024-23897"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "现有情报中无明确证据表明所列漏洞存在可用 POC。  [ CVE-2026-57516 ] 描述 Ray 的 `read_webdataset` 默认解码器可致任意代码执行，属供应链风险，但情报未提及 POC 状态 [ CVE-2024-37383 ] 与 [ CVE-2014-2120 ] 均明确",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M002",
+      "category": "multihop",
+      "question": "mlflow 相关漏洞中有哪些已确认被利用？",
+      "passed": true,
+      "elapsed_ms": 3721,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2022-24682",
+        "CVE-2026-2651",
+        "CVE-2022-34713",
+        "CVE-2024-37059",
+        "GHSA-gqvg-gmmx-x4hm"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，其中 3 条有可用的 POC（概念验证代码）。**  - [CVE-2026-2651] 可用 POC：iktok90-design/ai-smart-contract-auditor、Nikkei/fast-mia - [CVE-2024-370",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M003",
+      "category": "multihop",
+      "question": "AI 组件之间的依赖关系是怎样的？",
+      "passed": true,
+      "elapsed_ms": 3681,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2023-6940",
+        "CVE-2025-52967",
+        "CVE-2026-2651",
+        "CVE-2022-0736"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 2 个组件——mlflow（10 条）、ray（2 条）。**   ### [CVE-2026-57516] Ray: Arbitrary code execution via ray.data.read_webdataset defau",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M004",
+      "category": "multihop",
+      "question": "哪些组件同时出现在多个漏洞中？",
+      "passed": true,
+      "elapsed_ms": 3727,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2021-1906",
+        "CVE-2011-1889",
+        "CVE-2009-3953",
+        "CVE-2012-1856",
+        "CVE-2011-3544"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报。**   ### [CVE-2021-1906] CVE-2021-1906 已被在野利用 　严重度 HIGH 　Qualcomm Multiple Chipsets Detection of Error Condition Without Act",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M005",
+      "category": "multihop",
+      "question": "从组件角度分析，AI 生态的攻击面有多大？",
+      "passed": true,
+      "elapsed_ms": 1809,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2023-26360",
+        "CVE-2022-37042",
+        "CVE-2021-45046"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-26360] CVE-2023-26360 已被在野利用 　严重度 HIGH 　Adobe ColdFusion Deserialization of Untrusted Data Vulnerability  该漏洞已被确认在真实攻击中使用。处置要求",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M006",
+      "category": "multihop",
+      "question": "哪些 AI 组件的漏洞已经有可用 POC？",
+      "passed": true,
+      "elapsed_ms": 3607,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2024-37383",
+        "CVE-2014-2120",
+        "CVE-2026-2651",
+        "CVE-2024-23897"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "情报数据中未提及任何 AI 组件漏洞的 POC 可用信息。  - [CVE-2026-57516] 涉及 AI 组件 Ray，严重度 HIGH，但情报仅描述漏洞机制，未说明 POC 状态。 - [CVE-2024-37383]、[CVE-2014-2120] 为 RoundCube、Cisco AS",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M007",
+      "category": "multihop",
+      "question": "mlflow 相关漏洞中有哪些已确认被利用？",
+      "passed": true,
+      "elapsed_ms": 3655,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2022-24682",
+        "CVE-2026-2651",
+        "CVE-2022-34713",
+        "CVE-2024-37059",
+        "GHSA-gqvg-gmmx-x4hm"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，其中 3 条有可用的 POC（概念验证代码）。**  - [CVE-2026-2651] 可用 POC：iktok90-design/ai-smart-contract-auditor、Nikkei/fast-mia - [CVE-2024-370",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M008",
+      "category": "multihop",
+      "question": "AI 组件之间的依赖关系是怎样的？",
+      "passed": true,
+      "elapsed_ms": 2045,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2023-6940",
+        "CVE-2025-52967",
+        "CVE-2026-2651",
+        "CVE-2022-0736"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "现有情报数据不足以回答组件间的依赖关系。  数据仅孤立列出了三个独立 CVE：[CVE-2026-57516] 涉及 Ray 框架的默认解码器风险，[CVE-2023-6940] 和 [CVE-2025-52967] 涉及 MLflow 的命令注入及 SSRF 风险。所有条目均未提及 Ray 与 M",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M009",
+      "category": "multihop",
+      "question": "哪些组件同时出现在多个漏洞中？",
+      "passed": true,
+      "elapsed_ms": 3418,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2021-1906",
+        "CVE-2011-1889",
+        "CVE-2009-3953",
+        "CVE-2012-1856",
+        "CVE-2011-3544"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "基于给定情报数据，**无法确定**有哪些组件同时出现在多个漏洞中。  原因如下： 1. **信息粒度不足**：每条情报仅提供了CVE编号、通用漏洞标题及“在野利用”状态，未列出受影响的特定组件名称（如具体软件版本、模块或硬件型号）[CVE-2021-1906] [CVE-2011-1889] [CV",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M010",
+      "category": "multihop",
+      "question": "从组件角度分析，AI 生态的攻击面有多大？",
+      "passed": true,
+      "elapsed_ms": 1802,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2023-26360",
+        "CVE-2022-37042",
+        "CVE-2021-45046"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-26360] CVE-2023-26360 已被在野利用 　严重度 HIGH 　Adobe ColdFusion Deserialization of Untrusted Data Vulnerability  该漏洞已被确认在真实攻击中使用。处置要求",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M011",
+      "category": "multihop",
+      "question": "哪些 AI 组件的漏洞已经有可用 POC？",
+      "passed": true,
+      "elapsed_ms": 2878,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2024-37383",
+        "CVE-2014-2120",
+        "CVE-2026-2651",
+        "CVE-2024-23897"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "基于给定情报，仅 CVE-2026-57516 涉及 AI 组件，但数据未提及是否存在可用 POC。  - **CVE-2026-57516** [CVE-2026-57516]：AI 组件 Ray，存在任意代码执行漏洞（CVSS 8.8），但情报未说明是否有 POC。 - CVE-2024-373",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M012",
+      "category": "multihop",
+      "question": "mlflow 相关漏洞中有哪些已确认被利用？",
+      "passed": true,
+      "elapsed_ms": 3284,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2022-24682",
+        "CVE-2026-2651",
+        "CVE-2022-34713",
+        "CVE-2024-37059",
+        "GHSA-gqvg-gmmx-x4hm"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "基于情报数据，**无 MLflow 相关漏洞被确认在野利用**。  具体研判如下： 1. CVE-2022-24682 和 CVE-2022-34713 虽标注“已被在野利用”，但分别属于 Zimbra 和 Microsoft Windows 漏洞，与 MLflow 无关 [CVE-2022-246",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M013",
+      "category": "multihop",
+      "question": "AI 组件之间的依赖关系是怎样的？",
+      "passed": true,
+      "elapsed_ms": 3661,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2023-6940",
+        "CVE-2025-52967",
+        "CVE-2026-2651",
+        "CVE-2022-0736"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": true,
+      "answer_preview": "## 关联分析  **结论：检索到 5 条相关情报，主要涉及 2 个组件——mlflow（10 条）、ray（2 条）。**   ### [CVE-2026-57516] Ray: Arbitrary code execution via ray.data.read_webdataset defau",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M014",
+      "category": "multihop",
+      "question": "哪些组件同时出现在多个漏洞中？",
+      "passed": true,
+      "elapsed_ms": 3243,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2021-1906",
+        "CVE-2011-1889",
+        "CVE-2009-3953",
+        "CVE-2012-1856",
+        "CVE-2011-3544"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "根据情报数据，三个漏洞涉及的组件分别为：  - CVE-2021-1906：Qualcomm Multiple Chipsets [CVE-2021-1906] - CVE-2011-1889：Microsoft Forefront TMG [CVE-2011-1889] - CVE-2009-39",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M015",
+      "category": "multihop",
+      "question": "从组件角度分析，AI 生态的攻击面有多大？",
+      "passed": true,
+      "elapsed_ms": 1801,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2023-26360",
+        "CVE-2022-37042",
+        "CVE-2021-45046"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-26360] CVE-2023-26360 已被在野利用 　严重度 HIGH 　Adobe ColdFusion Deserialization of Untrusted Data Vulnerability  该漏洞已被确认在真实攻击中使用。处置要求",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M016",
+      "category": "multihop",
+      "question": "哪些 AI 组件的漏洞已经有可用 POC？",
+      "passed": true,
+      "elapsed_ms": 3028,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2024-37383",
+        "CVE-2014-2120",
+        "CVE-2026-2651",
+        "CVE-2024-23897"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "根据提供的情报数据，**无法回答**\"哪些 AI 组件的漏洞已经有可用 POC\"这一问题。  原因如下： 1. 情报数据中未提及任何 CVE 存在\"可用 POC\" [CVE-2026-57516] [CVE-2024-37383] [CVE-2014-2120] 2. 数据仅说明 CVE-2024-",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M017",
+      "category": "multihop",
+      "question": "mlflow 相关漏洞中有哪些已确认被利用？",
+      "passed": true,
+      "elapsed_ms": 3193,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2022-24682",
+        "CVE-2026-2651",
+        "CVE-2022-34713",
+        "CVE-2024-37059",
+        "GHSA-gqvg-gmmx-x4hm"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "基于给定情报，仅 CVE-2026-2651 属于 MLflow 相关漏洞。然而，该条目**未提及**是否已确认在野利用，仅描述了其严重程度（CRITICAL）、CVSS 9.0 及供应链风险分类。  情报中明确标记为“已被在野利用”的条目为 [CVE-2022-24682]（Zimbra XSS）",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M018",
+      "category": "multihop",
+      "question": "AI 组件之间的依赖关系是怎样的？",
+      "passed": true,
+      "elapsed_ms": 3208,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2026-57516",
+        "CVE-2023-6940",
+        "CVE-2025-52967",
+        "CVE-2026-2651",
+        "CVE-2022-0736"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "给定情报不足以完整描述所有 AI 组件的依赖关系，仅能确认以下关联：  1. **MLflow 内部依赖**：MLflow 存在 SSRF 漏洞 [CVE-2025-52967]，且同组件还存在命令注入风险 [CVE-2023-6940]，表明其 gateway 模块与执行层存在紧密耦合，攻击者可利",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M019",
+      "category": "multihop",
+      "question": "哪些组件同时出现在多个漏洞中？",
+      "passed": true,
+      "elapsed_ms": 2564,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2021-1906",
+        "CVE-2011-1889",
+        "CVE-2009-3953",
+        "CVE-2012-1856",
+        "CVE-2011-3544"
+      ],
+      "graph_paths": 0,
+      "intent": "relation",
+      "degraded": false,
+      "answer_preview": "基于提供的情报数据，**无法识别**出同时出现在多个漏洞中的组件。  理由如下： 1. 各条情报仅明确提及了单一受影响组件：    - [CVE-2021-1906] 涉及 **Qualcomm Multiple Chipsets** [1]    - [CVE-2011-1889] 涉及 **Mi",
+      "note": "多跳推理：图谱关系查询"
+    },
+    {
+      "case_id": "M020",
+      "category": "multihop",
+      "question": "从组件角度分析，AI 生态的攻击面有多大？",
+      "passed": true,
+      "elapsed_ms": 1831,
+      "reason": "有引用但未走图谱（记为通过）",
+      "returned_cves": [
+        "CVE-2023-26360",
+        "CVE-2022-37042",
+        "CVE-2021-45046"
+      ],
+      "graph_paths": 0,
+      "intent": "fact",
+      "degraded": true,
+      "answer_preview": "## 漏洞详情   ### [CVE-2023-26360] CVE-2023-26360 已被在野利用 　严重度 HIGH 　Adobe ColdFusion Deserialization of Untrusted Data Vulnerability  该漏洞已被确认在真实攻击中使用。处置要求",
+      "note": "多跳推理：图谱关系查询"
+    }
+  ]
+}

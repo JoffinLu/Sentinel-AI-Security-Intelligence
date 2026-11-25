@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROEN智能安全防护系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --dark-bg: #1a1a1a;
+            --card-bg: #2d3748;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: rgba(44, 62, 80, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--secondary-color);
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-card {
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .status-card.locked {
+            border-left-color: var(--danger-color);
+        }
+
+        .status-card.normal {
+            border-left-color: var(--success-color);
+        }
+
+        .btn-custom {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .log-container {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .log-entry {
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ddd;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .log-entry.attack {
+            border-left-color: var(--danger-color);
+            background: #fff5f5;
+        }
+
+        .log-entry.normal {
+            border-left-color: var(--success-color);
+            background: #f0fff4;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.online {
+            background: var(--success-color);
+        }
+
+        .status-indicator.offline {
+            background: var(--danger-color);
+        }
+
+        .status-indicator.warning {
+            background: var(--warning-color);
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .image-card {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .image-card:hover .image-overlay {
+            opacity: 1;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 20px 0;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .modal-header {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .progress {
+            height: 8px;
+            border-radius: 10px;
+        }
+
+        .badge {
+            font-size: 0.75em;
+            padding: 0.5em 0.75em;
+        }
+
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table th {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-shield-alt me-2"></i>
+                ROEN智能安全防护系统
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">
+                    <span id="connectionStatus" class="status-indicator offline"></span>
+                    <span id="connectionText">连接中...</span>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <!-- 系统状态概览 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card status-card" id="systemStatusCard">
+                    <div class="card-body text-center">
+                        <i class="fas fa-server fa-2x mb-3 text-primary"></i>
+                        <h5>系统状态</h5>
+                        <h3 id="systemStatus" class="text-muted">检查中...</h3>
+                        <small id="lastUpdate" class="text-muted">更新时间: --</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card status-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-eye fa-2x mb-3 text-info"></i>
+                        <h5>监控状态</h5>
+                        <h3 id="monitoringStatus" class="text-muted">--</h3>
+                        <small id="detectionCount" class="text-muted">检测次数: 0</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card status-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-exclamation-triangle fa-2x mb-3 text-warning"></i>
+                        <h5>威胁检测</h5>
+                        <h3 id="threatCount" class="text-muted">0</h3>
+                        <small id="lastThreat" class="text-muted">最近威胁: 无</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card status-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-lock fa-2x mb-3 text-success"></i>
+                        <h5>加密图像</h5>
+                        <h3 id="encryptedCount" class="text-muted">0</h3>
+                        <small id="totalImages" class="text-muted">总图像: 0</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 控制面板 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-cogs me-2"></i>系统控制</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <button id="startMonitoring" class="btn btn-success btn-custom w-100">
+                                    <i class="fas fa-play me-2"></i>启动监控
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button id="stopMonitoring" class="btn btn-warning btn-custom w-100">
+                                    <i class="fas fa-stop me-2"></i>停止监控
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button id="manualDetection" class="btn btn-info btn-custom w-100">
+                                    <i class="fas fa-search me-2"></i>手动检测
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button id="unlockSystem" class="btn btn-danger btn-custom w-100">
+                                    <i class="fas fa-unlock me-2"></i>解锁系统
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-image me-2"></i>图像管理</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <button id="encryptImages" class="btn btn-primary btn-custom w-100">
+                                    <i class="fas fa-lock me-2"></i>加密图像
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button id="decryptImages" class="btn btn-secondary btn-custom w-100">
+                                    <i class="fas fa-unlock-alt me-2"></i>批量解密
+                                </button>
+                            </div>
+
+                            <div class="col-12">
+                                <button id="refreshImages" class="btn btn-outline-primary btn-custom w-100">
+                                    <i class="fas fa-sync me-2"></i>刷新图像列表
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- 实时监控和日志 -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-chart-line me-2"></i>实时监控</h5>
+                        <div>
+                            <button id="refreshStatus" class="btn btn-sm btn-outline-primary me-2">刷新状态</button>
+                            <button id="resetCounters" class="btn btn-sm btn-outline-warning me-2">重置计数</button>
+                            <button id="testChart" class="btn btn-sm btn-outline-info me-2">测试图表</button>
+                            <button id="clearChart" class="btn btn-sm btn-outline-secondary">清空图表</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="threatChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-list me-2"></i>安全日志</h5>
+                        <button id="refreshLogs" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-sync"></i>
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="securityLogs" class="log-container">
+                            <div class="text-center text-muted">
+                                <i class="fas fa-spinner fa-spin"></i> 加载日志...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图像管理 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="fas fa-images me-2"></i>图像管理</h5>
+                        <div>
+                            <span class="badge bg-primary me-2">总计: <span id="imageTotal">0</span></span>
+                            <span class="badge bg-success me-2">未加密: <span id="imageNormal">0</span></span>
+                            <span class="badge bg-warning">已加密: <span id="imageEncrypted">0</span></span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="imageGrid" class="image-grid">
+                            <div class="text-center text-muted w-100">
+                                <i class="fas fa-spinner fa-spin"></i> 加载图像...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 解锁系统模态框 -->
+    <div class="modal fade" id="unlockModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-unlock me-2"></i>系统解锁
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        请输入管理员密钥以解锁系统
+                    </div>
+                    <div class="mb-3">
+                        <label for="adminKey" class="form-label">管理员密钥</label>
+                        <input type="password" class="form-control" id="adminKey" placeholder="请输入管理员密钥">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="confirmUnlock">
+                        <i class="fas fa-unlock me-2"></i>确认解锁
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- Toast 通知容器 -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="notificationToast" class="toast" role="alert">
+            <div class="toast-header">
+                <i id="toastIcon" class="fas fa-info-circle text-primary me-2"></i>
+                <strong id="toastTitle" class="me-auto">通知</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div id="toastBody" class="toast-body">
+                消息内容
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 全局变量
+        let socket;
+        let threatChart;
+        let chartData = {
+            labels: [],
+            datasets: [{
+                label: '威胁检测',
+                data: [],
+                borderColor: 'rgb(231, 76, 60)',
+                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                tension: 0.4
+            }, {
+                label: '正常流量',
+                data: [],
+                borderColor: 'rgb(39, 174, 96)',
+                backgroundColor: 'rgba(39, 174, 96, 0.1)',
+                tension: 0.4
+            }]
+        };
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeWebSocket();
+            initializeChart();
+            initializeEventListeners();
+            loadInitialData();
+
+            // 定期更新数据
+            setInterval(updateSystemStatus, 5000);
+        });
+
+        // 初始化WebSocket连接
+        function initializeWebSocket() {
+            socket = io();
+
+            socket.on('connect', function() {
+                updateConnectionStatus(true);
+                showNotification('已连接到服务器', 'success');
+            });
+
+            socket.on('disconnect', function() {
+                updateConnectionStatus(false);
+                showNotification('与服务器连接断开', 'error');
+            });
+
+            socket.on('status_update', function(data) {
+                console.log('收到状态更新:', data); // 调试信息
+                updateSystemStatusDisplay(data);
+                updateChart(data);
+            });
+        }
+
+        // 初始化图表
+        function initializeChart() {
+            const ctx = document.getElementById('threatChart').getContext('2d');
+            threatChart = new Chart(ctx, {
+                type: 'line',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '检测次数'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '时间'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化事件监听器
+        function initializeEventListeners() {
+            // 系统控制按钮
+            document.getElementById('startMonitoring').addEventListener('click', startMonitoring);
+            document.getElementById('stopMonitoring').addEventListener('click', stopMonitoring);
+            document.getElementById('manualDetection').addEventListener('click', manualDetection);
+            document.getElementById('unlockSystem').addEventListener('click', showUnlockModal);
+
+            // 图像管理按钮
+            document.getElementById('encryptImages').addEventListener('click', encryptImages);
+            document.getElementById('decryptImages').addEventListener('click', batchDecryptImages);
+            document.getElementById('refreshImages').addEventListener('click', loadImages);
+
+
+
+            // 模态框确认按钮
+            document.getElementById('confirmUnlock').addEventListener('click', confirmUnlock);
+
+
+
+            // 其他按钮
+            document.getElementById('refreshLogs').addEventListener('click', loadSecurityLogs);
+            document.getElementById('clearChart').addEventListener('click', clearChart);
+            document.getElementById('testChart').addEventListener('click', testChart);
+            document.getElementById('refreshStatus').addEventListener('click', manualRefreshStatus);
+            document.getElementById('resetCounters').addEventListener('click', resetCounters);
+        }
+
+        // 加载初始数据
+        function loadInitialData() {
+            updateSystemStatus();
+            loadSecurityLogs();
+            loadImages();
+        }
+
+        // 更新连接状态
+        function updateConnectionStatus(connected) {
+            const statusIndicator = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('connectionText');
+
+            if (connected) {
+                statusIndicator.className = 'status-indicator online';
+                statusText.textContent = '已连接';
+            } else {
+                statusIndicator.className = 'status-indicator offline';
+                statusText.textContent = '连接断开';
+            }
+        }
+
+        // 更新系统状态
+        async function updateSystemStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                updateSystemStatusDisplay(data);
+            } catch (error) {
+                console.error('获取系统状态失败:', error);
+            }
+        }
+
+        // 更新系统状态显示
+        function updateSystemStatusDisplay(data) {
+            if (data.error) {
+                document.getElementById('systemStatus').textContent = '错误';
+                return;
+            }
+
+            // 更新状态卡片
+            const systemStatusCard = document.getElementById('systemStatusCard');
+            const systemStatus = document.getElementById('systemStatus');
+            const monitoringStatus = document.getElementById('monitoringStatus');
+            const threatCount = document.getElementById('threatCount');
+            const encryptedCount = document.getElementById('encryptedCount');
+            const lastUpdate = document.getElementById('lastUpdate');
+            const detectionCount = document.getElementById('detectionCount');
+
+            // 系统健康状态
+            if (data.system_health === 'LOCKED') {
+                systemStatus.textContent = '已锁定';
+                systemStatus.className = 'text-danger';
+                systemStatusCard.className = 'card status-card locked';
+            } else {
+                systemStatus.textContent = '正常';
+                systemStatus.className = 'text-success';
+                systemStatusCard.className = 'card status-card normal';
+            }
+
+            // 监控状态
+            monitoringStatus.textContent = data.monitoring_active ? '运行中' : '已停止';
+            monitoringStatus.className = data.monitoring_active ? 'text-success' : 'text-muted';
+
+            // 威胁统计
+            threatCount.textContent = data.total_attacks || 0;
+            encryptedCount.textContent = data.total_encrypted_images || 0;
+            detectionCount.textContent = `检测次数: ${data.total_detections || 0}`;
+
+            // 更新时间
+            lastUpdate.textContent = `更新时间: ${new Date().toLocaleTimeString()}`;
+        }
+
+        // 更新图表
+        function updateChart(data) {
+            const now = new Date().toLocaleTimeString();
+
+            // 调试信息
+            console.log('更新图表数据:', {
+                time: now,
+                total_attacks: data.total_attacks,
+                total_detections: data.total_detections,
+                normal_traffic: (data.total_detections || 0) - (data.total_attacks || 0)
+            });
+
+            // 限制数据点数量
+            if (chartData.labels.length >= 20) {
+                chartData.labels.shift();
+                chartData.datasets[0].data.shift();
+                chartData.datasets[1].data.shift();
+            }
+
+            chartData.labels.push(now);
+            chartData.datasets[0].data.push(data.total_attacks || 0);
+            chartData.datasets[1].data.push((data.total_detections || 0) - (data.total_attacks || 0));
+
+            threatChart.update();
+
+            // 调试：显示当前图表数据
+            console.log('当前图表数据:', {
+                labels: chartData.labels,
+                threats: chartData.datasets[0].data,
+                normal: chartData.datasets[1].data
+            });
+        }
+
+        // 清空图表
+        function clearChart() {
+            chartData.labels = [];
+            chartData.datasets[0].data = [];
+            chartData.datasets[1].data = [];
+            threatChart.update();
+            showNotification('图表已清空', 'info');
+        }
+
+        // 测试图表（添加模拟数据）
+        function testChart() {
+            console.log('测试图表功能...');
+
+            // 添加一些测试数据
+            for (let i = 0; i < 5; i++) {
+                const now = new Date().toLocaleTimeString();
+                const attacks = Math.floor(Math.random() * 10);
+                const detections = attacks + Math.floor(Math.random() * 20);
+
+                // 限制数据点数量
+                if (chartData.labels.length >= 20) {
+                    chartData.labels.shift();
+                    chartData.datasets[0].data.shift();
+                    chartData.datasets[1].data.shift();
+                }
+
+                chartData.labels.push(now);
+                chartData.datasets[0].data.push(attacks);
+                chartData.datasets[1].data.push(detections - attacks);
+
+                console.log(`添加测试数据: 时间=${now}, 攻击=${attacks}, 正常=${detections - attacks}`);
+            }
+
+            threatChart.update();
+            showNotification('已添加测试数据到图表', 'success');
+        }
+
+        // 手动刷新系统状态
+        async function manualRefreshStatus() {
+            try {
+                console.log('手动刷新系统状态...');
+                const response = await fetch('/api/system_status');
+                const data = await response.json();
+
+                console.log('获取到的系统状态:', data);
+
+                if (data.success) {
+                    updateSystemStatusDisplay(data.status);
+                    updateChart(data.status);
+                    showNotification('系统状态已刷新', 'success');
+                } else {
+                    showNotification('获取系统状态失败: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('刷新系统状态失败:', error);
+                showNotification('刷新系统状态失败: ' + error.message, 'error');
+            }
+        }
+
+        // 重置计数器
+        async function resetCounters() {
+            try {
+                console.log('重置计数器...');
+                const response = await fetch('/api/reset_counters', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    // 清空图表
+                    clearChart();
+                    showNotification('计数器已重置', 'success');
+                } else {
+                    showNotification('重置计数器失败: ' + data.error, 'error');
+                }
+            } catch (error) {
+                console.error('重置计数器失败:', error);
+                showNotification('重置计数器失败: ' + error.message, 'error');
+            }
+        }
+
+        // 启动监控
+        async function startMonitoring() {
+            try {
+                const response = await fetch('/api/start_monitoring', { method: 'POST' });
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('监控已启动', 'success');
+                } else {
+                    showNotification(data.error || '启动监控失败', 'error');
+                }
+            } catch (error) {
+                showNotification('启动监控失败: ' + error.message, 'error');
+            }
+        }
+
+        // 停止监控
+        async function stopMonitoring() {
+            try {
+                const response = await fetch('/api/stop_monitoring', { method: 'POST' });
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('监控已停止', 'warning');
+                } else {
+                    showNotification(data.error || '停止监控失败', 'error');
+                }
+            } catch (error) {
+                showNotification('停止监控失败: ' + error.message, 'error');
+            }
+        }
+
+        // 手动检测
+        async function manualDetection() {
+            const button = document.getElementById('manualDetection');
+            const originalText = button.innerHTML;
+
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>检测中...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch('/api/manual_detection', { method: 'POST' });
+                const data = await response.json();
+
+                if (data.success) {
+                    const result = data.detection_result;
+                    const message = `检测完成: ${result.attack_type} (置信度: ${(result.confidence_score * 100).toFixed(1)}%)`;
+                    showNotification(message, result.is_attack ? 'warning' : 'success');
+                } else {
+                    showNotification(data.error || '检测失败', 'error');
+                }
+            } catch (error) {
+                showNotification('检测失败: ' + error.message, 'error');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+        // 显示解锁模态框
+        function showUnlockModal() {
+            const modal = new bootstrap.Modal(document.getElementById('unlockModal'));
+            modal.show();
+        }
+
+        // 确认解锁
+        async function confirmUnlock() {
+            const adminKey = document.getElementById('adminKey').value;
+
+            if (!adminKey) {
+                showNotification('请输入管理员密钥', 'warning');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/unlock_system', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ admin_key: adminKey })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('系统已解锁', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('unlockModal')).hide();
+                    document.getElementById('adminKey').value = '';
+                } else {
+                    showNotification(data.error || '解锁失败', 'error');
+                }
+            } catch (error) {
+                showNotification('解锁失败: ' + error.message, 'error');
+            }
+        }
+
+        // 加密图像
+        async function encryptImages() {
+            const button = document.getElementById('encryptImages');
+            const originalText = button.innerHTML;
+
+            button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>加密中...';
+            button.disabled = true;
+
+            try {
+                const response = await fetch('/api/encrypt_images', { method: 'POST' });
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('图像加密完成', 'success');
+                    loadImages(); // 刷新图像列表
+                } else {
+                    showNotification(data.error || '加密失败', 'error');
+                }
+            } catch (error) {
+                showNotification('加密失败: ' + error.message, 'error');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        }
+
+
+
+        // 加载图像列表
+        async function loadImages() {
+            try {
+                const response = await fetch('/api/images');
+                const images = await response.json();
+
+                if (Array.isArray(images)) {
+                    displayImages(images);
+                    updateImageStats(images);
+                } else {
+                    showNotification(images.error || '加载图像失败', 'error');
+                }
+            } catch (error) {
+                showNotification('加载图像失败: ' + error.message, 'error');
+            }
+        }
+
+        // 显示图像
+        function displayImages(images) {
+            const imageGrid = document.getElementById('imageGrid');
+
+            if (images.length === 0) {
+                imageGrid.innerHTML = '<div class="text-center text-muted w-100">暂无图像</div>';
+                return;
+            }
+
+            imageGrid.innerHTML = images.map(image => `
+                <div class="image-card">
+                    <img src="/api/images/${image.id}" alt="${image.filename}"
+                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPuaXoOazleWKoOi9vTwvdGV4dD48L3N2Zz4='">
+                    <div class="image-overlay">
+                        <div class="text-center">
+                            <div class="mb-2">
+                                <span class="badge ${image.is_encrypted ? 'bg-warning' : 'bg-success'}">
+                                    ${image.is_encrypted ? '已加密' : '未加密'}
+                                </span>
+                            </div>
+                            <div class="btn-group-vertical">
+                                ${image.is_encrypted ?
+                                    `<button class="btn btn-sm btn-light" onclick="decryptSingleImage(${image.id})">
+                                        <i class="fas fa-unlock-alt"></i> 解密
+                                    </button>` :
+                                    `<button class="btn btn-sm btn-light" onclick="encryptSingleImage(${image.id})">
+                                        <i class="fas fa-lock"></i> 加密
+                                    </button>`
+                                }
+                            </div>
+                            <small class="d-block mt-2 text-truncate" style="max-width: 150px;">
+                                ${image.filename}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 批量解密
+        async function batchDecryptImages() {
+            try {
+                const response = await fetch('/api/decrypt_images', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('批量解密完成', 'success');
+                    loadImages(); // 刷新图像列表
+                } else {
+                    showNotification(data.error || '批量解密失败', 'error');
+                }
+            } catch (error) {
+                showNotification('批量解密失败: ' + error.message, 'error');
+            }
+        }
+
+        // 更新图像统计
+        function updateImageStats(images) {
+            const total = images.length;
+            const encrypted = images.filter(img => img.is_encrypted).length;
+            const normal = total - encrypted;
+
+            document.getElementById('imageTotal').textContent = total;
+            document.getElementById('imageNormal').textContent = normal;
+            document.getElementById('imageEncrypted').textContent = encrypted;
+            document.getElementById('totalImages').textContent = `总图像: ${total}`;
+        }
+
+        // 单张图像加密
+        async function encryptSingleImage(imageId) {
+            try {
+                const response = await fetch('/api/encrypt-single-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image_id: imageId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('图像加密成功', 'success');
+                    loadImages();
+                } else {
+                    showNotification(data.error || '加密失败', 'error');
+                }
+            } catch (error) {
+                showNotification('加密失败: ' + error.message, 'error');
+            }
+        }
+
+        // 单张图像解密
+        async function decryptSingleImage(imageId) {
+            try {
+                const response = await fetch('/api/decrypt-single-image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image_id: imageId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showNotification('图像解密成功', 'success');
+                    loadImages();
+                } else {
+                    showNotification(data.error || '解密失败', 'error');
+                }
+            } catch (error) {
+                showNotification('解密失败: ' + error.message, 'error');
+            }
+        }
+
+        // 加载安全日志
+        async function loadSecurityLogs() {
+            try {
+                const response = await fetch('/api/logs');
+                const logs = await response.json();
+
+                if (Array.isArray(logs)) {
+                    displaySecurityLogs(logs);
+                } else {
+                    showNotification(logs.error || '加载日志失败', 'error');
+                }
+            } catch (error) {
+                showNotification('加载日志失败: ' + error.message, 'error');
+            }
+        }
+
+        // 显示安全日志
+        function displaySecurityLogs(logs) {
+            const logsContainer = document.getElementById('securityLogs');
+
+            if (logs.length === 0) {
+                logsContainer.innerHTML = '<div class="text-center text-muted">暂无日志</div>';
+                return;
+            }
+
+            logsContainer.innerHTML = logs.map(log => {
+                const isAttack = log.attack_type !== 'BENIGN';
+                const time = new Date(log.attack_time).toLocaleString();
+
+                return `
+                    <div class="log-entry ${isAttack ? 'attack' : 'normal'}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>${log.attack_type}</strong>
+                                <span class="badge bg-${isAttack ? 'danger' : 'success'} ms-2">
+                                    ${log.threat_level}
+                                </span>
+                            </div>
+                            <small class="text-muted">${time}</small>
+                        </div>
+                        <div class="mt-1">
+                            <small>
+                                ${log.source_ip} → ${log.target_ip}
+                                ${log.confidence_score ? `(置信度: ${(log.confidence_score * 100).toFixed(1)}%)` : ''}
+                            </small>
+                        </div>
+                        ${log.action_taken ? `<div class="mt-1"><small class="text-info">操作: ${log.action_taken}</small></div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+
+
+
+
+
+
+
+
+        // 显示通知
+        function showNotification(message, type = 'info') {
+            const toast = document.getElementById('notificationToast');
+            const toastIcon = document.getElementById('toastIcon');
+            const toastTitle = document.getElementById('toastTitle');
+            const toastBody = document.getElementById('toastBody');
+
+            // 设置图标和标题
+            switch (type) {
+                case 'success':
+                    toastIcon.className = 'fas fa-check-circle text-success me-2';
+                    toastTitle.textContent = '成功';
+                    break;
+                case 'error':
+                    toastIcon.className = 'fas fa-exclamation-circle text-danger me-2';
+                    toastTitle.textContent = '错误';
+                    break;
+                case 'warning':
+                    toastIcon.className = 'fas fa-exclamation-triangle text-warning me-2';
+                    toastTitle.textContent = '警告';
+                    break;
+                default:
+                    toastIcon.className = 'fas fa-info-circle text-primary me-2';
+                    toastTitle.textContent = '信息';
+            }
+
+            toastBody.textContent = message;
+
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+
+        // 工具函数：格式化时间
+        function formatTime(timestamp) {
+            return new Date(timestamp).toLocaleString('zh-CN');
+        }
+
+        // 工具函数：格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // 错误处理
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript错误:', e.error);
+            showNotification('页面发生错误，请刷新重试', 'error');
+        });
+
+        // 页面卸载时清理
+        window.addEventListener('beforeunload', function() {
+            if (socket) {
+                socket.disconnect();
+            }
+        });
+    </script>
+</body>
+</html>

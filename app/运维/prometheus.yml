@@ -1,0 +1,28 @@
+# Prometheus 抓取配置
+# 对应赛题"监控告警"评分项：指标采集 → 告警规则 → 可视化看板
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    system: ai-security-intel
+    stage: P0-P1
+
+# 告警规则（对应"采集失败率、富化置信度跌落、LLM 超时"三类告警）
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+  # 后端 API 服务指标
+  - job_name: aiintel-api
+    metrics_path: /metrics
+    scrape_interval: 15s
+    static_configs:
+      - targets: ["api:8000"]
+        labels:
+          component: backend
+
+  # Prometheus 自身
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]

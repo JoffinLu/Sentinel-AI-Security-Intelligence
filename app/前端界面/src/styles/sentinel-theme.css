@@ -1,0 +1,6986 @@
+/* ============================================================
+   SENTINEL 主题适配层 · 黑夜主题
+   ------------------------------------------------------------
+   把设计语言（sentinel-*.css）接入 Ant Design 5 组件体系。
+
+   原则：**不改任何 JSX 布局**，只做两件事：
+     ① 用 CSS 变量 + 选择器覆盖 AntD 内部类名（换肤）
+     ② 用 ConfigProvider darkAlgorithm 切换 AntD 基础算法
+
+   依赖：sentinel-design-tokens.css → sentinel-effects.css
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   一、全局底色与背景层
+   ------------------------------------------------------------ */
+
+/* 极光背景层：JS 注入到 body 下，固定不随内容滚动 */
+#sentinelBgLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  /* 与设计语言 .sentinel-bg-base 呼应：双角径向光晕 */
+  background:
+    radial-gradient(1200px 700px at 80% -10%, rgba(75, 225, 236, 0.05), transparent 60%),
+    radial-gradient(900px 600px at -10% 110%, rgba(182, 243, 74, 0.06), transparent 60%),
+    var(--bg);
+}
+#sentinelBgCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0.85;
+}
+
+/* 极光光斑容器 + 三团缓慢漂移光斑（26/32/38s 交错周期） */
+.sentinel-aurora-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+/* 光斑是 650px 的圆形 + blur(120px)。
+ *
+ * ---------- 为什么会露出「透明矩形」（用户截图反馈） ----------
+ * `border-radius: 50%` 加在 `::before` 上，只让**这一个伪元素**是圆的；
+ * 它的父元素 `.sentinel-aurora` 仍是**矩形**（inline style 给了 width/height）。
+ * 而 `filter: blur()` 作用于 `::before`，模糊会把它**向外扩散**，
+ * 于是圆形淡出边缘之外的区域仍带着父元素的矩形轮廓 →
+ * 屏幕上就是一块块**边界清晰的半透明矩形**。
+ * 第三团更明显：它被写成 `700x500`，本身就是矩形（不是 650 正方）。
+ *
+ * ---------- 修法：父级也圆形化 + 模糊吃满 ----------
+ * ① `.sentinel-aurora` 自身加 `border-radius: 50%`
+ *    —— 让父容器也是圆，矩形轮廓从根上不存在。
+ * ② 模糊半径**大于元素尺寸的一半**，保证淡出到容器边界时已接近全透明。
+ *    原 blur(120px) 相对 650px 元素只有 18%，边缘残留明显；
+ *    改为「按元素尺寸的一半 × 1.6」由内层承担，外层只跑 transform。
+ */
+.sentinel-aurora {
+  position: absolute;
+  will-change: transform;
+  /* ① 父级也圆形 —— 消除矩形轮廓的根因 */
+  border-radius: 50%;
+  /* 兜底：即使内层没覆盖到，父级裁切后也不会有直角 */
+  overflow: hidden;
+}
+.sentinel-aurora::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+/* 滤镜挂在静止的内层::before 上，只算一次并被缓存。
+   半径按元素尺寸取，保证淡出边缘在容器边界前就已透明。 */
+.sentinel-aurora-1::before { filter: blur(300px); }
+.sentinel-aurora-2::before { filter: blur(280px); }
+.sentinel-aurora-3::before { filter: blur(300px); }
+/* transform 动画跑在外层，浏览器只需做合成，不重新采样滤镜 */
+.sentinel-aurora-1 {
+  animation: sentinelDrift1 26s var(--ease) infinite alternate;
+}
+.sentinel-aurora-2 {
+  animation: sentinelDrift2 32s var(--ease) infinite alternate;
+}
+.sentinel-aurora-3 {
+  animation: sentinelDrift3 38s var(--ease) infinite alternate;
+}
+@keyframes sentinelDrift1 {
+  to {
+    transform: translate(120px, 90px) scale(1.12);
+  }
+}
+@keyframes sentinelDrift2 {
+  to {
+    transform: translate(-100px, 130px) scale(0.92);
+  }
+}
+@keyframes sentinelDrift3 {
+  to {
+    transform: translate(70px, -80px) scale(1.15);
+  }
+}
+
+/* 应用根容器：让内容浮在极光之上 */
+.ant-layout {
+  position: relative;
+  z-index: 1;
+  background: transparent !important;
+}
+
+/* 侧边栏：半透明墨绿 + 磨砂
+ *
+ * 必须 position: fixed —— 否则内容区滚动时侧栏会跟着一起滚走，
+ * 导航菜单滑出视口就找不回来了。
+ * AntD 的 Sider 本身不做视口固定，得靠样式补上。
+ * 配合 JSX 上的 marginTop 负值，把右侧内容顶到与侧栏齐平。
+ */
+.ant-layout-sider {
+  background: var(--panel) !important;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-right: 1px solid var(--border) !important;
+  box-shadow: 1px 0 0 rgba(182, 243, 74, 0.04), 8px 0 32px rgba(0, 0, 0, 0.35);
+  /* 固定定位：脱离文档流，始终钉在视口左侧 */
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  /* 内部内容超出时自身可滚动，避免底部数据卡被截断 */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  z-index: 20;
+  /* AntD Sider 内部有一层 .ant-layout-sider-children 包裹层，
+     它才是 Sider 的直接子元素。若 Sider 本身不是 flex 容器，
+     我们写在 .sentinel-side-bottom 上的 margin-top:auto
+     只能相对这层的高度计算，无法吸收侧栏剩余空间。*/
+  display: flex;
+  flex-direction: column;
+}
+/* 侧栏自身滚动条细化为背景风格 */
+.ant-layout-sider::-webkit-scrollbar {
+  width: 4px;
+}
+.ant-layout-sider::-webkit-scrollbar-thumb {
+  background: rgba(160, 200, 175, 0.16);
+  border-radius: 4px;
+}
+/* 折叠时收起右框线 */
+.ant-layout-sider-collapsed {
+  box-shadow: none;
+}
+
+/*
+ * Sider 内部包裹层转为 flex 列容器
+ *
+ * 这是吸底能否生效的关键：AntD 给这层设了 height:100%，
+ * 但默认不是 flex 容器。改为 flex 列后，
+ * .sentinel-side-bottom 的 margin-top:auto 才有剩余空间可吸收。
+ */
+.ant-layout-sider > .ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  /* 去掉AntD 的 overflow，由外层 Sider 统一处理滚动 */
+  overflow: visible;
+}
+
+/*
+ * 侧栏固定后，右侧的嵌套 Layout 会塌到左边，
+ * 需要用 margin-left 把它推回来。
+ *
+ * 宽度来自 JS 写入的 --sentinel-sider-width（App.tsx 里跟随折叠状态），
+ * 而不是 CSS 里的相邻兄弟选择器（`~`）——fixed 定位改变了层叠与
+ * 选择器匹配关系，兄弟选择器在这里不可靠。
+ */
+.ant-layout-has-sider > .ant-layout {
+  margin-left: var(--sentinel-sider-width, 224px);
+  transition: margin-left 200ms var(--ease);
+  /* 侧栏 fixed 后自己撑不满高度，需显式给最小高度 */
+  min-height: 100vh;
+}
+
+/* 顶栏：玻璃面板 + 固定
+ * 与侧栏同理，顶栏也应钉在视口顶部——
+ * 否则内容区一滚动，页面标题与健康状态就滚出视口。
+ * sticky 能在不脱离文档流的前提下实现固定，
+ * 这样右侧内容区的 margin-left 布局不受影响。
+ */
+.ant-layout-header {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  align-items: center;
+  background: var(--panel) !important;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid var(--border) !important;
+  box-shadow: 0 1px 0 rgba(182, 243, 74, 0.05), 0 8px 28px rgba(0, 0, 0, 0.28);
+}
+
+/* 内容区：透明，露出极光 */
+.ant-layout-content {
+  background: transparent !important;
+}
+
+/* ------------------------------------------------------------
+   二、品牌标识
+   ------------------------------------------------------------ */
+
+/* 侧栏 Logo：加荧光呼吸 + 渐变字 */
+/*
+ * 品牌区：图形在上、文字在下的垂直堆叠
+ *
+ * 排版层级：Logo 40px 主导视觉，文字 11.5px 辅助识别。
+ * Logo 放大后图形细节（雷达弧、扫描线）更清晰，
+ * 文字相应缩小并加字距，避免与图形抢视觉重量。
+ *
+ * 底部用渐变细线与菜单区分，形成品牌区与功能区的分界。
+ * 配色沿用原方案（荧光绿→情报青渐变文字），未做改动。
+ */
+.sentinel-logo {
+  display: flex;
+  /* 横向「图标 + 文字」：借鉴 AEGIS 参考设计的品牌区排布。
+     原为 column（图形在上文字在下），在 224px 侧栏里显得松散，
+     横向后与下方菜单的左边缘对齐更紧凑。 */
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  height: auto;
+  padding: 14px 14px 12px;
+  position: relative;
+  font-family: var(--font);
+}
+
+/* 可点击的品牌区（回首屏）
+ * 用 button 而非 div —— 原生自带键盘可达与焦点环，
+ * 不必额外补 tabindex / onKeyDown。
+ * 样式上抹平 button 的默认外观，沿用 .sentinel-logo 的排版。 */
+.sentinel-logo-btn {
+  width: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+  /* 过渡极短（160ms）且幅度极小（亮度微提）——
+     看板那轮反馈「动效宁小勿大」，这里只给「刚好可点」的暗示 */
+  transition: background-color 160ms var(--ease);
+}
+.sentinel-logo-btn:hover {
+  background: rgba(255, 255, 255, 0.032);
+}
+.sentinel-logo-btn:active {
+  background: rgba(255, 255, 255, 0.05);
+}
+/* 键盘聚焦环：与其他可交互元素一致 */
+.sentinel-logo-btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(6, 8, 7, 0.92),
+    0 0 0 4px var(--c-focus-ring);
+  border-radius: var(--r-md);
+}
+
+/* 底部渐变分隔线：把品牌区与菜单区分开 */
+.sentinel-logo::after {
+  content: '';
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(182, 243, 74, 0.22) 30%,
+    rgba(75, 225, 236, 0.16) 70%,
+    transparent
+  );
+}
+
+/* 品牌文字：渐变 + 加字距，拉开字符间距显精致 */
+.sentinel-logo-text {
+  background: linear-gradient(120deg, #d4ff70 10%, #4be1ec 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  line-height: 1;
+  white-space: nowrap;
+  /* 渐变文字（-webkit-text-fill-color:transparent）下 text-shadow
+     会被填充色覆盖而失效，改用 drop-shadow 产生辉光。
+     同时保留一层极淡的暗色滤镜，压住底部极光带来的亮边。 */
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55));
+}
+
+/* SVG 标志：辉光呼吸 */
+.sentinel-logo svg {
+  filter: drop-shadow(0 0 8px rgba(182, 243, 74, 0.4));
+  animation: logoBreath 3.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes logoBreath {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 3px rgba(182, 243, 74, 0.25));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(182, 243, 74, 0.6));
+  }
+}
+
+/* 顶栏页面标题：渐变字（不含 SVG） */
+.sentinel-page-title {
+  font-weight: 650;
+  font-size: 15px;
+  color: var(--text);
+}
+
+/*
+ * 顶栏模块图标：随路由切换
+ *
+ * JSX 上用 key={pathname} 让 React 在切页时重建节点，
+ * 于是这里的入场动画每次都会重新播放。
+ * 动效克制：只做「轻微旋转 + 淡入」（220ms），
+ * 不做位移或缩放——顶栏是常驻区域，动画太抢会干扰阅读。
+ */
+.sentinel-page-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: sentinelIconSwap 220ms var(--ease-spring) both;
+}
+@keyframes sentinelIconSwap {
+  from {
+    opacity: 0;
+    transform: rotate(-35deg) scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+}
+.sentinel-page-icon svg {
+  filter: drop-shadow(0 0 6px rgba(75, 225, 236, 0.35));
+}
+
+/* ------------------------------------------------------------
+   三、侧边菜单
+   ------------------------------------------------------------ */
+
+/*
+ * 侧栏折叠按钮（胶囊 + 圆底图标 + 文字）
+ * ------------------------------------------------------------
+ * 采用 Uiverse Creatlydev 的按钮结构与动效逻辑，但要适配本项目：
+ *
+ * ① 结构对应：胶囊容器 + 圆形图标底座 + 文字，圆底白底、图标取主色
+ * ② hover 变色：底色由墨绿 → 近黑；圆底由白 → 荧光绿；图标由主色 → 黑
+ *    （原版 hover 变纯黑，这里用 #060807 近黑，融入暗色体系不突兀）
+ * ③ 图标接力位移：原版是「复制/已复制」两个图标斜向交换，
+ *    这里换成「收起/展开」两个方向箭头，语义与侧栏功能对应
+ *
+ * 为什么不用 AntD 默认 trigger：
+ *   它是整宽窄条（48×28），结构上放不下「圆底 + 文字」，
+ *   因此 Sider 上设 trigger={null} 禁用，改为自建按钮。
+ */
+.sentinel-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  /* 胶囊内边距：左 padding 略大，与圆底图标形成呼吸感 */
+  padding: 7px 14px 7px 8px;
+  /* 水平居中：左右 auto。垂直位置由 flex 布局决定——
+     菜单 flex:1 吃掉剩余高度，数据卡与按钮自然排在底部。*/
+  margin: 0 auto 16px;
+  flex-shrink: 0;
+  /* 底/边走与「白天主题」开关相同的变量（用户要求黑夜下两按钮风格统一） */
+  border: 1px solid var(--border);
+  border-radius: 10rem;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-2);
+  background: var(--panel-2);
+  white-space: nowrap;
+  overflow: hidden;
+  transition:
+    background-color 0.3s var(--ease),
+    border-color 0.3s var(--ease),
+    color 0.3s var(--ease);
+}
+/* 折叠态（侧栏 64px）：只剩圆底图标，
+   按钮宽度收成圆形（22 + 7×2 = 36px）并水平居中 */
+.ant-layout-sider-collapsed .sentinel-collapse-btn {
+  padding: 7px;
+  width: 36px;
+  margin: 0 auto 14px;
+}
+
+.sentinel-collapse-btn:hover,
+.sentinel-collapse-btn:focus-visible {
+  /* 近黑而非纯黑：与 --bg (#060807) 呼应，不会在暗色面板里挖出死黑块 */
+  background: #060807;
+  border-color: rgba(182, 243, 74, 0.22);
+  color: var(--accent);
+  outline: none;
+}
+
+/* 圆形图标底座：深底（同「白天主题」开关圆底）→ hover 转荧光绿。
+   00:56 用户要求：黑夜下与「白天主题」按钮风格统一，白圆底改深，
+   图标色（--accent-2 荧光绿）与 hover 动效均不变。 */
+.sentinel-collapse-ico {
+  position: relative;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--panel-solid);
+  color: var(--accent-2);
+  transition:
+    background-color 0.3s var(--ease),
+    color 0.3s var(--ease),
+    box-shadow 0.3s var(--ease);
+}
+.sentinel-collapse-btn:hover .sentinel-collapse-ico {
+  background: var(--accent);
+  color: #04120b;
+  box-shadow: 0 0 14px rgba(182, 243, 74, 0.5);
+}
+
+/* 双图标叠放：靠绝对定位重叠，做斜向接力位移 */
+.sentinel-collapse-ico .anticon {
+  position: absolute;
+  font-size: 12px;
+  line-height: 1;
+  transition: transform 0.3s ease-in-out;
+}
+/* 收起箭头：常态可见，hover 时向右上方滑出 */
+.ico-fold {
+  transform: translate(0, 0);
+  opacity: 1;
+}
+.sentinel-collapse-btn:hover .ico-fold {
+  transform: translate(150%, -150%);
+  opacity: 0;
+  transition:
+    transform 0.3s ease-in-out,
+    opacity 0.2s ease-in-out;
+}
+/* 展开箭头：常态在左下方隐藏，hover 时滑入正中（延迟 0.1s，与原版一致） */
+.ico-unfold {
+  transform: translate(-150%, 150%);
+  opacity: 0;
+}
+.sentinel-collapse-btn:hover .ico-unfold {
+  transform: translate(0, 0);
+  opacity: 1;
+  transition:
+    transform 0.3s ease-in-out 0.1s,
+    opacity 0.2s ease-in-out 0.1s;
+}
+
+.sentinel-collapse-text {
+  letter-spacing: 0.2px;
+  /* 文字在图标接力时保持稳定，不跟着位移 */
+  transition: opacity 0.25s var(--ease);
+}
+
+/* 键盘可达性：focus 环跟随主题 */
+.sentinel-collapse-btn:focus-visible {
+  box-shadow:
+    0 0 0 2px rgba(6, 8, 7, 0.95),
+    0 0 0 4px var(--c-focus-ring);
+}
+
+/* ------------------------------------------------------------
+   主题开关（黑夜 ↔ 白天）· 与折叠按钮同家族
+   ------------------------------------------------------------
+   位置：.sentinel-side-bottom 内、「收起侧栏」正上方（用户指定）。
+   视觉：胶囊玻璃风（同 .sentinel-collapse-btn）；收起侧栏时
+   退化为与折叠按钮同宽的圆形图标按钮。
+   配色：全部走 tokens 变量——黑夜/白天两套变量各自成立，
+   是全站第一个「双主题原生」组件，不依赖后续亮色覆盖层。
+   ------------------------------------------------------------ */
+.sentinel-theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 7px 14px 7px 8px;
+  margin: 0 auto 10px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 10rem;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--text-2);
+  background: var(--panel-2);
+  white-space: nowrap;
+  overflow: hidden;
+  transition:
+    background-color 0.3s var(--ease),
+    border-color 0.3s var(--ease),
+    color 0.3s var(--ease);
+}
+
+/* 折叠态（侧栏 64px）：只剩圆形图标 */
+.ant-layout-sider-collapsed .sentinel-theme-toggle {
+  padding: 7px;
+  width: 36px;
+  margin: 0 auto 8px;
+}
+
+.sentinel-theme-toggle:hover,
+.sentinel-theme-toggle:focus-visible {
+  background: var(--bg);
+  border-color: var(--border-hi);
+  color: var(--accent);
+  outline: none;
+}
+
+/* 圆形图标底座：太阳 / 月亮做旋转接力（转入的是「目标主题」图标） */
+.sentinel-theme-ico {
+  position: relative;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: var(--panel-solid);
+  color: var(--accent-2);
+  transition:
+    background-color 0.3s var(--ease),
+    color 0.3s var(--ease),
+    box-shadow 0.3s var(--ease);
+}
+.sentinel-theme-toggle:hover .sentinel-theme-ico {
+  background: var(--accent);
+  color: var(--panel-solid);
+  box-shadow: 0 0 14px var(--glow);
+}
+
+.sentinel-theme-ico .anticon {
+  position: absolute;
+  font-size: 12px;
+  line-height: 1;
+  transition:
+    transform 0.35s var(--ease),
+    opacity 0.25s var(--ease);
+}
+/* 默认（黑夜）：显示太阳 —— 点击后切到白天 */
+.sentinel-theme-toggle .ico-sun {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+.sentinel-theme-toggle .ico-moon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+/* 白天：显示月亮 —— 点击后切回黑夜 */
+.sentinel-theme-toggle.is-light .ico-sun {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+.sentinel-theme-toggle.is-light .ico-moon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+.sentinel-theme-text {
+  letter-spacing: 0.2px;
+}
+
+/* 键盘可达性：focus 环跟随主题（暗底亮环 / 白底白偏移，由变量翻转） */
+.sentinel-theme-toggle:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--c-focus-ring-offset),
+    0 0 0 4px var(--c-focus-ring);
+}
+
+/* ------------------------------------------------------------
+   白天主题：不用动态背景
+   ------------------------------------------------------------
+   脚本侧（sentinel-bg-react.js）已经真的停掉了着色器 rAF 循环，
+   这里只负责视觉收尾：把整层藏起来，换成静态的白绿底。
+   光斑的漂移动画（sentinelDrift1/2/3）同样要停——
+   它是纯 CSS 动画，不受脚本控制。
+   ------------------------------------------------------------ */
+[data-theme="light"] #sentinelBgLayer {
+  display: none;
+}
+
+/* 白天画布：白绿底 + 极淡静态光晕（呼应设计语言 .sentinel-bg-base）
+   两层光晕都是静态的，没有任何动画——白天主题零持续动效。 */
+[data-theme="light"] body {
+  background:
+    radial-gradient(1200px 700px at 80% -10%, rgba(5, 150, 105, .05), transparent 60%),
+    radial-gradient(900px 600px at -10% 110%, rgba(16, 185, 129, .05), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+[data-theme="light"] .ant-layout {
+  background: transparent;
+}
+
+.ant-menu-dark.ant-menu-inline {
+  background: transparent !important;
+  border-inline-end: none !important;
+}
+
+/* 菜单项：默认态
+ *
+ * `transition: all` 是卡顿的根因——它把 width/height/transform
+ * 等布局属性也纳入过渡。AntD Menu 选中时同步改class 并重排，
+ * 浏览器被迫对每个属性做插值，视觉上像「动画被中断」。
+ * 改为显式声明：只过渡真正会变的视觉属性。
+ */
+.ant-menu-dark .ant-menu-item {
+  color: var(--text-2) !important;
+  border-radius: var(--r-sm);
+  margin: 4px 10px;
+  width: auto;
+  transition:
+    background-color var(--dur-hover) var(--ease),
+    color var(--dur-hover) var(--ease),
+    box-shadow var(--dur-hover) var(--ease),
+    transform var(--dur-micro) var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+/* 选中态：荧光绿 + 左侧亮条 + 辉光 */
+.ant-menu-dark .ant-menu-item-selected {
+  background: rgba(182, 243, 74, 0.1) !important;
+  color: var(--accent) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(182, 243, 74, 0.28),
+    0 0 18px rgba(182, 243, 74, 0.1);
+}
+.ant-menu-dark .ant-menu-item-selected::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+  /* 静态辉光：呼吸效果移到 ::after 用 opacity 单独跑。
+     原实现把 box-shadow 放进 keyframes —— box-shadow 动画每帧都要
+     重绘并重新模糊，而选中态是常驻的，等于侧栏永远在重绘，
+     点击时菜单项的过渡会被这层重绘拖住，表现为「动画中断」。*/
+  box-shadow: 0 0 10px var(--glow);
+}
+/* 呼吸层：与 ::before 同位置同尺寸，只动 opacity（合成器可托管，
+   不触发重绘）。不影响选中态的过渡连续性。*/
+.ant-menu-dark .ant-menu-item-selected::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
+  box-shadow: 0 0 12px 4px rgba(78, 222, 163, 0.65);
+  pointer-events: none;
+  animation: pulseGlowDot 2.4s var(--ease-inout-std) infinite;
+}
+@keyframes pulseGlowDot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+/* hover：微推+ 提亮 */
+.ant-menu-dark .ant-menu-item:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  transform: translateX(3px);
+}
+.ant-menu-dark .ant-menu-item-selected:hover {
+  background: rgba(182, 243, 74, 0.14) !important;
+  color: #d4ff70 !important;
+}
+
+/* ------------------------------------------------------------
+   四、卡片（玻璃拟态核心）
+   ------------------------------------------------------------ */
+
+.ant-card {
+  background: var(--panel) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-lg) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28) !important;
+  transition:
+    border-color var(--dur-border),
+    transform var(--dur-card) var(--ease-spring),
+    box-shadow var(--dur-border);
+  position: relative;
+  overflow: hidden;
+}
+/* hover：边框点亮为荧光绿 + 轻微浮起 */
+.ant-card:hover {
+  border-color: rgba(182, 243, 74, 0.2) !important;
+  box-shadow:
+    0 14px 44px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(182, 243, 74, 0.06) !important;
+  transform: translateY(-2px);
+}
+/* 卡片顶部扫光 */
+.ant-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.045),
+    transparent
+  );
+  transform: skewX(-18deg);
+  transition: left 0.75s var(--ease);
+  pointer-events: none;
+  z-index: 1;
+}
+.ant-card:hover::after {
+  left: 130%;
+}
+/* 卡片内容需在扫光之上 */
+.ant-card > .ant-card-head,
+.ant-card > .ant-card-body {
+  position: relative;
+  z-index: 2;
+}
+
+.ant-card-head {
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  background: transparent !important;
+  min-height: 44px;
+  padding: 0 16px !important;
+}
+.ant-card-head-title {
+  color: var(--text) !important;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+}
+.ant-card-body {
+  color: var(--text-2);
+  padding: 14px 16px !important;
+}
+
+/* KPI 卡片：额外辉光 */
+.ant-card.sentinel-kpi {
+  background: linear-gradient(
+    145deg,
+    rgba(22, 30, 26, 0.82),
+    rgba(17, 23, 20, 0.68)
+  ) !important;
+  border-color: rgba(182, 243, 74, 0.12) !important;
+  box-shadow:
+    0 0 0 1px rgba(182, 243, 74, 0.05),
+    0 0 46px rgba(182, 243, 74, 0.05),
+    0 8px 32px rgba(0, 0, 0, 0.3) !important;
+}
+.ant-card.sentinel-kpi:hover {
+  border-color: rgba(182, 243, 74, 0.3) !important;
+  box-shadow:
+    0 0 0 1px rgba(182, 243, 74, 0.1),
+    0 0 60px rgba(182, 243, 74, 0.09),
+    0 14px 44px rgba(0, 0, 0, 0.42) !important;
+}
+
+/* ------------------------------------------------------------
+   五、表格
+   ------------------------------------------------------------ */
+
+.ant-table {
+  background: transparent !important;
+  color: var(--text-2) !important;
+}
+.ant-table-thead > tr > th {
+  background: rgba(255, 255, 255, 0.028) !important;
+  color: var(--muted) !important;
+  border-bottom: 1px solid var(--border) !important;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+.ant-table-thead > tr > th::before {
+  display: none !important; /* 去掉 AntD 默认的深色表头遮罩 */
+}
+.ant-table-tbody > tr > td {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(180, 220, 195, 0.05) !important;
+  color: var(--text-2) !important;
+  font-size: 13px;
+  transition: background-color 0.22s var(--ease);
+}
+/* 行 hover：荧光绿微亮 + 左推
+ *
+ * ⚠ `transform` 必须留在 `tr` 上，且**行入场动画绝不能挂到 tr**。
+ * CSS 动画层叠优先级高于普通声明，若入场动画也占用 tr 的 transform
+ * （哪怕终态是 translateX(0)），hover 的左推会被整行冻结，
+ * 表现为「部分行 hover 无反应」。入场动画请挂到 `td`（见十七节①）。
+ */
+.ant-table-tbody > tr:hover > td {
+  background: rgba(182, 243, 74, 0.045) !important;
+  color: var(--text) !important;
+}
+.ant-table-tbody > tr {
+  transition: transform 0.25s var(--ease-spring);
+}
+.ant-table-tbody > tr:hover {
+  transform: translateX(3px);
+}
+.ant-table-cell-fix-left,
+.ant-table-cell-fix-right {
+  background: var(--panel-solid) !important;
+}
+.ant-table-tbody > tr:hover > td.ant-table-cell-fix-left,
+.ant-table-tbody > tr:hover > td.ant-table-cell-fix-right {
+  background: #131a16 !important;
+}
+.ant-table-placeholder .ant-table-cell {
+  background: transparent !important;
+  border-bottom: none !important;
+}
+
+/* ------------------------------------------------------------
+   六、标签 / 徽标（严格语义色）
+   ------------------------------------------------------------ */
+
+/* AntD Tag统一玻璃质感 + 等宽字 */
+.ant-tag {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--text-2) !important;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  backdrop-filter: blur(8px);
+  line-height: 18px;
+}
+
+/* 严重度语义色：CRITICAL 红 / HIGH 橙 / MEDIUM 黄 / LOW 蓝 */
+.ant-tag.tag-critical {
+  background: rgba(255, 92, 122, 0.16) !important;
+  border-color: rgba(255, 92, 122, 0.5) !important;
+  color: #ff8fa3 !important;
+  box-shadow: 0 0 10px rgba(255, 92, 122, 0.18);
+}
+.ant-tag.tag-high {
+  background: rgba(255, 200, 87, 0.14) !important;
+  border-color: rgba(255, 200, 87, 0.45) !important;
+  color: #ffd479 !important;
+  box-shadow: 0 0 10px rgba(255, 200, 87, 0.14);
+}
+.ant-tag.tag-medium {
+  background: rgba(90, 169, 255, 0.14) !important;
+  border-color: rgba(90, 169, 255, 0.42) !important;
+  color: #7cb8ff !important;
+}
+.ant-tag.tag-low {
+  background: rgba(100, 116, 139, 0.18) !important;
+  border-color: rgba(100, 116, 139, 0.42) !important;
+  color: #b3c0cc !important;
+}
+.ant-tag.tag-ok {
+  background: rgba(61, 220, 151, 0.14) !important;
+  border-color: rgba(61, 220, 151, 0.45) !important;
+  color: var(--ok) !important;
+  box-shadow: 0 0 10px rgba(61, 220, 151, 0.16);
+}
+.ant-tag.tag-info {
+  background: rgba(75, 225, 236, 0.13) !important;
+  border-color: rgba(75, 225, 236, 0.42) !important;
+  color: var(--cyan) !important;
+}
+.ant-tag.tag-warn {
+  background: rgba(255, 200, 87, 0.15) !important;
+  border-color: rgba(255, 200, 87, 0.5) !important;
+  color: #ffd479 !important;
+  font-weight: 700;
+}
+
+/* Badge 状态点：呼吸 */
+.ant-badge-status-dot {
+  box-shadow: 0 0 8px currentColor;
+}
+.ant-badge-status-success .ant-badge-status-dot {
+  animation: dotPulse 1.3s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+}
+
+/* ------------------------------------------------------------
+   七、按钮
+   ------------------------------------------------------------ */
+
+/* 主按钮：荧光绿渐变 + 内高光 + 辉光 + 扫光 */
+.ant-btn-primary {
+  background: linear-gradient(135deg, #d0ff6a, var(--accent-2)) !important;
+  border: 1px solid rgba(208, 255, 106, 0.5) !important;
+  color: #0c1009 !important;
+  font-weight: 650 !important;
+  box-shadow:
+    0 6px 22px rgba(142, 211, 33, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  transition: all var(--dur-hover) var(--ease-spring);
+  position: relative;
+  overflow: hidden;
+}
+.ant-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px) !important;
+  color: #0c1009 !important;
+  box-shadow:
+    0 10px 30px rgba(142, 211, 33, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+.ant-btn-primary:active:not(:disabled) {
+  transform: translateY(0) !important;
+}
+.ant-btn-primary:disabled {
+  opacity: 0.4 !important;
+  filter: grayscale(0.3);
+}
+
+/* 默认按钮：幽灵玻璃 */
+.ant-btn-default {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-2) !important;
+  transition: all var(--dur-hover) var(--ease-spring);
+}
+.ant-btn-default:hover:not(:disabled) {
+  border-color: rgba(182, 243, 74, 0.35) !important;
+  color: var(--accent) !important;
+  background: rgba(182, 243, 74, 0.06) !important;
+  transform: translateY(-1px);
+}
+
+/* 危险按钮（暂停采集用） */
+.ant-btn-dangerous.ant-btn-default {
+  background: rgba(255, 92, 122, 0.06) !important;
+  border-color: rgba(255, 92, 122, 0.3) !important;
+  color: var(--danger) !important;
+}
+.ant-btn-dangerous.ant-btn-default:hover:not(:disabled) {
+  background: rgba(255, 92, 122, 0.12) !important;
+  border-color: rgba(255, 92, 122, 0.5) !important;
+  color: #ff8fa3 !important;
+}
+
+/* 危险实底按钮 */
+.ant-btn-dangerous.ant-btn-primary,
+.ant-btn-primary.ant-btn-dangerous {
+  background: linear-gradient(135deg, #ff7a90, var(--danger)) !important;
+  border-color: rgba(255, 122, 144, 0.5) !important;
+  color: #fff !important;
+  box-shadow:
+    0 6px 22px rgba(255, 92, 122, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+/* 文字按钮 */
+.ant-btn-link {
+  color: var(--cyan) !important;
+  transition: all 0.2s var(--ease);
+}
+.ant-btn-link:hover:not(:disabled) {
+  color: #7cf0ff !important;
+  text-shadow: 0 0 12px rgba(75, 225, 236, 0.5);
+}
+
+/* 所有按钮：微弹簧按压 */
+.ant-btn {
+  transition: all var(--dur-hover) var(--ease-spring);
+  font-weight: 550;
+}
+.ant-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+/* ------------------------------------------------------------
+   八、表单控件
+   ------------------------------------------------------------ */
+
+/* 输入类控件的统一底色/边框。
+ *
+ * ⚠ 双层边框的坑：AntD 的 `Input` 带前缀图标时渲染成
+ * `<span class="ant-input-affix-wrapper"><input class="ant-input">`，
+ * 若对两者都设border，就会出现「小搜索框套在大搜索框里」的双层效果
+ * （用户反馈的正是这个）。故：
+ *   -有前缀/后缀（affix）→ 只给 **wrapper** 设边框，inner 透明无框
+ *   - 无 affix 的裸 input→ 自身设框
+ * 这样无论哪种形态都只出现**一层**边框。
+ */
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector,
+.ant-input-number,
+.ant-picker {
+  background: rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  border-radius: var(--r-sm) !important;
+  transition: all var(--dur-hover) var(--ease-spring);
+}
+/* affix wrapper 内的裸 input 去掉自身边框，避免与外框叠加 */
+.ant-input-affix-wrapper > .ant-input {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.ant-input:hover,
+.ant-input-affix-wrapper:hover,
+.ant-select-selector:hover,
+.ant-input-number:hover {
+  border-color: rgba(182, 243, 74, 0.3) !important;
+}
+/* 内层input 的 hover/focus 不能把边框"点亮"出来——外框统一负责 */
+.ant-input-affix-wrapper > .ant-input:hover,
+.ant-input-affix-wrapper > .ant-input:focus {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.ant-input:focus,
+.ant-input-affix-wrapper-focused,
+.ant-select-focused .ant-select-selector,
+.ant-input-number-focused {
+  background: rgba(255, 255, 255, 0.055) !important;
+  border-color: rgba(182, 243, 74, 0.5) !important;
+  box-shadow: 0 0 0 3px rgba(182, 243, 74, 0.1) !important;
+}
+.ant-input::placeholder {
+  color: var(--muted) !important;
+}
+.ant-select-selection-placeholder {
+  color: var(--muted) !important;
+}
+.ant-select-arrow,
+.ant-select-selection-item {
+  color: var(--text-2) !important;
+}
+
+/* 开关：荧光绿 */
+.ant-switch {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid var(--border);
+}
+.ant-switch-checked {
+  background: var(--accent-2) !important;
+  box-shadow: 0 0 14px rgba(142, 211, 33, 0.35);
+}
+
+/* ------------------------------------------------------------
+   九、选择器 / 弹层 / 抽屉
+   ------------------------------------------------------------ */
+
+.ant-select-dropdown,
+.ant-dropdown,
+.ant-popover-inner,
+.ant-picker-dropdown {
+  background: rgba(14, 19, 17, 0.96) !important;
+  border: 1px solid var(--border) !important;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-radius: var(--r-md) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6) !important;
+}
+.ant-select-item {
+  color: var(--text-2) !important;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.ant-select-item-option-active,
+.ant-select-item-option-selected {
+  background: rgba(182, 243, 74, 0.1) !important;
+  color: var(--accent) !important;
+}
+.ant-select-item-option-content {
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+/* 抽屉（富化详情） */
+.ant-drawer-content {
+  background: rgba(14, 19, 17, 0.97) !important;
+  backdrop-filter: blur(24px);
+  border-left: 1px solid var(--border) !important;
+}
+.ant-drawer-header {
+  border-bottom: 1px solid var(--border) !important;
+}
+.ant-drawer-title {
+  color: var(--text) !important;
+  font-weight: 650;
+}
+.ant-drawer-close {
+  color: var(--muted) !important;
+  transition: all 0.2s var(--ease);
+}
+.ant-drawer-close:hover {
+  color: var(--danger) !important;
+  background: rgba(255, 92, 122, 0.1) !important;
+}
+
+/* 气泡确认框 */
+.ant-popconfirm-inner {
+  background: rgba(14, 19, 17, 0.97) !important;
+  border: 1px solid rgba(255, 200, 87, 0.28) !important;
+  border-radius: var(--r-md);
+  backdrop-filter: blur(20px);
+}
+.ant-popconfirm-title {
+  color: var(--text) !important;
+  font-weight: 600;
+}
+.ant-popconfirm-description {
+  color: var(--text-2) !important;
+  font-size: 12.5px;
+}
+
+/* ------------------------------------------------------------
+   十、消息提示 toast
+   ------------------------------------------------------------ */
+
+.ant-message-notice-content {
+  background: rgba(14, 19, 17, 0.96) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-md) !important;
+  color: var(--text) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5) !important;
+  animation: toastIn 0.4s var(--ease) both;
+}
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.ant-message-success .ant-message-notice-content {
+  border-color: rgba(61, 220, 151, 0.4) !important;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(61, 220, 151, 0.12) !important;
+}
+.ant-message-error .ant-message-notice-content {
+  border-color: rgba(255, 92, 122, 0.45) !important;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(255, 92, 122, 0.12) !important;
+}
+
+/* ------------------------------------------------------------
+   十一、描述列表 / 统计 / 进度 / 分割线
+   ------------------------------------------------------------ */
+
+.ant-descriptions-bordered .ant-descriptions-view,
+.ant-descriptions-bordered .ant-descriptions-item-label,
+.ant-descriptions-bordered .ant-descriptions-item-content {
+  border-color: var(--border) !important;
+}
+.ant-descriptions-bordered .ant-descriptions-item-label {
+  background: rgba(255, 255, 255, 0.025) !important;
+  color: var(--muted) !important;
+  font-size: 12px;
+}
+.ant-descriptions-bordered .ant-descriptions-item-content {
+  color: var(--text-2) !important;
+}
+
+.ant-statistic-title {
+  color: var(--muted) !important;
+  font-size: 12.5px !important;
+}
+.ant-statistic-content {
+  color: var(--text) !important;
+  font-family: var(--mono);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ant-progress-bg {
+  box-shadow: 0 0 10px rgba(182, 243, 74, 0.45) !important;
+}
+.ant-progress-inner {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.ant-divider {
+  border-color: var(--border) !important;
+}
+.ant-divider-text {
+  color: var(--muted) !important;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+/* 空态 */
+.ant-empty-description {
+  color: var(--muted) !important;
+  font-size: 13px;
+}
+.ant-empty-image {
+  opacity: 0.4;
+  filter: grayscale(1) brightness(1.4);
+}
+
+/* 加载 / 骨架 */
+.ant-spin-dot-item {
+  background: var(--accent) !important;
+  box-shadow: 0 0 10px var(--glow);
+}
+
+/* 分页 */
+.ant-pagination .ant-pagination-item a {
+  color: var(--text-2) !important;
+}
+.ant-pagination .ant-pagination-item-active {
+  background: rgba(182, 243, 74, 0.1) !important;
+  border-color: rgba(182, 243, 74, 0.45) !important;
+}
+.ant-pagination .ant-pagination-item-active a {
+  color: var(--accent) !important;
+}
+.ant-pagination .ant-pagination-item:hover {
+  border-color: rgba(182, 243, 74, 0.4) !important;
+}
+
+/* ------------------------------------------------------------
+   十二、Tooltip 悬浮提示
+   ------------------------------------------------------------ */
+
+.ant-tooltip-inner {
+  background: rgba(8, 11, 9, 0.97) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text) !important;
+  font-size: 12px;
+  border-radius: 8px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* ------------------------------------------------------------
+   十三、ECharts 图表暗色适配
+   ------------------------------------------------------------
+   ECharts 的轴线/ 网格线 / 提示框默认是浅色主题的深灰，
+   在近黑玻璃卡上几乎不可见。ECharts 不支持 CSS 选择器，
+   所以这里用「容器反色 + 内部元素微调」的组合拳：
+   ① 容器保持透明，让卡片玻璃质感透出来
+   ② canvas 本身不做滤镜（会污染数据色），只统一提示框与坐标轴
+   ③ 文字色通过 CSS 变量给到 ECharts 的 textStyle（见页面内配置）
+   ------------------------------------------------------------ */
+
+.ant-card .echarts-for-react {
+  background: transparent !important;
+}
+
+/* 图表内Tooltip：玻璃拟态，与卡片同语言 */
+.ant-card .echarts-for-react div[style*='position: absolute'] {
+  backdrop-filter: blur(16px);
+}
+
+/* ------------------------------------------------------------
+   十四、路由切换过渡
+   ------------------------------------------------------------
+   方案演进（记录以便后续回溯）：
+     ① 最初用 View Transitions API + startViewTransition 做推移动画
+     ② 实测切页仍闪白——根因是 WebGL canvas 在快照期间被冻结成静态位图，
+        叠加 sentinel-effects.css 里`::view-transition-*(root){animation:none}`
+        导致背景层在切换瞬间消失，透出白色
+     ③ 试过 canvas 2D Aurora 背景规避（2D 不会被冻结），
+        但视觉不理想，已整体回退
+     ④ 现方案：不用快照机制，纯 CSS 淡入。
+        代价是没有推移方向感，收益是绝对稳定、零闪烁——
+        对数据看板这类高频切换场景，稳定性优先。
+
+   背景层始终在 body 下且 z-index:0，内容区在其上，
+   两者互不影响，切页时背景持续渲染、不会中断。
+   ------------------------------------------------------------ */
+.sentinel-content {
+  /* 不做 opacity 淡入——从 0.55 淡到 1 在暗色背景上本身就是一次「闪」，
+     视觉上比静态切换更明显。保持瞬时切换 + 局部遮罩提示加载即可。 */
+  animation: none;
+}
+
+/* 局部加载遮罩：结构在场，只压一层薄雾 + 顶部进度条。
+   替代「整页替换为 Spin 骨架」——后者是切页闪烁的主要来源。 */
+.sentinel-loading-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  /* 薄雾：能盖住未填充的骨架，但不遮到看不清内容 */
+  background: rgba(6, 8, 7, 0.45);
+  backdrop-filter: blur(1.5px);
+  animation: sentinelVeilIn 180ms var(--ease) both;
+}
+@keyframes sentinelVeilIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 顶部细进度条：L 2px 的荧光扫光，给出「正在加载」的确定反馈 */
+.sentinel-loading-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), var(--cyan), transparent);
+  background-size: 40% 100%;
+  background-repeat: no-repeat;
+  animation: sentinelLoadSlide 1.1s var(--ease-inout-std) infinite;
+  box-shadow: 0 0 10px var(--glow);
+}
+@keyframes sentinelLoadSlide {
+  0% {
+    background-position: -40% 0;
+  }
+  100% {
+    background-position: 140% 0;
+  }
+}
+
+/* 降低动效偏好：关闭路由过渡 */
+@media (prefers-reduced-motion: reduce) {
+  .sentinel-content {
+    animation: none !important;
+  }
+}
+
+/* ------------------------------------------------------------
+   十五、页面级入场动效
+   ------------------------------------------------------------ */
+
+/* 滚动入场：元素默认不可见，IntersectionObserver 加上
+   .sentinel-revealed 后才播放。避免首屏外的元素加载时
+   就把动画播完，滚过去时毫无动静。
+ *
+ * 为什么加 visibility（而不是只用 opacity）：
+ * 图表卡里有 ECharts canvas。opacity:0 时元素仍然参与布局与绘制，
+ * 浏览器不会跳过它的工作，图表动画与卡片的 opacity/transform 过渡
+ * 在同一帧里抢主线程 → 动画掉帧。
+ * visibility:hidden 让浏览器在入场前完全跳过该子树的光栅化
+ * （**注意与 display:none 的区别：布局照做，clientWidth 依然正确**，
+ * 所以 ECharts 仍能拿到最终尺寸，不会出现「量到 0 宽后重排」）。
+ * visibility 可过渡（不像 display），出场依旧平滑。
+ */
+.sentinel-reveal {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(16px);
+  transition:
+    opacity 620ms var(--ease),
+    transform 620ms var(--ease-spring),
+    visibility 0s linear 620ms;
+}
+.sentinel-reveal.sentinel-revealed {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition:
+    opacity 620ms var(--ease),
+    transform 620ms var(--ease-spring),
+    visibility 0s;
+}
+
+/* ECharts 容器：独立合成层
+ *
+ * 图表卡外层是 backdrop-filter 毛玻璃，而背景层（WebGL 着色器 +
+ * 三团漂移光斑）每帧都在变。浏览器对 backdrop-filter 的处理是
+ * 「背后每变一次就重新采样+模糊一次」，于是图表 canvas 每帧动画
+ * 都会连带触发一次全屏毛玻璃重算——在无 GPU 的机器上直接掉到个位数帧率。
+ *
+ * 给图表容器开will-change 让它成为独立层，canvas 动画即可走 GPU 合成，
+ * 不再每帧回流入主线程触发毛玻璃重算。
+ */
+.sentinel-chart {
+  will-change: transform;
+  /* ECharts 会给容器塞一个无宽高限制的 div，这里兜住避免撑破卡片 */
+  min-width: 0;
+  min-height: 0;
+}
+/* 图表内部的 canvas 不参与 transition（全局通配符已收窄，这里再加一层保险） */
+.sentinel-chart canvas {
+  transition: none !important;
+}
+
+/* KPI 卡鼠标追踪柔光：JS 写 --mx/--my，这里画光斑 */
+.sentinel-metric-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 320ms var(--ease);
+  pointer-events: none;
+  z-index: 0;
+}
+.sentinel-metric:hover .sentinel-metric-glow {
+  opacity: 1;
+}
+/* 卡片本体 hover：浮起 + 边框点亮 + 辉光扩散 */
+.sentinel-metric {
+  cursor: default;
+  will-change: transform;
+}
+.sentinel-metric:hover {
+  transform: translateY(-4px);
+  border-color: rgba(182, 243, 74, 0.3) !important;
+  box-shadow:
+    0 0 0 1px rgba(182, 243, 74, 0.1),
+    0 0 58px rgba(182, 243, 74, 0.1),
+    0 18px 44px rgba(0, 0, 0, 0.45) !important;
+}
+/* 数字刷新时的 pop（由 sentinel-fx.js 添加） */
+.sentinel-metric.num-pop {
+  animation: sentinelNumPop 0.42s var(--ease-spring);
+}
+@keyframes sentinelNumPop {
+  0% {
+    transform: scale(1);
+  }
+  38% {
+    transform: scale(1.035);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 图标底座（继承设计语言 icon-tile 配方） */
+.sentinel-icon-tile {
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-size: 18px;
+  flex-shrink: 0;
+  transition: all var(--dur-hover) var(--ease-spring);
+}
+.sentinel-icon-tile-primary {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.28);
+  color: #4edea3;
+}
+.sentinel-icon-tile-secondary {
+  background: rgba(39, 247, 255, 0.1);
+  border-color: rgba(39, 247, 255, 0.26);
+  color: #27f7ff;
+}
+.sentinel-icon-tile-accent {
+  background: rgba(124, 255, 103, 0.1);
+  border-color: rgba(124, 255, 103, 0.26);
+  color: #7cff67;
+}
+.sentinel-icon-tile-rose {
+  background: rgba(244, 63, 94, 0.12);
+  border-color: rgba(244, 63, 94, 0.3);
+  color: #ffb4ab;
+}
+/* 悬停时底座微亮 + 图标轻转 */
+.sentinel-metric:hover .sentinel-icon-tile {
+  transform: scale(1.06) translateY(-1px);
+  box-shadow: 0 0 18px -2px currentColor;
+}
+.sentinel-metric:hover .sentinel-icon-tile .anticon {
+  animation: sentinelIconNudge 0.5s var(--ease-spring);
+}
+@keyframes sentinelIconNudge {
+  0% {
+    transform: scale(1) rotate(0);
+  }
+  40% {
+    transform: scale(1.18) rotate(-7deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+/* 只做极轻微的位移，避免与路由过渡叠加后晃眼 */
+.sentinel-page {
+  animation: fadeUp 340ms var(--ease) both;
+}
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* KPI 卡错峰入场 */
+.sentinel-stagger-1 { animation-delay: 0.02s; }
+.sentinel-stagger-2 { animation-delay: 0.09s; }
+.sentinel-stagger-3 { animation-delay: 0.16s; }
+.sentinel-stagger-4 { animation-delay: 0.23s; }
+
+/* ------------------------------------------------------------
+   十七、高级交互与动效
+   ------------------------------------------------------------ */
+
+/* ① 表格行入场：逐行滑入（由 JS 在 tr 上设置 --row-i，CSS 据此算延迟）
+ *
+ * ⚠ 为什么动画挂在 `td` 而不是 `tr`（这是一个踩过的坑）
+ *
+ * 原来把入场动画直接挂在 `tr` 上，fill 模式写的 `both`。
+ * `both` 会让动画结束后把 `transform: translateX(0)` **永久保留**
+ * 为该元素的动画层叠值 —— 而 **CSS 动画的优先级高于 `:hover`
+ * 这类普通声明**，于是 `tr:hover { transform: translateX(3px) }`
+ * 被动画层压住，**hover 位移对带动画的行完全失效**。
+ * 表现就是「前面的行没动效、后面的行有动效」——
+ * 因为 JS 只给前 12 行加了类，后 8 行没有动画，反而正常响应。
+ *
+ * 修法：**入场动画与 hover 位移分属不同元素，各占一个属性**。
+ *   - 入场（一次性）：挂在 `td` 上，只动 opacity + translateX
+ *   - hover（持续态）：挂在 `tr` 上，独占 transform
+ * 两者永不同属性竞争，行为对所有行一致。
+ * `--row-i` 定义在 tr 上，td 继承得到，无需重复设置。
+ */
+.sentinel-row-in > td {
+  animation: sentinelRowIn 0.42s var(--ease) backwards;
+  animation-delay: calc(var(--row-i, 0) * 26ms);
+}
+@keyframes sentinelRowIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ② 侧栏菜单底部「数据总量」微光条 */
+/*
+ * 侧栏底部：系统概览仪表盘
+ *
+ * 原设计是三行纯文字（情报总量 / AI 相关 / 数据源），排版普通、
+ * 缺少视觉层次。重新设计为仪表盘式：
+ *   ① 顶部小标题 +渐变分隔线
+ *   ② 每一项 = 彩色图标底座 + 标签 + 等宽数值（右对齐）
+ *   ③ AI 占比用横向进度条可视化，比纯数字更直观
+ *   ④ 调度状态带脉冲点，是侧栏里唯一「会动」的元素——
+ *      静止的界面里只有一处呼吸，反而会被注意到
+ *
+ * 动效克制：只保留顶部扫光与调度脉冲点，
+ * 数值不做跳动动画（侧栏是参考信息，不需要抢注意力）。
+ */
+/*
+ * 侧栏底部容器（数据卡 + 折叠按钮）
+ *
+ * 单独包一层的原因：AntD Menu 组件内部样式会覆盖外层的 flex:1，
+ * 菜单因此不撑开剩余高度。若只靠子元素 margin-top:auto 吸底，
+ * 按钮位置会随内容高度上下漂移（曾出现「停在侧栏中部」）。
+ * 由本容器整体 margin-top:auto 吸底，两块内容作为一个整体
+ * 永远贴在侧栏底部，位置稳定。
+ */
+/*
+ * 吸底方案对比（记录以便回溯）
+ *
+ * ① margin-top: auto —— 失败。AntD Sider 内部有 height:100% 的包裹层，
+ *    auto 剩余空间被内层吸收，外层感知不到可用空间。
+ * ② 绝对定位 —— 失败。侧栏 overflow-y:auto 会让 absolute 相对它定位，
+ *    且需要精确的bottom 值，与「折叠态内容变高」冲突。
+ * ③ 下方留白填充 —— 采用。给底部容器一个 min-height，
+ *    再用 flex 把它压到底部，剩余空间表现为空白。
+ *    视觉与①②一致，但不依赖内层布局行为，最稳。
+ */
+.sentinel-side-bottom {
+  margin-top: auto;
+  flex-shrink: 0;
+  /* 折叠态时内容变少，用 min-height 保证按钮仍在视觉底部 */
+  min-height: 0;
+}
+
+.sentinel-side-foot {
+  position: relative;
+  flex-shrink: 0;
+  padding: 14px 14px 16px;
+  font-size: 12px;
+  color: var(--muted);
+  overflow: hidden;
+  /* 顶部一道缓慢横扫的荧光，暗示「数据在流动」 */
+  border-top: 1px solid rgba(180, 220, 195, 0.07);
+}
+.sentinel-side-foot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  animation: sentinelFlow 4.5s var(--ease-inout-std) infinite;
+}
+@keyframes sentinelFlow {
+  0% {
+    left: -100%;
+  }
+  60%,
+  100% {
+    left: 130%;
+  }
+}
+
+/* 顶部小标题 + 渐变线 */
+.sentinel-side-foot-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: rgba(160, 200, 175, 0.5);
+  font-family: var(--mono);
+}
+.sentinel-side-foot-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(180, 220, 195, 0.16), transparent);
+}
+
+/* 每一行统计：图标 + 标签 + 数值 */
+.sentinel-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  line-height: 1.4;
+  /* hover 时整行微亮 + 右推，给出「可读区域」的暗示 */
+  border-radius: 6px;
+  transition:
+    background-color var(--dur-hover) var(--ease),
+    transform var(--dur-hover) var(--ease-spring);
+}
+.sentinel-stat-row:hover {
+  background: rgba(182, 243, 74, 0.05);
+  transform: translateX(2px);
+}
+.sentinel-stat-row-last {
+  margin-top: 2px;
+  border-top: 1px dashed rgba(180, 220, 195, 0.08);
+  padding-top: 8px;
+}
+
+/* 图标底座：小圆角方块，三种色调 */
+.sentinel-stat-ico {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  font-size: 11px;
+  background: rgba(182, 243, 74, 0.1);
+  border: 1px solid rgba(182, 243, 74, 0.2);
+  color: var(--accent);
+}
+.sentinel-ico-cyan {
+  background: rgba(75, 225, 236, 0.1);
+  border-color: rgba(75, 225, 236, 0.22);
+  color: var(--cyan);
+}
+.sentinel-ico-amber {
+  background: rgba(255, 200, 87, 0.1);
+  border-color: rgba(255, 200, 87, 0.2);
+  color: var(--warn);
+}
+
+.sentinel-stat-label {
+  color: rgba(160, 200, 175, 0.62);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.sentinel-stat-value {
+  margin-left: auto;
+  color: var(--text);
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.2px;
+}
+.sentinel-val-cyan {
+  color: var(--cyan);
+}
+
+/* AI 占比进度条 */
+.sentinel-ratio {
+  padding: 3px 0 7px;
+}
+.sentinel-ratio-bar {
+  height: 3px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+.sentinel-ratio-bar span {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: linear-gradient(90deg, var(--accent-2), var(--cyan));
+  box-shadow: 0 0 8px rgba(78, 222, 163, 0.45);
+  transition: width 0.9s var(--ease);
+}
+.sentinel-ratio-text {
+  font-size: 10.5px;
+  color: rgba(160, 200, 175, 0.5);
+  font-family: var(--mono);
+  letter-spacing: 0.2px;
+}
+
+/* 调度状态：脉冲点 + 文字（侧栏唯一持续动效）
+ *
+ * 三种状态用class 区分：is-running / is-paused / is-off。
+ * 颜色与呼吸感跟随状态——
+ * 采集中最醒（绿 + 呼吸），已暂停收敛（琥珀 + 不动），
+ * 未启动最弱（灰 + 不动）。原文案变了而颜色不变，
+ * 会出现「文字写着已暂停、圆点还在绿闪」的矛盾。 */
+.sentinel-live-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 6px;
+  padding: 1px 7px 1px 5px;
+  border-radius: var(--r-pill);
+  font-size: 10px;
+  font-family: var(--mono);
+  white-space: nowrap;
+  transition: background-color var(--dur-hover) var(--ease),
+    border-color var(--dur-hover) var(--ease),
+    color var(--dur-hover) var(--ease);
+}
+.sentinel-live-text::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+  transition: background-color var(--dur-hover) var(--ease),
+    box-shadow var(--dur-hover) var(--ease);
+}
+/* 采集中：绿 + 呼吸 */
+.sentinel-live-text.is-running {
+  background: rgba(61, 220, 151, 0.12);
+  border: 1px solid rgba(61, 220, 151, 0.3);
+  color: var(--ok);
+}
+.sentinel-live-text.is-running::before {
+  animation: dotPulse 1.6s ease-in-out infinite;
+}
+/* 已暂停：琥珀 + 静止（不该有呼吸感） */
+.sentinel-live-text.is-paused {
+  background: rgba(255, 200, 87, 0.1);
+  border: 1px solid rgba(255, 200, 87, 0.28);
+  color: var(--warn);
+}
+/* 未启动：灰 + 静止 */
+.sentinel-live-text.is-off {
+  background: rgba(160, 200, 175, 0.08);
+  border: 1px solid rgba(160, 200, 175, 0.2);
+  color: var(--muted);
+}
+
+/* ⑥ 问答页推荐问题卡：悬停时情报青辉光 + 箭头暗示 */
+/*
+ * 问答页推荐问题卡：透明黑
+ *
+ * 通用 .ant-card 用的是半透明墨绿玻璃（--panel rgba(17,23,20,.72)），
+ * 在问答页的极光背景上会泛出一层绿调，文字对比度不足。
+ * 这里改为**透明黑**：纯黑低透明度叠加，背景极光仍透出，
+ * 但底色被压暗，文字（白色/青色）更清晰——与参考答案图一致。
+ */
+.sentinel-qa-card {
+  background: rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(76, 215, 246, 0.16) !important;
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  transition:
+    background-color var(--dur-hover) var(--ease),
+    transform 340ms var(--ease-spring),
+    border-color 300ms,
+    box-shadow 300ms;
+}
+.sentinel-qa-card:hover {
+  background: rgba(0, 0, 0, 0.58) !important;
+  transform: translateY(-3px) scale(1.012);
+  border-color: rgba(76, 215, 246, 0.45) !important;
+  box-shadow:
+    0 16px 38px -10px rgba(0, 0, 0, 0.7),
+    0 0 26px -4px rgba(76, 215, 246, 0.28) !important;
+}
+/* 顶部一道横向扫光，暗示「可点击」 */
+.sentinel-qa-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(76, 215, 246, 0.08),
+    transparent
+  );
+  transform: skewX(-18deg);
+  transition: left 0.7s var(--ease);
+  pointer-events: none;
+  z-index: 1;
+}
+.sentinel-qa-card:hover::before {
+  left: 130%;
+}
+.sentinel-qa-card > .ant-card-body {
+  position: relative;
+  z-index: 2;
+}
+
+/* ⑥ 顶栏状态徽标：成功时轻微发光 */
+.ant-tag.ant-tag-success {
+  box-shadow: 0 0 14px rgba(61, 220, 151, 0.22);
+}
+
+/* ------------------------------------------------------------
+   十八、智能问答页专属
+   ------------------------------------------------------------ */
+
+/* 机器人 logo 容器：青色辉光，让图标在暗色背景上「亮」起来 */
+.sentinel-qa-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.sentinel-qa-logo svg {
+  filter: drop-shadow(0 0 16px rgba(75, 225, 236, 0.35));
+  animation: sentinelLogoFloat 4.2s var(--ease-inout-std) infinite;
+}
+@keyframes sentinelLogoFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* 知识底座构成条：深墨绿玻璃，替代原先的浅色 #f7f9fc 白框 */
+/*
+ * 知识底座构成条：透明黑
+ *
+ * 与问答推荐卡统一语言：纯黑低透明度叠加 + 背景模糊。
+ * 不用白色半透明（rgba(255,255,255,.032)）——那会提亮底色，
+ * 在极光背景上泛灰，文字对比度反而更差。
+ * 透明黑能把背景压暗，白字与青/绿/黄数值都更清晰。
+ */
+.sentinel-kb-strip {
+  background: rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(76, 215, 246, 0.16) !important;
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: none;
+  transition:
+    background-color var(--dur-hover) var(--ease),
+    border-color var(--dur-hover) var(--ease);
+}
+.sentinel-kb-strip:hover {
+  background: rgba(0, 0, 0, 0.55) !important;
+  border-color: rgba(76, 215, 246, 0.32) !important;
+}
+
+/* ------------------------------------------------------------
+   十九、同排卡片等高
+   ------------------------------------------------------------
+   问题：同一 Row 里的卡片若内容条目数不同、或条目行高不同
+   （如数据源表的行高 vs 调度列表的行高），会出现高低错位。
+   固定 height 不可行——内容长度会变。
+
+   做法：Col 作为 flex 容器，卡片 height:100% 撑满，
+   由 AntD Row 的 align="stretch" 保证同一行等高。
+   内容超出时卡片内部滚动，不撑破布局。
+   ------------------------------------------------------------ */
+.sentinel-equal-col {
+  display: flex;
+}
+.sentinel-equal-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.sentinel-equal-card > .ant-card-body {
+  flex: 1;
+  min-height: 0;
+}
+
+/* 调度卡：卡片体不滚动，让内容自然撑开
+ *
+ * 原来这里有 `overflow-y: auto`，配合表格的 scroll.y 会产生
+ * **两层嵌套滚动条**（卡内一层、表内一层）。
+ * 本项目两卡行数相同（都是 9 行），内容天然等高，
+ * 不需要任何内部滚动——去掉后右卡与左卡表现一致。*/
+.sentinel-equal-card:has(.sentinel-sched-table) > .ant-card-body {
+  overflow-y: visible;
+}
+
+/* ------------------------------------------------------------
+   情报页：政策法规条目卡
+   ------------------------------------------------------------
+   原来是内联 `border: 1px solid #e8eaed` —— 那是**亮色主题**的
+   浅灰，在暗色底上是一圈刺眼白边（截图里很明显）。
+   改用设计语言的语义色：与能力卡同一套玻璃质感 + 极低对比边框，
+   hover 时边框微亮，与全站交互一致。
+   ------------------------------------------------------------ */
+.intel-policy-card {
+  height: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  /* 走 --feed-* 变量：暗色= 原深色，白天 = 白底。
+     变量默认值在 tokens 里写死为原值，所以暗色视觉逐字不变。*/
+  background: var(--feed-bg);
+  border: var(--feed-border);
+  transition:
+    border-color var(--dur-hover) var(--ease),
+    background-color var(--dur-hover) var(--ease);
+}
+.intel-policy-card:hover {
+  border-color: rgba(182, 243, 74, 0.22);
+  background: var(--feed-hover-bg);
+}
+
+/* ------------------------------------------------------------
+   情报页：表格横向滚动条常驻显示
+   ------------------------------------------------------------
+   用户反馈：「鼠标不放在卡片上就没有，有悬停才出现，时隐时现」。
+
+   根因：AntD 用 `overflow-x: auto`，而 Windows/macOS 的
+   **「自动隐藏滚动条」是系统级设置** —— 轨道在页面静止时
+   淡出、鼠标悬停才淡入。这不是 bug 而是系统默认行为，
+   但在答辩现场「拖动条时有时无」看起来像坏了。
+
+   修法两条同时上：
+     ① `overflow-x: auto` → `scroll`
+        强制**常驻轨道**，不理会系统的自动隐藏设置。
+     ② 自定义滑块为常态可见色
+        即使系统仍做淡出，淡出后的常态色也保证可辨识。
+   ------------------------------------------------------------ */
+.intel-vuln-table .ant-table-body,
+.intel-vuln-table .ant-table-content {
+  overflow-x: scroll !important;
+  /* 常驻轨道的底色：极淡，让滑块始终有参照 */
+  scrollbar-color: rgba(160, 200, 175, 0.35) rgba(160, 200, 175, 0.06);
+  scrollbar-width: thin;
+}
+/* WebKit 内核：把滑块/轨道显式画出来，不依赖系统淡入 */
+.intel-vuln-table .ant-table-body::-webkit-scrollbar,
+.intel-vuln-table .ant-table-content::-webkit-scrollbar {
+  height: 9px;
+  background: rgba(160, 200, 175, 0.06);
+}
+.intel-vuln-table .ant-table-body::-webkit-scrollbar-thumb:horizontal,
+.intel-vuln-table .ant-table-content::-webkit-scrollbar-thumb:horizontal {
+  /* 常态就可见（不是 hover 才亮）—— 系统淡出动画期间也看得见 */
+  background: rgba(160, 200, 175, 0.35);
+  border-radius: 8px;
+}
+.intel-vuln-table .ant-table-body::-webkit-scrollbar-thumb:horizontal:hover,
+.intel-vuln-table .ant-table-content::-webkit-scrollbar-thumb:horizontal:hover {
+  background: rgba(182, 243, 74, 0.5);
+}
+.intel-vuln-table .ant-table-body::-webkit-scrollbar-track:horizontal,
+.intel-vuln-table .ant-table-content::-webkit-scrollbar-track:horizontal {
+  background: rgba(160, 200, 175, 0.06);
+  border-radius: 8px;
+}
+
+/* 表格包裹层：为自绘横向滑块提供定位上下文 */
+.intel-vuln-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+.intel-vuln-wrap .ant-card {
+  margin-bottom: 0;
+}
+/* 隐藏 AntD 表格内部容器的原生横向条，改用自绘滑块 */
+.intel-vuln-table .ant-table-body,
+.intel-vuln-table .ant-table-content {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.intel-vuln-table .ant-table-body::-webkit-scrollbar,
+.intel-vuln-table .ant-table-content::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* ------------------------------------------------------------
+   自绘滚动条
+   ------------------------------------------------------------
+   系统「自动隐藏滚动条」会让原生条一闪一闪，
+   CSS 的 `overflow: scroll` 改不掉（那只能强制占位，
+   拦不住系统对滑块做淡出动画）。
+   所以：**原生条彻底隐藏，自绘一个**。
+
+   注意 overflow 仍是 auto —— 滚轮/触控板/键盘滚动照常，
+   我们只是不显示它的原生条，没有替换滚动行为。
+   ------------------------------------------------------------ */
+.cs-area {
+  position: relative;
+  min-height: 0;
+}
+.cs-viewport {
+  overflow: auto;
+  /* 隐藏原生条：WebKit 与 Firefox 两套写法都要 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /*
+   * 必须为自绘滑块**预留出轨道宽度**。
+   * 滑块是 position:absolute 浮在内容之上的，若不给内容留白，
+   * 它会压住右侧文字（用户反馈：论文的「4 天前」、ATLAS 的
+   * 「已实证」标签被挡）。
+   * 轨道宽 9px + 贴边 2px + 视觉呼吸 6px = 17px。
+   */
+  padding-right: 17px;
+}
+.cs-viewport::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+/* 轨道：贴边 2px，宽 9px */
+.cs-track {
+  position: absolute;
+  background: rgba(160, 200, 175, 0.06);
+  border-radius: 8px;
+  transition: background-color var(--dur-hover) var(--ease);
+}
+.cs-track-y {
+  top: 2px;
+  right: 2px;
+  bottom: 2px;
+  width: 9px;
+}
+.cs-track-x {
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  height: 9px;
+}
+/* 绑定式：覆盖在已有容器旁，需要外层定位上下文 */
+.cs-track-float {
+  z-index: 2;
+}
+.cs-thumb {
+  background: rgba(160, 200, 175, 0.35);
+  border-radius: 8px;
+  /* 只跟手不跟动画：拖动必须即时响应 */
+  transition: background-color var(--dur-hover) var(--ease);
+}
+.cs-track-y .cs-thumb {
+  width: 100%;
+  min-height: 32px;
+}
+.cs-track-x .cs-thumb {
+  height: 100%;
+  min-width: 32px;
+}
+.cs-thumb:hover,
+.cs-track:hover .cs-thumb {
+  background: rgba(182, 243, 74, 0.5);
+}
+/* 拖动中不触发 hover 变色，避免视觉抖动 */
+.cs-thumb:active {
+  background: rgba(182, 243, 74, 0.62);
+}
+
+/* ------------------------------------------------------------
+   问答页：消息气泡（提问在右 / 回答在左，同款卡片）
+   ------------------------------------------------------------
+   用户要求「提问卡片放右边，回答卡片风格和提问一样」。
+   实现要点：**两者共用同一套卡片语言**（圆角、边框、内边距），
+   靠「左右位置 + 主次强调色」区分，而不是一个有框一个没有 ——
+   后者会让人以为回答不是正式内容。
+   ------------------------------------------------------------ */
+.sentinel-qa-msg-row {
+  display: flex;
+  margin-bottom: 14px;
+}
+.sentinel-qa-msg-row.is-user {
+  justify-content: flex-end;
+}
+.sentinel-qa-msg-row.is-assistant {
+  justify-content: flex-start;
+}
+
+.sentinel-qa-bubble {
+  max-width: 82%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  line-height: 1.75;
+  /* 共用底色与描边风格，只有色调不同 */
+  background: rgba(12, 18, 15, 0.62);
+  border: 1px solid rgba(180, 220, 195, 0.12);
+}
+/* 提问：青色调，强调「这是你问的」 */
+.sentinel-qa-bubble.is-user {
+  background: linear-gradient(
+    135deg,
+    rgba(76, 215, 246, 0.16),
+    rgba(78, 222, 163, 0.12)
+  );
+  border-color: rgba(76, 215, 246, 0.3);
+  color: var(--text);
+  box-shadow: 0 4px 18px rgba(76, 215, 246, 0.1);
+}
+/* 回答：墨绿调，视觉上更沉���内容更长的部分不会被抢焦点 */
+.sentinel-qa-bubble.is-assistant {
+  background: rgba(12, 18, 15, 0.68);
+  border-color: rgba(180, 220, 195, 0.14);
+}
+/* 回答卡内的内容不加额外内边距——外层气泡已经提供了 */
+.sentinel-qa-bubble.is-assistant > * {
+  margin-bottom: 0;
+}
+
+/* ------------------------------------------------------------
+   问答页：两栏布局（左历史 / 右对话）
+   ------------------------------------------------------------
+   仿 DeepSeek 式对话界面。关键约束：
+     ① **两栏各自独立滚动** —— 对话区增长时左侧历史列表不能被推走
+     ② 历史栏宽度固定（240px），对话区 flex:1 吃掉剩余宽度
+     ③ 窄屏（<900px）默认折叠历史栏，把空间全部让给对话
+   ------------------------------------------------------------ */
+.sentinel-qa-shell {
+  display: flex;
+  gap: 10px;
+  height: calc(100vh - 110px);
+  position: relative;
+}
+
+/* ---- 左：历史栏 ---- */
+.sentinel-qa-history {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* 半透明深色面板，与站点玻璃语言一致但更暗，
+     避免与右侧对话内容抢注意力（它是导航，不是主角） */
+  background: rgba(6, 10, 8, 0.5);
+  border: 1px solid rgba(180, 220, 195, 0.08);
+  border-radius: 12px;
+  padding: 10px;
+  min-height: 0;
+}
+.sentinel-qa-new-btn {
+  border-radius: 8px !important;
+  font-weight: 500;
+}
+.sentinel-qa-history-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  /* 负 margin 让滚动条贴到面板边缘，避免压住列表项 */
+  margin-right: -4px;
+  padding-right: 4px;
+}
+/* 分组标题（今天/昨天/更早）
+ *
+ * 原来 `position: sticky` + 纯色背景，渲染成一条**贯通的黑色长条**，
+ * 在窄侧栏里显得突兀（用户反馈）。
+ * 改为圆角胶囊：加宽内边距 + border-radius + 半透明底色，
+ * 与下方历史条目（也是圆角）形成统一的圆角语言。
+ * sticky 保留 —— 滚动长列表时仍需知道自己在哪一段。 */
+.sentinel-qa-history-group {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 5px 10px;
+  margin: 6px 0 4px;
+  letter-spacing: 0.4px;
+  position: sticky;
+  top: 0;
+  /* 半透明 + 圆角，不再是贴满的黑色长条 */
+  background: rgba(8, 12, 10, 0.82);
+  border-radius: 8px;
+  border: 1px solid rgba(180, 220, 195, 0.06);
+  z-index: 1;
+}
+.sentinel-qa-history-group:first-child {
+  margin-top: 0;
+}
+.sentinel-qa-history-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background-color var(--dur-hover) var(--ease);
+}
+.sentinel-qa-history-item:hover {
+  background: rgba(182, 243, 74, 0.07);
+  color: var(--text);
+}
+.sentinel-qa-history-item.is-active {
+  background: rgba(182, 243, 74, 0.12);
+  color: var(--text);
+}
+/* 标题单行省略：历史标题可能很长，不能把面板撑宽 */
+.sentinel-qa-history-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sentinel-qa-history-time {
+  font-size: 10.5px;
+  color: var(--muted);
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+/* 删除按钮：默认透明，hover 该项时才显形——避免列表花哨 */
+.sentinel-qa-history-del {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--muted);
+  opacity: 0;
+  padding: 2px;
+  border-radius: 4px;
+  transition:
+    opacity var(--dur-hover) var(--ease),
+    color var(--dur-hover) var(--ease);
+}
+.sentinel-qa-history-item:hover .sentinel-qa-history-del {
+  opacity: 1;
+}
+.sentinel-qa-history-del:hover {
+  color: #ff8fa3;
+}
+.sentinel-qa-history-empty {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  padding: 24px 8px;
+}
+
+/* ---- 右：对话区 ---- */
+.sentinel-qa-main {
+  flex: 1;
+  min-width: 0;
+  /* flex 子项默认 min-height:auto（不肯小于内容高度），
+     不加这行则滚动容器无法收缩，内容会被底部输入区盖住。 */
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+/* 纵向滚动容器。
+ *
+ * 这层只需纵向滚动，但内容（推荐问题卡的长标题、
+ * 回答里的表格）可能撑出横向溢出 → 底部出现一条横向拖动栏。
+ * 横向滚动在这里没有任何意义（内容宽度由 max-width 控制），
+ * 故直接隐藏横向条、保留纵向条。
+ */
+.sentinel-qa-scroll {
+  flex: 1;
+  /* 同上：允许收缩到内容以下，否则空态的起步问题卡会被输入区遮住 */
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  /* 隐藏原生横向滚动条（系统的自动隐藏会让它一闪一闪） */
+  scrollbar-width: thin;
+}
+.sentinel-qa-scroll::-webkit-scrollbar {
+  width: 7px;
+  height: 0; /* 横向条高度归零 → 不显示 */
+}
+.sentinel-qa-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sentinel-qa-scroll::-webkit-scrollbar-thumb {
+  background: rgba(160, 200, 175, 0.18);
+  border-radius: 8px;
+}
+.sentinel-qa-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(182, 243, 74, 0.35);
+}
+.sentinel-qa-scroll::-webkit-scrollbar-thumb:horizontal {
+  background: transparent;
+}
+/* 折叠按钮：绝对定位在对话区左上角，不占布局空间 */
+.sentinel-qa-history-toggle {
+  position: absolute;
+  top: -4px;
+  right: 0;
+  z-index: 3;
+  background: rgba(6, 10, 8, 0.6);
+  border: 1px solid rgba(180, 220, 195, 0.12);
+  border-radius: 8px;
+  color: var(--text-2);
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 13px;
+  transition:
+    color var(--dur-hover) var(--ease),
+    border-color var(--dur-hover) var(--ease);
+}
+.sentinel-qa-history-toggle:hover {
+  color: var(--accent);
+  border-color: rgba(182, 243, 74, 0.35);
+}
+
+/* 窄屏：历史栏改为浮层，避免挤压对话区 */
+@media (max-width: 899px) {
+  .sentinel-qa-history {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 20;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+  .sentinel-qa-history-toggle {
+    right: auto;
+    left: 0;
+  }
+}
+
+/* ------------------------------------------------------------
+   问答页：Agent 工具调用轨迹
+   ------------------------------------------------------------
+   让「AI 查了什么」可见 —— 这是 Agent 模式与固定模板模式
+   最直观的区别，也是答案可信度的来源。
+   默认折叠，避免长轨迹把答案挤到屏幕外。
+   ------------------------------------------------------------ */
+.sentinel-qa-tools {
+  margin-bottom: 10px;
+  border: 1px solid rgba(76, 215, 246, 0.18);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+.sentinel-qa-tools > summary {
+  cursor: pointer;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--cyan);
+  user-select: none;
+  list-style: none;
+  transition: background-color var(--dur-hover) var(--ease);
+}
+.sentinel-qa-tools > summary:hover {
+  background: rgba(76, 215, 246, 0.06);
+}
+/* 隐藏默认三角，用自己的 ▸ 提示可展开 */
+.sentinel-qa-tools > summary::-webkit-details-marker {
+  display: none;
+}
+.sentinel-qa-tools > summary::before {
+  content: '▸';
+  margin-right: 6px;
+  display: inline-block;
+  transition: transform var(--dur-hover) var(--ease);
+}
+.sentinel-qa-tools[open] > summary::before {
+  transform: rotate(90deg);
+}
+.sentinel-qa-tools-list {
+  padding: 4px 10px 10px;
+  border-top: 1px solid rgba(76, 215, 246, 0.12);
+}
+.sentinel-qa-tool {
+  margin-top: 8px;
+  padding-left: 9px;
+  border-left: 2px solid rgba(76, 215, 246, 0.25);
+}
+.sentinel-qa-tool-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sentinel-qa-tool-time {
+  font-size: 10.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.sentinel-qa-tool-args {
+  margin: 5px 0 3px;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text-2);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 5px;
+  padding: 6px 8px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.sentinel-qa-tool-result {
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ------------------------------------------------------------
+   采集动态浮标
+   ------------------------------------------------------------
+   解决「后台采到数据但用户不知道」。
+   平时安静地挂在顶栏（有数字才显示），有新采集时闪一下提醒，
+   悬停可看最近 5 条记录 —— 需要时再看，不看则不扰。
+   ------------------------------------------------------------ */
+.sentinel-feed {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(180, 220, 195, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-2);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  /* 顶栏是 align-items:center 的 flex 子项；
+     继承的 line-height 会让它偏上（实测 top=-6 溢出顶栏）。
+     显式指定行高并取消外边距，保证与其它状态项垂直居中。 */
+  line-height: 1.4;
+  margin: 0;
+  align-self: center;
+  transition:
+    background-color var(--dur-hover) var(--ease),
+    border-color var(--dur-hover) var(--ease),
+    color var(--dur-hover) var(--ease);
+}
+.sentinel-feed:hover {
+  background: rgba(182, 243, 74, 0.06);
+  border-color: rgba(182, 243, 74, 0.3);
+  color: var(--text);
+}
+/* 有未读：常态底色加深，一眼可辨（不能只靠闪动，闪完就没了） */
+.sentinel-feed.has-unread {
+  background: rgba(182, 243, 74, 0.1);
+  border-color: rgba(182, 243, 74, 0.35);
+  color: var(--text);
+}
+.sentinel-feed:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(6, 8, 7, 0.95),
+    0 0 0 4px var(--c-focus-ring);
+}
+/* 顶栏右侧容器：把浮标与状态坞收在一起，
+   否则顶栏 space-between 会把两者分推到两端、中间大片空白。 */
+.sentinel-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.sentinel-feed-icon {
+  font-size: 13px;
+}
+/* 有新动态：短暂高亮一次（不是持续闪烁，避免长期扰民） */
+.sentinel-feed.is-new {
+  animation: feedPulse 1.6s var(--ease) 1;
+}
+@keyframes feedPulse {
+  0% {
+    background: rgba(182, 243, 74, 0.22);
+    border-color: rgba(182, 243, 74, 0.6);
+    color: var(--accent);
+  }
+  100% {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(180, 220, 195, 0.1);
+    color: var(--text-2);
+  }
+}
+.sentinel-feed-label {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 悬停面板：宽度要容得下漏洞标题 */
+.sentinel-feed-pop {
+  /* 加宽到 420px：漏洞标题普遍较长，330px 下大量被省略号截断 */
+  width: 420px;
+}
+.sentinel-feed-pop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-2);
+  padding-bottom: 8px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(180, 220, 195, 0.1);
+}
+.sentinel-feed-pop-head b {
+  color: var(--accent);
+  font-size: 15px;
+  margin: 0 4px;
+  font-variant-numeric: tabular-nums;
+}
+.sentinel-feed-read {
+  height: auto;
+  padding: 0;
+  font-size: 11.5px;
+}
+.sentinel-feed-pop-empty {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.8;
+  padding: 10px 0;
+  text-align: center;
+}
+.sentinel-feed-pop-empty span {
+  font-size: 10.5px;
+  opacity: 0.8;
+}
+
+/* 采集记录（每次采集一组） */
+.sentinel-feed-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 380px;
+  overflow-y: auto;
+}
+.sentinel-feed-group {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(180, 220, 195, 0.06);
+}
+.sentinel-feed-group:last-child {
+  border-bottom: none;
+}
+.sentinel-feed-group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+  padding-bottom: 5px;
+  border-bottom: 1px dashed rgba(180, 220, 195, 0.08);
+}
+
+/* ---------- 数据刷新状态条 ----------
+   原来是「11.5px + muted 灰 + 右对齐」的一行小字，
+   在深色底上对比度不足、且紧贴容器右缘，实测反馈「看不清」。
+   这里改成独立状态条：左对齐 + 加大字号 + 提高对比，
+   并加一个活点指示，让「数据是实时的」这件事自带视觉标识。 */
+.sentinel-updated-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  /* 半透明底 + 细边：把这段文字与图表区在视觉上分层 */
+  background: rgba(180, 220, 195, 0.06);
+  border: 1px solid rgba(180, 220, 195, 0.12);
+  font-size: 12.5px;
+  /* 用 text-2 而非 muted —— 后者对比度太低，正是看不清的根因 */
+  color: var(--text-2);
+  line-height: 1.4;
+}
+.sentinel-updated-bar b {
+  color: var(--text-1);
+  font-weight: 600;
+  /* 等宽数字：时间戳跳动时不引起布局抖动 */
+  font-variant-numeric: tabular-nums;
+}
+.sentinel-updated-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #4ade9b;
+  box-shadow: 0 0 0 3px rgba(74, 222, 155, 0.16);
+}
+.sentinel-updated-sep {
+  color: var(--muted);
+}
+.sentinel-updated-hint {
+  color: var(--text-2);
+}
+/* ---------- 严重度图例 ---------- */
+/* 注：原先标题栏里还有一套紧凑图例（.sentinel-feed-sev-legend），
+   已按需求移除 —— 标题栏只留「采集动态 + 铃铛」，
+   图例统一收敛到表格上方那一行，避免两处重复且位置割裂。*/
+
+/* 表格上方的常驻图例行 —— 不依赖悬停就能看到含义。
+   形态：**「严重度」标签在竖线左侧，竖线右侧是各项解释**。
+   竖线是「标签区」与「说明区」的分界，标签必须在分界左边，
+   否则读起来像「严重度属于第一项」。*/
+.sentinel-feed-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 2px 7px;
+  font-size: 11.5px;
+  color: var(--text-2);
+  border-bottom: 1px solid rgba(180, 220, 195, 0.07);
+  margin-bottom: 4px;
+}
+.sentinel-feed-legend-label {
+  font-size: 11px;
+  color: var(--muted);
+  /* 右padding + 竖线：形成标签区与说明区的明确分界 */
+  padding-right: 10px;
+  border-right: 1px solid rgba(180, 220, 195, 0.16);
+  white-space: nowrap;
+}
+/* 竖线右侧的说明区 */
+.sentinel-feed-legend-items {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.sentinel-feed-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: help;
+  white-space: nowrap;
+}
+/* 「未评级」：灰色描边空心点，与有色的实心点区分开 */
+.sentinel-feed-legend-item.is-none {
+  color: var(--muted);
+}
+
+/* 色点本体 —— 与表格里的色点同一视觉规格 */
+.sentinel-feed-sev-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+.sentinel-feed-sev-dot.is-none {
+  background: transparent !important;
+  border: 1px solid rgba(180, 220, 195, 0.3);
+  width: 5px;
+  height: 5px;
+}
+
+/* 组序号：多次采集时能快速定位第几组 */
+.sentinel-feed-idx {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: rgba(182, 243, 74, 0.15);
+  color: var(--accent);
+  font-size: 9.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+.sentinel-feed-src {
+  flex: 1;
+  min-width: 0;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+}
+.sentinel-feed-num {
+  color: var(--accent);
+  font-weight: 600;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+/* 「抓到 N」用弱化色：它是背景信息（抓了很多但多数已入库），
+   真正要突出的是「新增 M」。 */
+.sentinel-feed-fetched {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.sentinel-feed-when {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sentinel-feed-when em {
+  font-style: normal;
+  opacity: 0.75;
+}
+
+/* 具体条目：这是用户最想看的内容，给足视觉权重 */
+.sentinel-feed-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 4px 0 4px 2px;
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+/* 条目序号 */
+.sentinel-feed-item-idx {
+  flex-shrink: 0;
+  width: 14px;
+  text-align: right;
+  font-size: 10px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.75;
+}
+.sentinel-feed-item.is-empty {
+  color: var(--muted);
+  font-size: 10.5px;
+  padding-left: 2px;
+}
+.sentinel-feed-sev {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+/* 标题允许换行两行：加宽面板后长标题能读完，不必一律省略 */
+.sentinel-feed-item-title {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sentinel-feed-item-title a {
+  color: var(--text-2);
+}
+.sentinel-feed-item-title a:hover {
+  color: var(--accent);
+}
+.sentinel-feed-cvss {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-family: var(--mono);
+  color: var(--muted);
+  margin-top: 2px;
+}
+.sentinel-feed-more {
+  margin-top: 4px;
+  padding-left: 10px;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------
+   情报页：ATLAS 攻击链
+   ------------------------------------------------------------
+   原来这里是 6 条平铺的技术名（纯英文 + 编号），
+   改成按战术分组的攻击链视图。样式上要解决三件事：
+     ① 阶段分组要一眼可辨（色点 + 分组间距）
+     ② 父技术/子技术要有层级差（缩进 + 颜色降一级）
+     ③ 成熟度标签要轻量、不能和标题抢注意力
+   ------------------------------------------------------------ */
+.atlas-intro {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-2);
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  background: rgba(182, 243, 74, 0.05);
+  border-left: 2px solid rgba(182, 243, 74, 0.35);
+}
+.atlas-intro b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.atlas-chain {
+  /* 高度约束传给内层滚动容器 —— 见CustomScroll.tsx 注释 */
+  --cs-max-h: 460px;
+}
+.atlas-chain-group {
+  margin-bottom: 12px;
+}
+.atlas-chain-group:last-child {
+  margin-bottom: 0;
+}
+/* 分组头：侦察 / 资源开发 / ……
+ *
+ * 原来是「一条横贯的直线 + 贴底分隔线」，在暗底上呈规整长方形，
+ * 与站内其它圆角控件（卡片、标签、徽标）风格不一致。
+ * 改为**圆角标签**，与下方 `.atlas-id-tag` / `.atlas-maturity`
+ * 以及搜索框共用同一档圆角（--r-sm，8px），语言才统一。
+ *
+ * ⚠ 圆角不能用 999px 做成胶囊：胶囊的两端是**完全圆的**，
+ * 在一条通栏标题上会显得过于圆润、与站内的直角元素不协调。
+ * 「适度圆角」才与全站一致。
+ *
+ * 仍是 sticky —— 滚动 170 项时需要始终知道自己在攻击链哪一段。
+ */
+.atlas-chain-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  margin-bottom: 6px;
+  /* 与站内输入框/标签同档圆角 */
+  border-radius: var(--r-sm, 8px);
+  background: rgba(182, 243, 74, 0.06);
+  border: 1px solid rgba(182, 243, 74, 0.14);
+  position: sticky;
+  top: 2px;
+  /* 吸顶时下方内容会从下方滚过，用卡片底色垫一层避免文字重叠 */
+  background-color: #101613;
+  z-index: 1;
+}
+/* 吸顶胶囊与下方滚动内容之间**不留**渐隐过渡。
+ * 之前加过一个 ::after 向下渐隐层，但它渲染成一条实色窄条，
+ * 在暗底上被看成「一条小黑线」（用户反馈）——是减法失败而非设计。
+ * 现在靠 top: 2px 的间隙区分两层，干净且没有额外元素。 */
+/* 阶段色点：准备=青蓝 / 渗透=琥珀 / 收割=玫红 */
+.atlas-chain-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.atlas-phase-prepare {
+  background: #0090b7;
+}
+.atlas-phase-intrude {
+  background: #f9c80e;
+}
+.atlas-phase-harvest {
+  background: #ff7096;
+}
+
+.atlas-chain-items {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.atlas-chain-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  padding: 2px 0;
+  border-radius: 4px;
+  transition: background-color var(--dur-hover) var(--ease);
+}
+.atlas-chain-item:hover {
+  background: rgba(182, 243, 74, 0.05);
+}
+.atlas-id-tag {
+  font-size: 10px !important;
+  font-family: var(--mono);
+  margin: 0 !important;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+/* 父技术：主色；子技术：次级色 + 缩进，层级一眼可辨 */
+.atlas-tech-main {
+  color: var(--text);
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+}
+.atlas-tech-sub {
+  color: var(--text-2);
+  padding-left: 10px;
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+/* 子技术前的连接符，暗示「从属于上一条」 */
+.atlas-tech-sub::before {
+  content: '└';
+  position: absolute;
+  left: 0;
+  opacity: 0.4;
+}
+
+/* 成熟度：小圆角标签，字号 10px，不与标题争视觉权重 */
+.atlas-maturity {
+  font-size: 10px;
+  line-height: 1.5;
+  padding: 0 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+}
+.atlas-maturity-realized {
+  color: #ff8fa3;
+  background: rgba(255, 113, 150, 0.12);
+  border-color: rgba(255, 113, 150, 0.25);
+}
+.atlas-maturity-demonstrated {
+  color: #f9c80e;
+  background: rgba(249, 200, 14, 0.1);
+  border-color: rgba(249, 200, 14, 0.22);
+}
+.atlas-maturity-feasible {
+  color: #7fb4c4;
+  background: rgba(0, 144, 183, 0.12);
+  border-color: rgba(0, 144, 183, 0.25);
+}
+
+/* ------------------------------------------------------------
+   情报页：论文卡片
+   ------------------------------------------------------------
+   论文有 205 条，卡片展示条数远少于总量。
+   这里用「检索 + 固定高度滚动列表 + 分页」，
+   保证每一条都可达，同时不让卡片把页面撑得过长。
+   ------------------------------------------------------------ */
+.intel-paper-filter {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.intel-paper-list {
+  /* 高度约束传给内层滚动容器 —— 见CustomScroll.tsx 注释 */
+  --cs-max-h: 420px;
+}
+.intel-paper-item {
+  padding: 5px 6px;
+  border-radius: 5px;
+  transition: background-color var(--dur-hover) var(--ease);
+}
+.intel-paper-item:hover {
+  background: rgba(182, 243, 74, 0.05);
+}
+.intel-paper-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.intel-paper-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.intel-paper-time {
+  font-size: 11px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.intel-paper-topics {
+  margin-top: 3px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+/* 主题标签可点击 → 直接作为筛选入口（省去再去下拉里找） */
+.intel-paper-topic {
+  font-size: 11px;
+  margin: 0;
+  cursor: pointer;
+  transition: border-color var(--dur-hover) var(--ease);
+}
+.intel-paper-topic:hover {
+  border-color: rgba(182, 243, 74, 0.45) !important;
+}
+.intel-paper-pager {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+  margin-top: 6px;
+  border-top: 1px solid rgba(180, 220, 195, 0.08);
+}
+
+/* 政策列表同理：22 条不该把页面撑得很长，固定高度 + 滚动 */
+.intel-policy-list {
+  /* 高度约束传给内层滚动容器 —— 见CustomScroll.tsx 注释 */
+  --cs-max-h: 420px;
+}
+/*
+ * 去掉 AntD Row 的负边距。
+ *
+ * `Row gutter={[10,10]}` 靠给 Row 加 `margin-left/-right: -5px`
+ * 再给 Col 加 `padding: 5px` 来实现间距。在**滚动容器**里，
+ * 那个负边距会撑出容器 → 底部出现一条横向滚动条（用户反馈的无意义拖动栏）。
+ *
+ * 改用 Row 自身的 `padding` 代替负边距：留白还在，不再溢出。
+ */
+.intel-policy-list > .ant-row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+.intel-policy-list > .ant-row > .ant-col {
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+  /* 首尾列去掉外侧留白，避免右侧多出一截空白 */
+}
+.intel-policy-list > .ant-row > .ant-col:first-child {
+  padding-left: 0 !important;
+}
+.intel-policy-list > .ant-row > .ant-col:last-child {
+  padding-right: 0 !important;
+}
+
+/* ------------------------------------------------------------
+   知识底座新鲜度徽标
+   ------------------------------------------------------------
+   要回答用户的疑问：「这个数字会自己变吗？数据什么时候采的？」
+   绿点= 正常自动更新中；琥珀 = 超过调度周期未更新（待更新）。
+   采集完成瞬间闪一下绿色脉冲，让「自动化」肉眼可见。
+   ------------------------------------------------------------ */
+.kb-fresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  line-height: 1.6;
+  padding: 0 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+  cursor: default;
+  border: 1px solid transparent;
+  transition:
+    background-color var(--dur-hover) var(--ease),
+    border-color var(--dur-hover) var(--ease);
+}
+.kb-fresh-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.kb-fresh-ok {
+  color: #7fd4a8;
+  background: rgba(29, 211, 176, 0.1);
+  border-color: rgba(29, 211, 176, 0.22);
+}
+.kb-fresh-ok .kb-fresh-dot {
+  background: #1dd3b0;
+  /* 呼吸动画：表示「正在自动同步」 */
+  animation: kbBreath 2.4s ease-in-out infinite;
+}
+.kb-fresh-stale {
+  color: #f9c80e;
+  background: rgba(249, 200, 14, 0.1);
+  border-color: rgba(249, 200, 14, 0.25);
+}
+.kb-fresh-stale .kb-fresh-dot {
+  background: #f9c80e;
+  animation: none;
+}
+@keyframes kbBreath {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
+  }
+}
+/* 条数刚变化时的脉冲：一次性高亮，3 秒后由 JS 摘掉 class */
+.kb-fresh-pulse {
+  animation: kbPulse 0.7s var(--ease) 2;
+}
+@keyframes kbPulse {
+  0% {
+    background: rgba(29, 211, 176, 0.45);
+    border-color: rgba(29, 211, 176, 0.75);
+  }
+  100% {
+    background: rgba(29, 211, 176, 0.1);
+    border-color: rgba(29, 211, 176, 0.22);
+  }
+}
+/* 尊重系统「减少动态效果」：关掉呼吸与脉冲 */
+@media (prefers-reduced-motion: reduce) {
+  .kb-fresh-ok .kb-fresh-dot,
+  .kb-fresh-pulse {
+    animation: none;
+  }
+}
+/* 调度表本身也不滚动 */
+.sentinel-sched-table .ant-table-body {
+  overflow-y: visible !important;
+  max-height: none !important;
+}
+.sentinel-sched-table .ant-table-container {
+  overflow: visible !important;
+}
+
+/* ------------------------------------------------------------
+   二十、定时调度面板
+   ------------------------------------------------------------ */
+
+/* 顶栏状态组：任务数 → 状态 → 按钮（顺序见 DashboardPage 的 extra） */
+.sentinel-sched-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.sentinel-sched-count {
+  font-size: 11.5px;
+  color: var(--muted);
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+/* 采集进度条：Uiverse loader（by satyamchaudharydev）的暗色适配版
+ *
+ * 原版配色 #0071e2 是亮蓝，放在 SENTINEL 的墨绿暗调里很突兀，
+ * 改为翡翠绿（--ok），与其他状态色同源。
+ *
+ * 四处按项目规范调整：
+ * ① 宽度 130px → 72px。顶栏 extra 空间有限且紧挨操作按钮，
+ *    130px 会把「暂停/恢复」挤出卡片头。
+ * ② **始终渲染，只用 .is-active 控制动画**（用户明确要求）：
+ *    暂停时进度条要留在原地、只是不流动。
+ *    若用条件渲染，进度条会整块消失再出现，卡片头宽度跳动，
+ *    视觉上比「静止」更突兀。
+ * ③ 静止态给一个固定宽度（28%）的暗色填充 —— 读作「有进度但停住了」，
+ *    而不是「空进度条」，后者容易被误认为数据没加载出来。
+ * ④ 只动 width，不动 box-shadow / filter —— 前者能交给合成器，
+ *    后者每帧都要重新模糊。这台机器无 GPU，差别很明显。
+ */
+.sentinel-runner {
+  --runner-height: 4px;
+  display: block;
+  width: 72px;
+  height: var(--runner-height);
+  border-radius: 30px;
+  background-color: rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.sentinel-runner::before {
+  content: '';
+  position: absolute;
+  background: var(--ok);
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 100%;
+  border-radius: 30px;
+  transition: width 220ms var(--ease);
+}
+/* 静止态（未启动 / 已暂停）：留一段固定填充，读作「停住了」而非「空」 */
+.sentinel-runner:not(.is-active)::before {
+  width: 28%;
+  opacity: 0.4;
+}
+/* 运行态：无限循环跑 */
+.sentinel-runner.is-active::before {
+  animation: sentinelRunnerMove 1.1s ease-in-out infinite;
+}
+@keyframes sentinelRunnerMove {
+  50% {
+    width: 100%;
+  }
+  100% {
+    width: 0;
+    right: 0;
+    left: unset;
+  }
+}
+
+/* 运行中的脉冲环：强调自动化确实在运转（看板唯一的「活体」信号）。
+   早期版本这个 class 名被写进 JSX 但 CSS 里没定义，是个死类，本轮补上。*/
+.sentinel-live-ring {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 6px var(--ok);
+  animation: dotPulse 1.6s ease-in-out infinite;
+}
+
+/* 表格：与左侧数据源卡同构，靠紧凑行高塞进右栏 */
+.sentinel-sched-table .ant-table {
+  background: transparent;
+}
+.sentinel-sched-table .ant-table-thead > tr > th {
+  /* 与左卡表头同一套样式：淡墨绿、等宽、字距拉开 */
+  background: rgba(255, 255, 255, 0.028) !important;
+  color: var(--muted) !important;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  padding: 8px 10px !important;
+  white-space: nowrap;
+}
+.sentinel-sched-table .ant-table-tbody > tr > td {
+  padding: 9px 10px !important;
+  border-bottom: 1px solid rgba(180, 220, 195, 0.05) !important;
+}
+/* 任务名单元格：主题色圆点 + 名称
+ *
+ * 圆点取色与左卡「数据源状态」表的 Badge 完全同源（SOURCE_COLOR），
+ * 同一个数据源在两张表里是同一个颜色 —— 两卡左右对照时能直接对上。
+ * 原来右卡没有色点，左卡有，视觉上右卡像是「退化版」。*/
+.sentinel-sched-name-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.sentinel-sched-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  /* 与左卡 Badge 同规格：小圆点+ 同色辉光 */
+  box-shadow: 0 0 6px currentColor;
+}
+/* 任务名：允许换行但优先完整显示（中文名较长） */
+.sentinel-sched-name {
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.4;
+  display: inline-block;
+}
+
+/* 周期列：无边框下拉，静态时与文字无异，悬停才显出可编辑性
+ *
+ * 为什么用下拉而不是纯文本：采集周期是运维高频调整项
+ * （赛题考核监测时效性，调 NVD 2h→1h 是提分手段），
+ * 点开就能改，不用另开设置页。
+ * 档位由后端按各源 min/max_interval 裁剪，越界选项根本不出现。 */
+.sentinel-sched-cycle-select {
+  width: 100%;
+  min-width: 84px;
+}
+.sentinel-sched-cycle-select .ant-select-selector {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  /* 右对齐：与右侧「上次 / 下次」两列形成一条对齐线 */
+  justify-content: flex-end;
+  padding: 0 2px 0 8px !important;
+}
+/* 悬停/聚焦才给底色 —— 平时是文字，指上去才知道能点。
+   ⚠️ 暗色用半透明白，白天必须换墨绿半透明：
+   白底上 6% 的白等于没有（本项目已栽过 44 处）。 */
+.sentinel-sched-cycle-select:hover .ant-select-selector,
+.sentinel-sched-cycle-select.ant-select-focused .ant-select-selector {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+[data-theme="light"] .sentinel-sched-cycle-select:hover .ant-select-selector,
+[data-theme="light"] .sentinel-sched-cycle-select.ant-select-focused .ant-select-selector {
+  background: rgba(23, 58, 43, 0.06) !important;
+}
+/* 选中值：等宽 + tabular-nums，与左右两列时间戳同一套字距。
+   行高不覆盖 —— antd 按 size=small 自动给 22px，
+   写死会把 24px 高的下拉撑高，与「上次/下次」列行高不齐。 */
+.sentinel-sched-cycle-select .ant-select-selection-item {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  padding-right: 0;
+}
+/* 自定义周期用主色标出：一眼看出「这个源被单独调过」 */
+.sentinel-sched-cycle-select.is-custom .ant-select-selection-item {
+  color: var(--accent);
+}
+.sentinel-sched-cycle-select .ant-select-arrow {
+  color: var(--muted);
+  font-size: 10px;
+  right: 0;
+}
+/* 下拉里的「↩ 恢复默认」：琥珀色，暗示这是回退操作而非档位 */
+.sentinel-sched-reset {
+  color: var(--warn);
+}
+
+/* 时间戳：等宽 + 纵向对齐，便于上下扫读比较 */
+.sentinel-sched-time {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sentinel-sched-time.is-ok {
+  /* 上次执行成功 = 翡翠绿 */
+  color: var(--ok);
+}
+.sentinel-sched-time.is-paused {
+  /* 暂停时的「下次」用琥珀，与「已暂停」标签呼应 */
+  color: var(--warn);
+  font-size: 11px;
+}
+/* 「下次」倒计时：证明自动采集还活着，把「还没到点」和「调度挂了」区分开 */
+.sentinel-sched-countdown {
+  display: block;
+  font-style: normal;
+  font-size: 10px;
+  color: var(--muted);
+  opacity: 0.85;
+  margin-top: 1px;
+}
+/* 上次执行的新增量：+N 是「这次采到东西了」最直接的证据 */
+.sentinel-sched-delta {
+  font-style: normal;
+  font-size: 10px;
+  color: var(--cyan);
+  opacity: 0.9;
+  margin-left: 5px;
+}
+
+/* ------------------------------------------------------------
+   二十一、顶栏状态悬浮坞
+   ------------------------------------------------------------
+   动画模型（仿 Floating Dock）：
+     JS 每帧计算鼠标到各项的距离 → 权重 --w（0~1）→ 写进 CSS 变量，
+     CSS 用 --w 插值缩放、底色、辉光。
+     **权重是连续的**，所以鼠标快速划过时整条坞平滑起伏，
+     而不是各图标独立跳变（CSS :hover 就是后者，所以不连贯）。
+
+   过渡时长极短（160ms）——因为插值已经由 rAF 平滑处理，
+   CSS 只需补一点点阻尼感，不能再长否则会拖影。
+   ------------------------------------------------------------ */
+.sentinel-dock {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.sentinel-dock-item {
+  --w: 0; /* 权重：JS 每帧写入 */
+
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 11px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  cursor: default;
+  font-family: var(--font);
+  color: var(--tone, var(--muted));
+
+  /* 底色随权重加深：calc 让 --w 直接参与 alpha 计算 */
+  background: rgba(255, 255, 255, calc(var(--w) * 0.05));
+  border-color: color-mix(
+    in srgb,
+    var(--tone) calc(var(--w) * 26%),
+    transparent
+  );
+  box-shadow: 0 0 calc(var(--w) * 14px) rgba(255, 255, 255, 0.05);
+
+  /* 短过渡补阻尼；缩放由 --w 直接算，不放transition 避免延迟 */
+  transition:
+    box-shadow 160ms var(--ease),
+    border-color 160ms var(--ease);
+}
+button.sentinel-dock-item {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* 图标：随权重放大 + 上浮 */
+.sentinel-dock-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  font-size: 15px;
+  color: var(--tone);
+  transform: scale(calc(1 + var(--w) * 0.16))
+    translateY(calc(var(--w) * -0.5px));
+  /* 颜色随权重变亮：让「最近的那项」视觉上更突出 */
+  filter: brightness(calc(1 + var(--w) * 0.28));
+}
+
+/* 状态光点：随权重放大并增亮辉光，不做呼吸动画（连续插值已经够活泼） */
+.sentinel-dock-dot {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--tone);
+  transform: scale(calc(0.9 + var(--w) * 0.35));
+  opacity: calc(0.62 + var(--w) * 0.38);
+  box-shadow:
+    0 0 calc(3px + var(--w) * 5px) var(--tone);
+}
+
+/* 文字：随权重提亮，不做位移（位移会与缩放叠加产生抖动感） */
+.sentinel-dock-label {
+  margin-left: 7px;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  /* 插值到近白：与图标同步变化，整项一起「亮起来」 */
+  color: color-mix(
+    in srgb,
+    var(--text-2) calc(100% - var(--w) * 55%),
+    #ffffff
+  );
+}
+
+/* 无障碍：键盘聚焦环 */
+.sentinel-dock-item:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(6, 8, 7, 0.95),
+    0 0 0 4px var(--c-focus-ring);
+}
+
+/* ------------------------------------------------------------
+   二十二、工具类
+   ------------------------------------------------------------ */
+
+/* 等宽数字：防跳动 */
+.mono-num,
+[data-metric] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  font-family: var(--mono);
+}
+
+/* 文本级 */
+.t-primary { color: var(--text) !important; }
+.t-secondary { color: var(--text-2) !important; }
+.t-muted { color: var(--muted) !important; }
+.t-accent { color: var(--accent) !important; }
+.t-cyan { color: var(--cyan) !important; }
+.t-ok { color: var(--ok) !important; }
+.t-warn { color: var(--warn) !important; }
+.t-danger { color: var(--danger) !important; }
+
+/* ------------------------------------------------------------
+   二十三、全局滚动条 + 选区
+   ------------------------------------------------------------ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(160, 200, 175, 0.14);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(182, 243, 74, 0.35);
+}
+
+::selection {
+  background: rgba(182, 243, 74, 0.3);
+  color: #fff;
+}
+
+body {
+  color: var(--text-2);
+  font-family: var(--font);
+}
+
+/* ------------------------------------------------------------
+   二十四、焦点环（键盘可达性）
+   ------------------------------------------------------------ */
+
+:where(button, a[href], [role='button'], input, select, textarea):focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(6, 8, 7, 0.95),
+    0 0 0 4px var(--c-focus-ring);
+  border-radius: 8px;
+}
+
+/* 把外层传入的高度变量应用到真正滚动的 viewport 上。
+   没有这条，max-height 停在 .cs-area 上，内层不滚动、滑块永不出现。 */
+.atlas-chain > .cs-viewport,
+.intel-paper-list > .cs-viewport,
+.intel-policy-list > .cs-viewport {
+  max-height: var(--cs-max-h, none);
+  overflow-y: auto;
+}
+
+/* ================================================================
+   问答答案的 Markdown 排版
+   ----------------------------------------------------------------
+   为什么要专门排版：LLM 输出的是标准 Markdown，
+   渲染后元素默认样式（h1/h2 字号过大、列表缩进突兀、
+   代码块无底色）会显得杂乱。这里统一收敛到与卡片一致的视觉语言。
+   ================================================================ */
+.sentinel-qa-md {
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--text);
+  word-break: break-word;
+}
+
+/* 标题：缩小字号 + 左侧竖线，避免大标题喧宾夺主 */
+.sentinel-qa-md h1,
+.sentinel-qa-md h2,
+.sentinel-qa-md h3,
+.sentinel-qa-md h4 {
+  margin: 14px 0 8px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text);
+}
+.sentinel-qa-md h1 { font-size: 16px; }
+.sentinel-qa-md h2 {
+  font-size: 14.5px;
+  padding-left: 8px;
+  border-left: 3px solid var(--accent);
+}
+.sentinel-qa-md h3 {
+  font-size: 13.5px;
+  padding-left: 7px;
+  border-left: 2px solid rgba(182, 243, 74, 0.45);
+}
+.sentinel-qa-md > :first-child { margin-top: 0; }
+
+/* 段落与列表：收紧间距 */
+.sentinel-qa-md p { margin: 7px 0; }
+.sentinel-qa-md ul,
+.sentinel-qa-md ol { margin: 7px 0; padding-left: 20px; }
+.sentinel-qa-md li { margin: 3px 0; }
+.sentinel-qa-md li > ul,
+.sentinel-qa-md li > ol { margin: 3px 0; }
+
+/* 表格：加底色 + 边框 + 横向滚动（列多时不撑破布局） */
+.sentinel-qa-md-tablewrap {
+  overflow-x: auto;
+  margin: 9px 0;
+  border-radius: 4px;
+  border: 1px solid rgba(180, 220, 195, 0.12);
+}
+.sentinel-qa-md-tablewrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.sentinel-qa-md-tablewrap th,
+.sentinel-qa-md-tablewrap td {
+  padding: 6px 9px;
+  text-align: left;
+  border-bottom: 1px solid rgba(180, 220, 195, 0.09);
+}
+.sentinel-qa-md-tablewrap th {
+  background: rgba(180, 220, 195, 0.06);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+.sentinel-qa-md-tablewrap tr:last-child td { border-bottom: none; }
+
+/* 行内代码：淡底 + 等宽，区别于正文 */
+.sentinel-qa-md code {
+  background: rgba(180, 220, 195, 0.09);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--accent);
+}
+/* 代码块：独立底色 + 横向滚动 */
+.sentinel-qa-md pre {
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(180, 220, 195, 0.1);
+  border-radius: 5px;
+  padding: 10px 12px;
+  margin: 9px 0;
+  overflow-x: auto;
+}
+.sentinel-qa-md pre code {
+  background: none;
+  padding: 0;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+/* 引用块：左侧竖线，用于「资料不足时的补充说明」 */
+.sentinel-qa-md blockquote {
+  margin: 9px 0;
+  padding: 6px 12px;
+  border-left: 3px solid rgba(182, 243, 74, 0.35);
+  background: rgba(182, 243, 74, 0.04);
+  color: var(--text-2);
+}
+.sentinel-qa-md blockquote p { margin: 3px 0; }
+
+.sentinel-qa-md hr {
+  border: none;
+  border-top: 1px solid rgba(180, 220, 195, 0.12);
+  margin: 12px 0;
+}
+
+.sentinel-qa-md strong { color: var(--text); font-weight: 600; }
+.sentinel-qa-md a { color: var(--accent); text-decoration: none; }
+.sentinel-qa-md a:hover { text-decoration: underline; }
+
+/* ============================================================
+   AEGIS 参考设计借鉴 · 布局增强（2026-10-08）
+   ------------------------------------------------------------
+   借鉴点：品牌横排 / 工作空间卡 / 菜单分组标签 / 引擎健康行 /
+          面包屑顶栏 / 全局搜索入口 / 状态药丸
+   ============================================================ */
+
+/* ---- 品牌文字：主副两行（横排后重排版） ---- */
+.sentinel-logo-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+}
+.sentinel-logo-text b {
+  background: linear-gradient(120deg, #d4ff70 10%, #4be1ec 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 14.5px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55));
+}
+/* 版本号：随 logo 副标题（v1.0）——mono 字体区分，颜色随副标题 */
+.sentinel-logo-text .logo-ver {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.4px;
+}
+.sentinel-logo-text small {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  line-height: 1;
+  opacity: 0.86;
+}
+
+/* ---- 工作空间卡（AEGIS workspace） ---- */
+.sentinel-workspace {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 2px 12px 12px;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  background: linear-gradient(135deg, rgba(75, 225, 236, 0.07), rgba(182, 243, 74, 0.05));
+  border: 1px solid rgba(180, 220, 195, 0.1);
+  transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+}
+.sentinel-workspace:hover {
+  border-color: rgba(75, 225, 236, 0.28);
+  background: linear-gradient(135deg, rgba(75, 225, 236, 0.1), rgba(182, 243, 74, 0.07));
+}
+.sentinel-workspace-ico {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: rgba(75, 225, 236, 0.12);
+  color: #4be1ec;
+  font-size: 15px;
+}
+.sentinel-workspace-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.sentinel-workspace-text b {
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.sentinel-workspace-text small {
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.sentinel-workspace-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #6ee7a8;
+  box-shadow: 0 0 8px rgba(110, 231, 168, 0.85);
+  animation: sentinelWsPulse 2.6s ease-in-out infinite;
+}
+.sentinel-workspace-dot.is-warn {
+  background: #ffb95f;
+  box-shadow: 0 0 8px rgba(255, 185, 95, 0.85);
+}
+@keyframes sentinelWsPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.82); }
+}
+
+/* ---- 菜单分组标签（工作台 / 管理） ---- */
+.sentinel-menu-group {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+.sentinel-menu-group em {
+  font-style: normal;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1.4px;
+  opacity: 0.5;
+  text-transform: uppercase;
+}
+/* 分组之间加一条淡分隔线，形成"区段感" */
+.ant-menu-item-group + .ant-menu-item-group {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(180, 220, 195, 0.07);
+}
+
+/* ---- 引擎健康行（AEGIS sidebar-health） ---- */
+.sentinel-side-health {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 12px 8px;
+  padding: 9px 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--feed-border);
+  background: var(--feed-bg);
+  color: var(--muted);
+  font-size: 11.5px;
+}
+.sentinel-side-health > span:nth-child(2) {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sentinel-live-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #6ee7a8;
+  box-shadow: 0 0 8px rgba(110, 231, 168, 0.8);
+  animation: sentinelWsPulse 2.6s ease-in-out infinite;
+}
+.sentinel-live-dot.is-warn {
+  background: #ffb95f;
+  box-shadow: 0 0 8px rgba(255, 185, 95, 0.8);
+}
+.sentinel-side-version {
+  color: var(--muted);
+  font-size: 10.5px;
+  opacity: 0.55;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 顶栏面包屑 ---- */
+.sentinel-breadcrumb-root {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+.sentinel-breadcrumb-slash {
+  color: rgba(148, 163, 184, 0.42);
+  font-size: 13px;
+}
+.sentinel-breadcrumb-current {
+  color: var(--text);
+  font-size: 14.5px;
+  font-weight: 650;
+  letter-spacing: 0.2px;
+}
+
+/* ---- 状态药丸 ---- */
+.sentinel-demo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  padding: 4px 11px;
+  border-radius: var(--r-pill);
+  border: 1px solid rgba(110, 231, 168, 0.28);
+  background: rgba(110, 231, 168, 0.08);
+  color: #8ff0bd;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.sentinel-demo-pill.is-warn {
+  border-color: rgba(255, 185, 95, 0.32);
+  background: rgba(255, 185, 95, 0.09);
+  color: #ffc98a;
+}
+.sentinel-demo-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: sentinelWsPulse 2.6s ease-in-out infinite;
+}
+
+/* ---- 全局搜索入口（AEGIS ⌘K） ---- */
+.sentinel-global-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 10px 0 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid rgba(180, 220, 195, 0.1);
+  background: rgba(12, 18, 22, 0.5);
+  color: var(--muted);
+  font-size: 12.5px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.25s var(--ease);
+}
+.sentinel-global-search:hover {
+  border-color: rgba(75, 225, 236, 0.32);
+  background: rgba(75, 225, 236, 0.06);
+  color: var(--text);
+}
+.sentinel-global-search > span {
+  white-space: nowrap;
+}
+.sentinel-global-search kbd {
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid rgba(180, 220, 195, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 10.5px;
+  font-family: var(--mono);
+  line-height: 1.4;
+}
+.sentinel-global-search:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgba(6, 8, 7, 0.92),
+    0 0 0 4px var(--c-focus-ring);
+}
+
+/* ============================================================
+   智能问答 · 布局增强（优化复用手册 3.7 + 信息层级）
+   ------------------------------------------------------------
+   对齐「工作空间外壳 + 主区 + 标题栏」的成熟布局：
+     顶部标题栏 / 空态欢迎区 / 工具行 / 快捷键与免责提示
+   配色一律沿用既有变量，未引入新色值。
+   ============================================================ */
+
+/* ---- 顶部标题栏 ---- */
+.sentinel-qa-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 4px 12px;
+  flex-shrink: 0;
+}
+.sentinel-qa-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.sentinel-qa-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.sentinel-qa-titles h1 {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.2px;
+  margin: 0;
+}
+.sentinel-qa-titles span {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- 空态欢迎区 ---- */
+.sentinel-qa-eyebrow {
+  margin: 14px 0 8px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.32em;
+  color: var(--muted);
+  opacity: 0.75;
+}
+.sentinel-qa-welcome-title {
+  margin: 0 0 10px;
+  text-align: center;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  color: var(--text);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+}
+.sentinel-qa-welcome-sub {
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.9;
+  color: var(--text);
+  opacity: 0.9;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* ---- 输入区工具行 ---- */
+.sentinel-qa-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  min-height: 26px;
+}
+.sentinel-qa-toolbar-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.sentinel-qa-toolbar-switch .is-on {
+  color: var(--accent);
+  font-weight: 600;
+}
+.sentinel-qa-counter {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- 快捷键与免责提示 ---- */
+.sentinel-qa-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--muted);
+  opacity: 0.85;
+}
+
+@media (max-width: 720px) {
+  .sentinel-qa-titles span { display: none; }
+  .sentinel-qa-hint { font-size: 10.5px; }
+}
+
+/* 可下钻图表：指针提示（仅交互反馈，不改配色） */
+.sentinel-chart.is-drillable {
+  cursor: pointer;
+}
+
+/* ============================================================
+   态势总览（分析大屏）
+   ------------------------------------------------------------
+   配色全部沿用既有变量，未引入任何新色值。
+   ============================================================ */
+.sentinel-situation {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ---- 顶部：标题 + 时间范围 ---- */
+.sentinel-situation-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 2px;
+}
+.sentinel-situation-head h1 {
+  margin: 0 0 4px;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.sentinel-situation-head p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+/* 时间范围切换：胶囊组，选中项用既有 accent */
+.sentinel-range {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+}
+.sentinel-range-item {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12.5px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 0.18s var(--ease), background 0.18s var(--ease);
+  font-family: inherit;
+}
+.sentinel-range-item:hover {
+  color: var(--text);
+}
+.sentinel-range-item.is-active {
+  background: rgba(77, 222, 163, 0.14);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ---- 指标卡 ---- */
+.sentinel-metric {
+  position: relative;
+  overflow: hidden;
+}
+.sentinel-metric .ant-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+}
+.sentinel-metric-ico {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  font-size: 18px;
+  color: var(--accent);
+  opacity: 0.5;
+}
+.sentinel-metric-label {
+  font-size: 12px;
+  color: var(--muted);
+}
+.sentinel-metric-value {
+  font-family: var(--mono);
+  font-size: 24px;
+  line-height: 1.25;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.sentinel-metric-sub {
+  font-size: 11px;
+  color: var(--muted);
+  opacity: 0.85;
+}
+
+/* ---- 分类图例 ---- */
+.sentinel-cat-legend {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sentinel-cat-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+.sentinel-cat-legend li:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.sentinel-cat-legend .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sentinel-cat-legend .name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sentinel-cat-legend b {
+  font-family: var(--mono);
+  color: var(--text);
+}
+.sentinel-cat-legend small {
+  color: var(--muted);
+  font-size: 11px;
+  width: 46px;
+  text-align: right;
+  font-family: var(--mono);
+}
+
+/* ---- 最新高危列表 ---- */
+.sentinel-top-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 262px;
+  overflow-y: auto;
+}
+.sentinel-top-row {
+  /* 列宽按「编号要完整显示」重排：
+     编号（cid）→ 严重度（sev）→ 标题 → CVSS → 来源。
+     原先 cid 只有 62px，GHSA 开头的长编号会被截成「GHSA-wf…」。 */
+  display: grid;
+  grid-template-columns: minmax(148px, auto) 58px 1fr 42px 60px;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+.sentinel-top-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+/* 严重度标签：压缩宽度。原来 150px 拿来看一个 HIGH，实在太奢侈 */
+.sentinel-top-row .sev {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  text-align: center;
+  padding: 2px 0;
+  border-radius: 4px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+}
+/* 编号：唯一可点区。做成 button 便于键盘可达与 hover 反馈 */
+.sentinel-top-row .cid.is-link {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 2px 4px;
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--cyan);
+  text-align: left;
+  cursor: pointer;
+  /* 完整显示是硬需求，宁可让标题多让出空间 */
+  white-space: nowrap;
+}
+.sentinel-top-row .cid.is-link:hover {
+  background: rgba(76, 215, 246, 0.12);
+  text-decoration: underline;
+}
+/* 编号被点/聚焦时给个明确反馈——它是唯一可点的地方，得让用户看出来 */
+.sentinel-top-row .cid.is-link:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 1px;
+}
+.sentinel-top-row .title {
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sentinel-top-row .cvss {
+  font-family: var(--mono);
+  color: var(--accent);
+  text-align: right;
+}
+.sentinel-top-row .src {
+  color: var(--muted);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sentinel-link-btn {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+
+/* ---- 流水线 ---- */
+.sentinel-pipeline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 18px 4px 8px;
+  flex-wrap: wrap;
+}
+.sentinel-pipeline-step {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sentinel-pipeline-step > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 92px;
+  padding: 10px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--border);
+}
+.sentinel-pipeline-step b {
+  font-family: var(--mono);
+  font-size: 18px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.sentinel-pipeline-step small {
+  font-size: 11px;
+  color: var(--muted);
+}
+.sentinel-pipeline-step .arrow {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 0 2px;
+}
+
+/* ---- 情报源健康 ---- */
+.sentinel-source-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(212px, 1fr));
+  gap: 8px;
+}
+.sentinel-source {
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--border);
+}
+.sentinel-source .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.sentinel-source .name {
+  font-size: 12px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sentinel-source .rate {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.sentinel-source .rate.is-good {
+  color: var(--accent);
+}
+.sentinel-source .rate.is-warn {
+  color: var(--warn);
+}
+.sentinel-source .rate.is-bad {
+  color: var(--danger);
+}
+.sentinel-source .bar {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 7px 0 5px;
+  overflow: hidden;
+}
+.sentinel-source .bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+}
+.sentinel-source .foot {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+@media (max-width: 1100px) {
+  .sentinel-top-row {
+    grid-template-columns: 58px 1fr 40px;
+  }
+  .sentinel-top-row .src {
+    display: none;
+  }
+}
+
+/* ---- 顶栏实时时钟（配色沿用既有变量） ---- */
+.sentinel-clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  height: 30px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.sentinel-clock .anticon {
+  color: var(--accent);
+  opacity: 0.75;
+}
+.sentinel-clock-date {
+  font-weight: 500;
+  color: var(--muted);
+}
+.sentinel-clock-time {
+  color: var(--text);
+  letter-spacing: 0.3px;
+}
+@media (max-width: 980px) {
+  .sentinel-clock-date {
+    display: none;
+  }
+}
+
+/* ============================================================
+   流水线 · 美化（图标 + 动效）
+   ------------------------------------------------------------
+   动效原则：只动 transform / opacity，不触发重排；
+   所有循环动效都包在 prefers-reduced-motion 里。
+   配色沿用既有令牌。
+   ============================================================ */
+
+/* ---- 流水线 ---- */
+.sentinel-pipeline {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 16px 4px 6px;
+  flex-wrap: wrap;
+}
+.sentinel-pipeline-step {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.sentinel-step-box {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 12px 6px 14px;
+  border-radius: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.015)
+  );
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: transform 0.24s var(--ease), border-color 0.24s var(--ease);
+}
+.sentinel-step-box:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-hi);
+}
+.sentinel-step-ico {
+  font-size: 15px;
+  color: var(--accent);
+  display: inline-flex;
+  animation: sentinelStepPulse 2.8s var(--ease-inout-std) infinite;
+}
+.sentinel-step-box b {
+  font-family: var(--mono);
+  font-size: 19px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+.sentinel-step-box small {
+  font-size: 11px;
+  color: var(--muted);
+}
+/* 阶段占比条：把「漏斗」可视化 */
+.sentinel-step-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  height: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, var(--accent), var(--cyan));
+  border-radius: 2px;
+  opacity: 0.75;
+  animation: sentinelStepBar 0.9s var(--ease) both;
+}
+.sentinel-step-link {
+  flex: 0 0 auto;
+  width: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 10px;
+  position: relative;
+}
+/* 箭头上的流光：暗示「数据流向下一环」 */
+.sentinel-step-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(77, 222, 163, 0.85),
+    transparent
+  );
+  width: 40%;
+  animation: sentinelStepFlow 1.9s var(--ease-inout-std) infinite;
+  pointer-events: none;
+}
+
+@keyframes sentinelStepPulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+}
+@keyframes sentinelStepBar {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+}
+@keyframes sentinelStepFlow {
+  from {
+    transform: translateX(-140%);
+  }
+  to {
+    transform: translateX(340%);
+  }
+}
+
+/* 尊重系统的「减少动效」设置 */
+@media (prefers-reduced-motion: reduce) {
+  .sentinel-step-ico,
+  .sentinel-step-bar,
+  .sentinel-step-link::after {
+    animation: none !important;
+  }
+  .sentinel-step-box:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   知识图谱
+   ------------------------------------------------------------
+   配色沿用既有令牌，未引入新色值。
+   ============================================================ */
+.sentinel-graph {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sentinel-graph-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.sentinel-graph-head h1 {
+  margin: 0 0 4px;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.sentinel-graph-head p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.sentinel-graph-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sentinel-graph-filters label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.sentinel-graph-refresh {
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  cursor: pointer;
+}
+.sentinel-graph-refresh:hover {
+  color: var(--accent);
+  border-color: var(--border-hi);
+}
+
+/* ---- 主体：图 + 右侧栏 ---- */
+.sentinel-graph-body {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 10px;
+  /* stretch：让右列跟着左列的图谱高度拉伸，
+     三张卡用 flex 权重瓜分这段高度（align-items:start 做不到）。 */
+  align-items: stretch;
+}
+.sentinel-graph-canvas .ant-card-head-title {
+  font-size: 13.5px;
+}
+
+/* 图例 */
+.sentinel-graph-legend {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.sentinel-lg-item {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 11.5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: opacity 0.16s var(--ease);
+}
+.sentinel-lg-item i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.sentinel-lg-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.sentinel-lg-item.is-off {
+  opacity: 0.32;
+  text-decoration: line-through;
+}
+
+.sentinel-graph-hint {
+  margin: 4px 6px 0;
+  font-size: 11px;
+  color: var(--muted);
+  opacity: 0.85;
+}
+
+/* ---- 右侧栏 ---- */
+.sentinel-graph-side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+/* 三张卡按内容多少分配高度：
+   节点详情的邻居列表长度不固定，给最大权重并在内部滚动，
+   避免一个邻居很多的节点把整列撑破、与左图不等高。 */
+.sentinel-graph-side > .ant-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.sentinel-graph-side > .ant-card > .ant-card-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.sentinel-graph-side > .ant-card:nth-child(1) {
+  flex: 1.45 1 0;
+}
+/* 多跳链路压缩：内容只有两个选择器 + 一句提示，
+   高度让给关系类型分布（4 行条形图需要呼吸空间）。 */
+.sentinel-graph-side > .ant-card:nth-child(2) {
+  flex: 0.78 1 0;
+}
+.sentinel-graph-side > .ant-card:nth-child(3) {
+  flex: 1.15 1 0;
+}
+/* 隐藏卡内滚动条：右侧栏滚动条会拖出视觉噪音，
+   但滚动手势要保留（内容超长时仍可滚）。 */
+.sentinel-graph-side > .ant-card > .ant-card-body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.sentinel-graph-side > .ant-card > .ant-card-body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* 节点详情 */
+.sentinel-gnode {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sentinel-gnode-tag {
+  align-self: flex-start;
+  font-size: 10.5px;
+  font-family: var(--mono);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.sentinel-gnode-name {
+  font-size: 14px;
+  line-height: 1.45;
+  word-break: break-all;
+}
+.sentinel-gnode-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.sentinel-ggroup {
+  border-top: 1px solid var(--border);
+  padding-top: 7px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.sentinel-ggroup-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.sentinel-ggroup-head em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.sentinel-gitem {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.sentinel-gitem:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+.sentinel-gitem i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sentinel-gitem .nm {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 多跳链路 */
+.sentinel-gpath {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.sentinel-gpath-result {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+}
+.sentinel-gpath-hops {
+  align-self: flex-start;
+  font-size: 10.5px;
+  font-family: var(--mono);
+  color: var(--accent);
+  border: 1px solid var(--border-hi);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.sentinel-gpath-node {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  position: relative;
+  padding-left: 4px;
+}
+.sentinel-gpath-node .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.sentinel-gpath-node .nm {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* 关系标签挂在两节点之间：竖线 + 小字 */
+.sentinel-gpath-node .via {
+  position: relative;
+  font-style: normal;
+  font-size: 10.5px;
+  color: var(--cyan);
+  margin-left: 2px;
+  padding-left: 14px;
+  flex-shrink: 0;
+}
+.sentinel-gpath-node .via::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  width: 6px;
+  height: 1px;
+  background: var(--cyan);
+  opacity: 0.6;
+}
+.sentinel-gpath-empty {
+  margin: 6px 2px 0;
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* 关系分布 */
+.sentinel-grel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  height: 100%;
+}
+.sentinel-grel-row {
+  flex: 0 0 auto;
+}
+.sentinel-grel-row {
+  display: grid;
+  grid-template-columns: 64px 1fr 42px;
+  align-items: center;
+  gap: 8px;
+}
+.sentinel-grel-row .nm {
+  font-size: 11.5px;
+  color: var(--text);
+}
+.sentinel-grel-row .track {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+.sentinel-grel-row .track i {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--cyan), var(--accent));
+  animation: sentinelRelBar 0.8s var(--ease) both;
+}
+.sentinel-grel-row b {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-align: right;
+}
+@keyframes sentinelRelBar {
+  from {
+    width: 0;
+  }
+}
+
+/* 与指标卡行同一个断点：两处必须同时切换，
+   否则会出现「卡片两栏、图谱单栏」的错位。 */
+@media (max-width: 860px) {
+  .sentinel-graph-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 图谱页指标卡：4 个。
+   注意必须显式写 display:grid——态势总览那边用的是 AntD <Row>
+   （自带 flex），本页用的是普通 div，不加 display 会退化成块级竖排。 */
+/* 指标卡行：列定义与 .sentinel-graph-body 保持一致（1fr + 320px），
+   这样左三卡的右端 = 图谱卡右端，右卡的左端 = 右侧三卡左端。 */
+.sentinel-graph .sentinel-metric-row {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 10px;
+  align-items: stretch;
+}
+.sentinel-metric-left {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  min-width: 0;
+}
+.sentinel-metric-right {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-width: 0;
+}
+.sentinel-metric-left > .sentinel-metric,
+.sentinel-metric-right > .sentinel-metric {
+  min-width: 0;
+}
+/* 断点设860px 而不是 1280px：
+   常见的 1080p 笔记本（内容区约 870px）仍应保持两栏——
+   单栏会让左侧图谱失去与右侧栏的边界，两套列宽又对不齐。 */
+@media (max-width: 860px) {
+  .sentinel-graph .sentinel-metric-row {
+    grid-template-columns: 1fr;
+  }
+  .sentinel-metric-left {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ============================================================
+   流水线 · 视觉升级
+   ------------------------------------------------------------
+   上一版的问题（用户指出）：连接线只是一条闪烁的绿条，
+   像"装饰"而不是"管道"，没有数据流动的方向感；卡片也偏平。
+   现在的做法：
+     · 连接线 → SVG 渐变轨道 + 沿线移动的光点 + 箭头收束
+     · 卡片   → 顶部高光 + 徽章图标 + 底部占比条 + 悬停浮起
+   配色沿用既有令牌。
+   ============================================================ */
+.sentinel-pipeline {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 20px 4px 8px;
+  flex-wrap: wrap;
+}
+.sentinel-pipeline-step {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.sentinel-step-box {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px 16px;
+  border-radius: 14px;
+  /* 上亮下暗的纵向渐变，比单色块更有体积感 */
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.02) 62%,
+    rgba(255, 255, 255, 0.008) 100%
+  );
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition:
+    transform 0.28s var(--ease),
+    border-color 0.28s var(--ease),
+    box-shadow 0.28s var(--ease);
+}
+.sentinel-step-box:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-hi);
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.32),
+    0 0 0 1px rgba(182, 243, 74, 0.08);
+}
+/* 顶部一道细高光，模拟玻璃边缘反光 */
+.sentinel-step-sheen {
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.34),
+    transparent
+  );
+}
+
+/* 图标做成徽章：内发光 + 呼吸 */
+.sentinel-step-ico {
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  color: var(--accent);
+  background: rgba(182, 243, 74, 0.12);
+  border: 1px solid rgba(182, 243, 74, 0.22);
+  box-shadow: inset 0 0 12px rgba(182, 243, 74, 0.14);
+  animation: sentinelStepPulse 2.9s var(--ease-inout-std) infinite;
+}
+
+.sentinel-step-box b {
+  font-family: var(--mono);
+  font-size: 21px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 18px rgba(182, 243, 74, 0.16);
+}
+.sentinel-step-box small {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+/* 占比条：渐变 + 发光端点，视觉上"灌满"的进度 */
+.sentinel-step-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  height: 2.5px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--cyan));
+  box-shadow: 0 0 10px rgba(75, 225, 236, 0.45);
+  animation: sentinelStepBar 0.9s var(--ease) both;
+}
+
+/* ---- 连接线：SVG 管道 ---- */
+.sentinel-step-link {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 16px;
+  overflow: visible;
+}
+
+@keyframes sentinelStepPulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+@keyframes sentinelStepBar {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+}
+@keyframes sentinelStepFlow {
+  from {
+    transform: translateX(-140%);
+  }
+  to {
+    transform: translateX(340%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sentinel-step-ico,
+  .sentinel-step-bar {
+    animation: none !important;
+  }
+  .sentinel-step-box:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   页面级行间距修正
+   ------------------------------------------------------------
+   问题：AntD 的 gutter={[x, y]} 只作用于**单个 Row 内部**
+   （列间距 + 行内多行的间距），**兄弟 Row 之间默认 0**，
+   于是上下两排卡片贴在一起，而左右有 10~12px——
+   视觉上「挤在一起」，不像同一套栅格。
+
+   这里给兄弟行补上与 gutter 一致的上边距：
+     态势总览（gutter 10）→ 10px
+     监控看板（gutter 12）→ 12px
+   ============================================================ */
+
+/* 态势总览：卡片都包在 Spin 里，
+   外层 flex 的 gap 只作用到 Spin 这一个子元素，内部的行彼此紧贴。 */
+.sentinel-situation .ant-spin-nested-loading .ant-row + .ant-row {
+  margin-top: 10px;
+}
+
+/* 监控看板：根容器下的兄弟元素。
+   注意不能只写`> .ant-row + .ant-row`——实测两行之间还有
+   独立的 Card、Alert、更新时间条，它们同样是兄弟节点，
+   只匹配 Row 会漏掉真正的贴边处（实测 Row 与其后Card 间距为 0）。*/
+.sentinel-dash-rows > * + * {
+  margin-top: 12px;
+}
+
+/* 组件自带的 margin 会叠加到兄弟间距上（实测 16/28/24 不一），
+   这里清零，让所有纵向间距统一由父容器的 margin-top 决定，
+   才能真正做到「上下间距 = 左右间距」。 */
+.sentinel-dash-rows > .ant-alert,
+.sentinel-dash-rows > .ant-card,
+.sentinel-dash-rows > .sentinel-updated-bar,
+.sentinel-dash-rows > .ant-row {
+  margin-bottom: 0 !important;
+}
+
+
+/* 顶栏「引擎健康」标签的版本号 */
+/* （.tb-dock-ver 已随 v3.0 徽章移除，版本号现随 logo 副标题 .logo-ver） */
+/* 降级态的点：琥珀色，与侧栏原本的 is-warn 语义一致 */
+.tb-dock .dot.is-warn {
+  background: var(--warn);
+  box-shadow: 0 0 8px var(--warn);
+}
+
+/* ============================================================
+   顶栏「引擎健康」胶囊（从侧栏移到顶栏后沿用原有视觉）
+   ------------------------------------------------------------
+   注意：这里必须自成一套样式。原代码复用 .tb-dock + .dot，
+   但这两个类在顶栏作用域下并没有对应规则（.tb-dock 只定义了
+   .tb-dock-ver，.dot 只有作用域版本），结果是绿框与呼吸绿点
+   全部丢失，只剩一段裸文字。
+   ============================================================ */
+.sentinel-engine-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text);
+  white-space: nowrap;
+  cursor: default;
+  transition: border-color 0.2s var(--ease);
+}
+.sentinel-engine-chip:hover {
+  border-color: var(--border-hi);
+}
+
+/* 呼吸绿点：与侧栏时期一致 */
+.sentinel-engine-chip .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: sentinelChipBreathe 2.4s var(--ease) infinite;
+  flex-shrink: 0;
+}
+.sentinel-engine-chip .dot.is-warn {
+  background: var(--warn);
+  box-shadow: 0 0 8px var(--warn);
+}
+
+.sentinel-engine-chip em {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  opacity: 0.75;
+}
+
+@keyframes sentinelChipBreathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sentinel-engine-chip .dot {
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   渲染性能：屏外内容跳过布局与绘制
+   ------------------------------------------------------------
+   实测（PerformanceObserver longtask，1080p）：
+     监控看板 521ms · 情报中心 375ms · 智能问答 535ms
+   其中相当一部分花在为「当前视口外的卡片」做首次布局与绘制。
+   content-visibility: auto 让屏外子树直接跳过这些工作，
+   滚动到附近时才渲染（contain-intrinsic-size 给一个占位高度，
+   避免滚动条跳动）。contain-intrinsic-size: auto 关键字表示
+   浏览器会记住上次渲染的真实高度，滚动体验比固定值更稳。
+   ============================================================ */
+.sentinel-content .ant-card,
+.sentinel-dash-rows .ant-card,
+.sentinel-graph .ant-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}
+
+/* 卡片内有 sticky 表头 / 绝对定位浮层时跳过渲染会让它们错位，
+   这些卡片必须实时渲染。 */
+.sentinel-content .ant-card:has(.ant-table),
+.sentinel-content .ant-card:has(.echarts-for-react),
+.sentinel-graph .sentinel-graph-canvas {
+  content-visibility: visible;
+}
+
+/* ============================================================
+   系统运维与自愈
+   ------------------------------------------------------------
+   配色沿用既有令牌（--accent/--cyan/--warn/--danger），未引入新色值。
+   ============================================================ */
+.sentinel-ops {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* 所有卡片都包在 <Spin> 里，外层 flex 的 gap 只作用到 Spin 这一个
+   子元素，里面的卡片彼此是紧贴的——纵向因此比横向（gutter 10px）
+   宽出一截。这里给 Spin 内部补上同等的间距。 */
+.sentinel-ops .ant-spin-nested-loading > .ant-spin-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sentinel-ops-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.sentinel-ops-head h1 {
+  margin: 0 0 4px;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+.sentinel-ops-head p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.sentinel-ops-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ops-health {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.ops-health .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px currentColor;
+  animation: sentinelChipBreathe 2.4s var(--ease) infinite;
+}
+.ops-uptime {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+/* 最近一次成功刷新的时刻——让「数据是实时的」可被用户自行验证，
+   而不是只能相信。失败时转为警示色，明确当前显示的是上一轮数据。 */
+.ops-updated {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  cursor: default;
+}
+.ops-updated.is-stale {
+  color: var(--warn);
+  border-color: rgba(255, 200, 87, 0.4);
+  background: rgba(255, 200, 87, 0.08);
+}
+.sentinel-ops-refresh {
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  cursor: pointer;
+}
+.sentinel-ops-refresh:hover {
+  color: var(--accent);
+  border-color: var(--border-hi);
+}
+
+.ops-card {
+  border-radius: 15px;
+}
+.ops-card > .ant-card-head-title {
+  font-size: 13.5px;
+}
+.ops-extra {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* ---- 编排节点卡 ---- */
+.ops-node-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+  gap: 8px;
+}
+.ops-node {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.015)
+  );
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.24s var(--ease), transform 0.24s var(--ease);
+}
+.ops-node:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-hi);
+}
+.ops-node.is-circuit {
+  border-color: rgba(255, 92, 122, 0.42);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 92, 122, 0.1),
+    rgba(255, 92, 122, 0.02)
+  );
+}
+.ops-node-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ops-node-ico {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  color: var(--accent);
+  background: rgba(182, 243, 74, 0.12);
+  border: 1px solid rgba(182, 243, 74, 0.2);
+}
+.ops-node-state {
+  font-size: 10.5px;
+  font-family: var(--mono);
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.ops-node-state.is-good {
+  color: var(--accent);
+  border-color: var(--border-hi);
+}
+.ops-node-state.is-warn {
+  color: var(--warn);
+}
+.ops-node-state.is-bad {
+  color: var(--danger);
+  border-color: rgba(255, 92, 122, 0.4);
+}
+.ops-node-name {
+  font-size: 13px;
+  color: var(--text);
+}
+.ops-node-metrics {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ops-node-metrics > span {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ops-node-metrics em {
+  font-style: normal;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+.ops-node-metrics strong {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.ops-node-metrics strong.is-good {
+  color: var(--accent);
+}
+.ops-node-metrics strong.is-warn {
+  color: var(--warn);
+}
+.ops-node-metrics strong.is-bad {
+  color: var(--danger);
+}
+.ops-node-metrics strong.is-idle {
+  color: var(--muted);
+}
+.ops-node-idle {
+  font-size: 11.5px;
+  color: var(--muted);
+  font-style: italic;
+}
+.ops-node-err {
+  font-size: 10.5px;
+  color: var(--danger);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- 采集器卡 ---- */
+.ops-collector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 8px;
+}
+.ops-collector {
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 9px 11px;
+}
+.ops-collector .head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ops-collector .name {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ops-collector .rate {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.ops-collector .rate.is-good {
+  color: var(--accent);
+}
+.ops-collector .rate.is-warn {
+  color: var(--warn);
+}
+.ops-collector .rate.is-bad {
+  color: var(--danger);
+}
+.ops-collector-bar {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 7px 0 5px;
+  overflow: hidden;
+}
+.ops-collector-bar > i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--cyan));
+  animation: sentinelRelBar 0.8s var(--ease) both;
+}
+.ops-collector .foot {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  color: var(--muted);
+  font-family: var(--mono);
+}
+
+/* ---- 资源水位 ---- */
+.ops-rings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /* 环 108 → 128 后，行距与外边距同步放大，
+     否则四个环会挤在一起（原来是 10px / 6px 2px） */
+  gap: 16px;
+  padding: 10px 2px;
+}
+.ops-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.ops-ring svg {
+  grid-area: 1 / 1;
+}
+.ops-ring-txt {
+  grid-area: 1 / 1;
+  /* 与 svg 同占 grid-area 1/1，必须显式抬到上层，
+     否则百分比数字会被环形进度条盖住 */
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.3;
+  text-align: center;
+  /* 环已放大到 128px，内圈约 106px，
+     不再需要靠内边距压缩文本来避免压环 */
+  padding: 0 4px;
+}
+/* 百分比：18 → 16px */
+.ops-ring-txt b {
+  font-family: var(--mono);
+  font-size: 16px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+/* 指标名（CPU / 内存…）：13 → 12px */
+.ops-ring-txt small {
+  font-size: 12px;
+  color: var(--text);
+}
+/* 副文本（16 核 / 17.1/27.8 GB…）：12 → 11px。
+   这行是「灰色字体」，最小最不显眼，却是判断资源是否够用的关键信息。 */
+.ops-ring-txt em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--mono);
+  margin-top: 1px;
+}
+
+/* ---- 「一切正常」空状态 ----
+   自愈事件 / 告警中心为空是**好事**，但 Empty 组件的默认插画
+   会被读成「加载失败 / 功能坏了」。改成绿色对勾 + 明确结论。 */
+.ops-healthy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 100%;
+  min-height: 120px;
+  padding: 16px 20px;
+  text-align: center;
+}
+.ops-healthy .ico {
+  font-size: 26px;
+  color: var(--ok);
+  opacity: 0.85;
+}
+.ops-healthy b {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text);
+}
+.ops-healthy small {
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 340px;
+}
+
+/* ---- 编排链路流程图（LangGraph 状态机） ----
+   画的是真实图结构（orchestrator._build_graph），不是示意图。 */
+.ops-flow {
+  margin-top: 14px;
+  padding: 14px 14px 12px;
+  border-radius: 12px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, rgba(76, 215, 246, .045), transparent 55%),
+    radial-gradient(120% 140% at 100% 100%, rgba(78, 222, 163, .035), transparent 55%),
+    rgba(255, 255, 255, .012);
+  border: 1px solid rgba(180, 220, 195, .085);
+}
+
+.ops-flow-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.ops-flow-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: .02em;
+  padding-left: 8px;
+  border-left: 2px solid var(--cyan);
+  line-height: 1.15;
+}
+.ops-flow-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+/* hint 里的虚线图例：用小线段示意「虚线=条件/回环」 */
+.ops-flow-hint .lg-dash {
+  display: inline-block;
+  width: 18px;
+  border-top: 1px dashed rgba(255, 138, 92, .8);
+  vertical-align: middle;
+  margin: 0 3px;
+}
+
+.ops-flow-canvas {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.ops-flow-canvas svg {
+  display: block;
+  width: 100%;
+  /* 960 宽的画布若被压到 680px 会缩到 0.71 倍、字号只剩 7.4px。
+     760px 是保证 8.5px 副标题仍可读的下限，再窄就让容器横向滚动。 */
+  min-width: 760px;
+  height: auto;
+}
+
+/* 文案层级：主 10.5/600、副 8.5/400。
+   字号不能只看 SVG 数值——画布 viewBox 是 960 宽，渲染到页面上
+   会被缩放，实际视觉大小 ≈ 字号 × (容器宽/960)。
+   上一版 720 画布配 12px，实际渲染到约 17px，框和字都显得过大。 */
+.ops-flow-t1 {
+  font-family: var(--font);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+.ops-flow-t2 {
+  font-family: var(--font);
+  font-size: 8.5px;
+  font-weight: 400;
+  letter-spacing: .02em;
+}
+.ops-flow-lbl {
+  font-family: var(--font);
+  font-size: 8.5px;
+  fill: rgba(160, 190, 178, .92);
+}
+
+/* 节点：hover 只抬亮自身的边框，**不模糊/淡出其它节点**——
+   之前用 opacity 淡化其余节点，用户反馈「不要把其他内容虚化掉」。
+   现在只做「当前节点边框变亮变粗 + 轻微外发光」，其余保持不变。 */
+.ops-flow-node {
+  cursor: pointer;
+}
+.ops-flow-node rect,
+.ops-flow-node path {
+  transition: stroke-opacity .18s ease, stroke-width .18s ease;
+}
+.ops-flow-node.is-hover rect {
+  filter: drop-shadow(0 0 6px rgba(76, 215, 246, .3));
+}
+/* 虚线框 = 图外组件（调度器）——不属 LangGraph 状态机，但驱动整条链路 */
+.ops-flow-node.is-outside rect {
+  stroke-dasharray: 3 2.5;
+  fill: rgba(9,17,15,.7);
+}
+.ops-flow-node:focus-visible {
+  outline: none;
+}
+.ops-flow-node:focus-visible rect {
+  stroke-width: 1.8;
+  stroke-opacity: 1;
+}
+
+/* 动效：光点沿路径跑 + 运行正常节点的边框呼吸。
+   全部放在 no-preference 里，用户开启「减弱动效」时自动停用；
+   降级后光点仍是一条静态短线，图的信息量不损失。 */
+@media (prefers-reduced-motion: no-preference) {
+  .ops-flow-runner {
+    animation: ops-flow-run 2.6s linear infinite;
+  }
+  .ops-flow-runner.is-slow {
+    animation-duration: 3.6s;
+  }
+  .ops-flow-node.is-live > rect {
+    animation: ops-flow-breathe 4s ease-in-out infinite;
+  }
+}
+@keyframes ops-flow-run {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: -102.4; }
+}
+@keyframes ops-flow-breathe {
+  0%, 100% { stroke-opacity: .58; }
+  50%      { stroke-opacity: .84; }
+}
+
+/* 详情条：聚焦节点的职责 + 真实运行数据 */
+.ops-flow-detail {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 9px 12px;
+  min-height: 38px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .022);
+  border: 1px solid rgba(180, 220, 195, .07);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.ops-flow-d-name {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.ops-flow-d-state {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .02em;
+  padding: 1.5px 7px;
+  border-radius: 5px;
+}
+.ops-flow-d-state.is-ok {
+  color: var(--ok);
+  background: rgba(78, 222, 163, .12);
+}
+.ops-flow-d-state.is-idle {
+  color: var(--muted);
+  background: rgba(255, 255, 255, .05);
+}
+.ops-flow-d-state.is-bad {
+  color: #ff6b6b;
+  background: rgba(255, 92, 92, .14);
+}
+.ops-flow-d-state.is-struct {
+  color: var(--cyan);
+  background: rgba(76, 215, 246, .1);
+}
+.ops-flow-d-duty {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--text-2);
+}
+.ops-flow-d-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.ops-flow-d-stat em {
+  font-style: normal;
+  opacity: .78;
+}
+.ops-flow-d-stat b {
+  font-weight: 500;
+  color: var(--text-2);
+}
+/* 竖分隔线：比「·」更清晰，且不会与数字混淆 */
+.ops-flow-d-stat u {
+  display: inline-block;
+  width: 1px;
+  height: 10px;
+  margin: 0 3px;
+  background: rgba(180, 220, 195, .2);
+  text-decoration: none;
+}
+
+/* ---- 自愈时间线 ---- */
+.ops-timeline {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.ops-timeline li {
+  display: grid;
+  grid-template-columns: 14px 1fr 64px;
+  align-items: start;
+  gap: 10px;
+  padding: 7px 4px;
+  border-radius: 8px;
+}
+.ops-timeline li:hover {
+  background: rgba(255, 255, 255, 0.035);
+}
+.ops-timeline .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-top: 6px;
+  background: var(--muted);
+  flex-shrink: 0;
+}
+.ops-timeline li.is-error .dot {
+  background: var(--danger);
+  box-shadow: 0 0 8px var(--danger);
+}
+.ops-timeline li.is-warn .dot {
+  background: var(--warn);
+  box-shadow: 0 0 8px var(--warn);
+}
+.ops-timeline li.is-info .dot {
+  background: var(--accent);
+}
+.ops-timeline .body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ops-timeline .body b {
+  font-size: 12.5px;
+  font-weight: 500;
+}
+.ops-timeline .body small {
+  font-size: 11px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ops-timeline time {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  text-align: right;
+}
+
+/* ---- 告警 ---- */
+.ops-alerts {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ops-alerts li {
+  display: grid;
+  grid-template-columns: 16px 1fr 30px 82px;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 6px;
+  border-radius: 8px;
+  font-size: 12px;
+  border-left: 2px solid transparent;
+}
+.ops-alerts li.is-error {
+  border-left-color: var(--danger);
+  background: rgba(255, 92, 122, 0.06);
+}
+.ops-alerts li.is-warn {
+  border-left-color: var(--warn);
+  background: rgba(255, 200, 87, 0.05);
+}
+.ops-alerts .nm {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ops-alerts b {
+  font-family: var(--mono);
+  color: var(--warn);
+  text-align: right;
+}
+.ops-alerts li.is-error b {
+  color: var(--danger);
+}
+.ops-alerts .tm {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--muted);
+  text-align: right;
+}
+.ops-note {
+  margin: 10px 4px 0;
+  font-size: 11.5px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ============================================================
+   运维页 · 并排卡片等高
+   ------------------------------------------------------------
+   与知识图谱页同一个问题：AntD 的 Col 默认不拉伸，
+   卡片高度由内容决定——内容少的「资源水位」「告警中心」
+   就比旁边的图卡矮一截。
+   这里让 Col 作纵向 flex 容器、Card 撑满，
+   并让内部列表自己滚动而不是把卡片撑高。
+   ============================================================ */
+.ops-pair-row {
+  align-items: stretch;
+}
+.ops-pair-row > .ant-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ops-pair-row > .ant-col > .ant-card {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.ops-pair-row > .ant-col > .ant-card > .ant-card-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* 图卡与资源环填满可用高度 */
+.ops-pair-row .ant-card-body > .echarts-for-react {
+  flex: 1 1 auto;
+}
+.ops-rings {
+  flex: 1 1 auto;
+  align-content: center;
+}
+/* 列表超出时在卡内滚动，不把卡片撑高 */
+.ops-timeline,
+.ops-alerts {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.ops-note {
+  margin-top: 10px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   运维页 · 左右两卡等高
+   ------------------------------------------------------------
+   AntD 的 Row 默认 align="top"，两个 Col 各自按内容高度，
+   于是「资源水位」比「趋势图」矮、「告警中心」比「时间线」矮。
+   这里让 Col 作 flex 容器、卡片撑满，等高由较高的一栏决定。
+   ============================================================ */
+.ops-pair-row {
+  align-items: stretch;
+}
+.ops-pair-row > .ant-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+/* 关键：卡片高度跟随 Col，而不是内容 */
+.ops-pair-row > .ant-col > .ops-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+/* 图表卡内容区占满剩余高度，ECharts 才能撑满 */
+.ops-pair-row > .ant-col > .ops-card > .ant-card-body {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+/* 时间线与告警列表在等高后各自滚动，不把卡片撑得更高 */
+.ops-pair-row .ops-timeline,
+.ops-pair-row .ops-alerts {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.ops-pair-row .ops-rings {
+  align-content: center;
+  height: 100%;
+}
+
+/* ------------------------------------------------------------
+   知识图谱 · 节点详情恢复滚动条
+   ------------------------------------------------------------
+   上一轮按「去掉拖动栏」把侧栏滚动条一并隐藏了，但节点详情的
+   邻居列表长度不固定（chrome 有 107 个邻居），没有滚动条就
+   看不到后面的条目。这里单独给它恢复，其他卡片仍保持无滚动条。 */
+.sentinel-graph-side .ant-card:first-child .ant-card-body {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(180, 220, 195, 0.18) transparent;
+}
+.sentinel-graph-side .ant-card:first-child .ant-card-body::-webkit-scrollbar {
+  width: 6px;
+}
+.sentinel-graph-side .ant-card:first-child .ant-card-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sentinel-graph-side .ant-card:first-child .ant-card-body::-webkit-scrollbar-thumb {
+  background: rgba(180, 220, 195, 0.18);
+  border-radius: 3px;
+}
+.sentinel-graph-side .ant-card:first-child .ant-card-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(180, 220, 195, 0.3);
+}
+
+/* ------------------------------------------------------------
+   态势总览 · AI 风险分类：环形图与图例不再互相压住
+   ------------------------------------------------------------
+   环形图固定高度、下方图例在卡片高度不够时会被底边裁掉
+   （「AI应用与智能体风险」那行只露出上半截）。
+   让图例区自适应剩余高度并可滚动。 */
+.sentinel-cat-legend {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  justify-content: flex-start;
+  scrollbar-width: none;
+}
+.sentinel-cat-legend::-webkit-scrollbar {
+  width: 0;
+}
+
+/* ============================================================
+   ★ 亮色主题覆盖层（白天主题 · 批次 B）
+   ============================================================
+   为什么集中放在文件末尾，而不是逐处改原规则：
+     ① 原文件 6000+ 行、约 40 处浅色硬编码（rgba(255,255,255,.045)
+        这类「白字淡底」的暗色配方），逐处改会淹没在噪声里；
+     ② 暗色是全站基准，必须逐字不动 —— 集中覆盖能保证
+        「不写错就不影响黑夜」，改动面也可一眼看全；
+     ③ 暗色规则大量带 !important，所以覆盖层同样需要 !important
+        才能压住，这条约束也集中在一处。
+
+   ---------- 核心原则：文字一律不用「半透明白/绿灰」 ----------
+   暗色主题里 rgba(255,255,255,.05)、rgba(160,200,175,.62) 这类
+   低透明白/绿灰在白底上对比度普遍 < 2:1，正文级完全不可读。
+   覆盖层里对应位置一律换成**不透明的深墨绿**，实测值：
+     --text #12211a 15.4:1 · --text-2 #46584f 7.0:1
+     --muted #63746b 4.6:1 · --accent #047d57 4.8:1
+   ============================================================ */
+
+/* ---------- 一、外壳：侧栏 / 顶栏 ---------- */
+[data-theme="light"] .sentinel-logo-btn:hover {
+  background: rgba(5, 150, 105, 0.07);
+}
+[data-theme="light"] .sentinel-collapse-btn {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: rgba(23, 58, 43, 0.12);
+}
+/* hover 原本是「深黑底 + 荧光绿字」，白天反转为「墨绿底 + 白字」 */
+[data-theme="light"] .sentinel-collapse-btn:hover,
+[data-theme="light"] .sentinel-collapse-btn:focus-visible {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+/* 折叠按钮的白色圆底 → 白底上要靠描边区分，否则看不见 */
+[data-theme="light"] .sentinel-collapse-ico {
+  background: #ffffff;
+  border: 1px solid rgba(23, 58, 43, 0.14);
+  color: var(--accent);
+}
+[data-theme="light"] .sentinel-collapse-btn:hover .sentinel-collapse-ico {
+  background: #ffffff;
+  color: var(--accent);
+  box-shadow: none;
+}
+[data-theme="light"] .sentinel-collapse-btn:focus-visible {
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px var(--c-focus-ring);
+}
+
+/* 侧栏底部「系统概览」卡片 */
+[data-theme="light"] .sentinel-side-foot {
+  border-top-color: rgba(23, 58, 43, 0.1);
+}
+[data-theme="light"] .sentinel-side-foot-title {
+  color: var(--muted);
+}
+[data-theme="light"] .sentinel-side-foot-line {
+  background: linear-gradient(90deg, rgba(23, 58, 43, 0.16), transparent);
+}
+[data-theme="light"] .sentinel-stat-row:hover {
+  background: rgba(5, 150, 105, 0.05);
+}
+[data-theme="light"] .sentinel-stat-ico {
+  background: rgba(5, 150, 105, 0.1);
+  border-color: rgba(5, 150, 105, 0.24);
+}
+[data-theme="light"] .sentinel-ico-cyan {
+  background: rgba(14, 116, 144, 0.1);
+  border-color: rgba(14, 116, 144, 0.24);
+}
+[data-theme="light"] .sentinel-ico-amber {
+  background: rgba(180, 83, 9, 0.1);
+  border-color: rgba(180, 83, 9, 0.24);
+}
+/* 半透绿灰标签 → 不透明弱化文字（原来是 2.2:1，白底不可读） */
+[data-theme="light"] .sentinel-stat-label {
+  color: var(--muted);
+}
+[data-theme="light"] .sentinel-ratio-bar {
+  background: rgba(23, 58, 43, 0.08);
+}
+[data-theme="light"] .sentinel-ratio-bar span {
+  background: linear-gradient(90deg, var(--accent), var(--cyan));
+  box-shadow: none;
+}
+[data-theme="light"] .sentinel-ratio-text {
+  color: var(--muted);
+}
+
+/* 调度状态药丸：浅底 + 深字（白字在浅底上只有 1.1:1） */
+[data-theme="light"] .sentinel-live-text.is-running {
+  background: var(--pill-ok-bg);
+  border-color: rgba(5, 150, 105, 0.3);
+  color: var(--pill-ok-fg);
+}
+[data-theme="light"] .sentinel-live-text.is-paused {
+  background: var(--pill-warn-bg);
+  border-color: rgba(180, 83, 9, 0.3);
+  color: var(--pill-warn-fg);
+}
+[data-theme="light"] .sentinel-live-text.is-off {
+  background: var(--pill-neutral-bg);
+  border-color: rgba(23, 58, 43, 0.12);
+  color: var(--pill-neutral-fg);
+}
+
+/* ---------- 二、顶栏状态坞 / 引擎芯片 ---------- */
+[data-theme="light"] .sentinel-header-right .ant-tag,
+[data-theme="light"] .sentinel-engine-chip {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(23, 58, 43, 0.14);
+}
+[data-theme="light"] .sentinel-global-search {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(23, 58, 43, 0.12);
+  color: var(--muted);
+}
+[data-theme="light"] .sentinel-global-search:hover {
+  background: #ffffff;
+  border-color: rgba(5, 150, 105, 0.4);
+  color: var(--text-2);
+}
+[data-theme="light"] .sentinel-breadcrumb-root,
+[data-theme="light"] .sentinel-breadcrumb-slash {
+  color: var(--muted);
+}
+[data-theme="light"] .sentinel-page-icon {
+  background: rgba(5, 150, 105, 0.09);
+  border-color: rgba(5, 150, 105, 0.22);
+  color: var(--accent);
+}
+
+/* ---------- 三、菜单（保持 theme="dark" 标记，白天改色值） ---------- */
+[data-theme="light"] .ant-menu-dark .ant-menu-item:hover {
+  color: var(--accent) !important;
+  background: rgba(5, 150, 105, 0.07) !important;
+}
+[data-theme="light"] .ant-menu-dark .ant-menu-item-selected {
+  color: var(--accent) !important;
+}
+[data-theme="light"] .sentinel-menu-group {
+  color: var(--muted);
+}
+
+/* ---------- 四、卡片 / 表格 / 弹窗 / 浮层 ---------- */
+[data-theme="light"] .glass-panel {
+  background: var(--panel);
+  border-color: rgba(23, 58, 43, 0.14);
+  box-shadow: 0 2px 10px rgba(23, 58, 43, 0.05);
+}
+[data-theme="light"] .glass-panel:hover {
+  border-color: rgba(5, 150, 105, 0.32);
+  box-shadow: 0 8px 24px rgba(23, 58, 43, 0.08);
+}
+[data-theme="light"] .glass-interactive-card {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(23, 58, 43, 0.14);
+}
+[data-theme="light"] .glass-interactive-card::before {
+  background: radial-gradient(420px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
+    rgba(5, 150, 105, 0.1), rgba(14, 116, 144, 0.06), transparent 65%);
+}
+[data-theme="light"] .glass-interactive-card:hover {
+  border-color: rgba(5, 150, 105, 0.4);
+  box-shadow: 0 12px 28px -10px rgba(23, 58, 43, 0.18);
+}
+
+/* AntD 表格：暗色表头白字 → 白底深字 */
+[data-theme="light"] .ant-table {
+  background: transparent;
+}
+[data-theme="light"] .ant-table-thead > tr > th {
+  background: rgba(23, 58, 43, 0.035);
+  color: var(--muted);
+  border-bottom-color: rgba(23, 58, 43, 0.1);
+}
+[data-theme="light"] .ant-table-tbody > tr > td {
+  border-bottom-color: rgba(23, 58, 43, 0.07);
+  color: var(--text);
+}
+[data-theme="light"] .ant-table-tbody > tr:hover > td {
+  background: rgba(5, 150, 105, 0.05) !important;
+}
+[data-theme="light"] .ant-table-tbody > tr.ant-table-row-selected > td {
+  background: rgba(5, 150, 105, 0.08) !important;
+}
+
+/* 弹窗 / 抽屉 / 下拉：底色与阴影 */
+[data-theme="light"] .ant-modal-content,
+[data-theme="light"] .ant-drawer-content {
+  background: #ffffff;
+  box-shadow: 0 12px 40px rgba(23, 58, 43, 0.14);
+}
+/* dropdown-menu / popover-inner / select-dropdown 已并入文末「绿色浮层」段 */
+[data-theme="light"] .ant-modal-header,
+[data-theme="light"] .ant-modal-title,
+[data-theme="light"] .ant-drawer-title {
+  color: var(--text);
+}
+[data-theme="light"] .ant-modal-close {
+  color: var(--muted);
+}
+[data-theme="light"] .ant-modal-close:hover {
+  background: rgba(23, 58, 43, 0.06);
+  color: var(--text);
+}
+/* dropdown 菜单项并入文末绿底段 */
+
+/* ---------- 五、表单控件 ---------- */
+[data-theme="light"] .ant-input,
+[data-theme="light"] .ant-input-affix-wrapper,
+[data-theme="light"] .ant-select-selector,
+[data-theme="light"] .ant-picker {
+  background: #ffffff !important;
+  border-color: rgba(23, 58, 43, 0.16) !important;
+  color: var(--text) !important;
+}
+[data-theme="light"] .ant-input::placeholder {
+  color: var(--muted);
+}
+[data-theme="light"] .ant-input:hover,
+[data-theme="light"] .ant-select-selector:hover {
+  border-color: rgba(5, 150, 105, 0.45) !important;
+}
+[data-theme="light"] .ant-input:focus,
+[data-theme="light"] .ant-input-affix-wrapper-focused,
+[data-theme="light"] .ant-select-focused .ant-select-selector {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.12) !important;
+}
+[data-theme="light"] .ant-input-number,
+[data-theme="light"] .ant-input-number-input {
+  background: #ffffff !important;
+  color: var(--text) !important;
+  border-color: rgba(23, 58, 43, 0.16) !important;
+}
+/* 标签页 / 分段器 / 开关的轨道 */
+[data-theme="light"] .ant-tabs-tab {
+  color: var(--muted);
+}
+[data-theme="light"] .ant-tabs-tab:hover,
+[data-theme="light"] .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--accent);
+}
+[data-theme="light"] .ant-tabs-ink-bar {
+  background: var(--accent);
+}
+[data-theme="light"] .ant-segmented {
+  background: rgba(23, 58, 43, 0.05);
+}
+[data-theme="light"] .ant-segmented-item-selected {
+  background: #ffffff;
+  color: var(--accent);
+  box-shadow: 0 1px 3px rgba(23, 58, 43, 0.1);
+}
+
+/* ---------- 六、空状态 / 提示 / 分隔线 ---------- */
+[data-theme="light"] .ant-empty-description {
+  color: var(--muted);
+}
+[data-theme="light"] .ant-divider {
+  border-color: rgba(23, 58, 43, 0.14);
+}
+[data-theme="light"] .ant-empty-normal .anticon {
+  color: rgba(5, 150, 105, 0.35);
+}
+
+/* ============================================================
+   ★ 亮色覆盖层· 补漏（批次 D 逐页走查后追加）
+   ------------------------------------------------------------
+   批次 B/C 的覆盖层按「外壳 + antd 常用组件」写，
+   走查后发现漏了三类：① 玻璃拟态的其余变体
+   ② 通知/图片预览等没覆盖到的浮层 ③ 渐变描边（亮色下会显脏）。
+   ============================================================ */
+
+/* ---------- 玻璃拟态：批次 B 漏掉的变体 ---------- */
+/* glass-dock：深墨绿半透明 → 白玻璃 */
+[data-theme="light"] .glass-dock {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(23, 58, 43, 0.14);
+  box-shadow: 0 8px 24px rgba(23, 58, 43, 0.1);
+}
+[data-theme="light"] .glass-dock:focus-within {
+  border-color: rgba(5, 150, 105, 0.45);
+  box-shadow:
+    0 8px 24px rgba(23, 58, 43, 0.12),
+    0 0 0 4px rgba(5, 150, 105, 0.1);
+}
+/* 青色调变体：亮色下 ::before 的青色辉光要收敛，否则整卡发青 */
+[data-theme="light"] .glass-interactive-card-cyan::before {
+  background: radial-gradient(420px circle at var(--mouse-x, -500px) var(--mouse-y, -500px),
+    rgba(14, 116, 144, 0.12), rgba(5, 150, 105, 0.07), transparent 65%);
+}
+[data-theme="light"] .glass-interactive-card-cyan:hover {
+  border-color: rgba(14, 116, 144, 0.4);
+  box-shadow: 0 12px 28px -10px rgba(23, 58, 43, 0.18);
+}
+/* 渐变描边：荧光绿在白底几乎不可见，改墨绿→青 */
+[data-theme="light"] .glass-panel.glow-ring::before {
+  background: linear-gradient(140deg, rgba(5, 150, 105, 0.3), transparent 30%,
+    transparent 70%, rgba(14, 116, 144, 0.18));
+}
+
+/* ---------- 浮层（用户指定：绿底白字，同侧栏）----------
+   ⚠️ 必须 !important：暗色规则（.ant-tooltip-inner 等）带 4 个 !important，
+   之前两轮白天覆盖（不带 important）全被压住 —— 用户看到的一直是黑的。 */
+[data-theme="light"] .ant-tooltip .ant-tooltip-inner {
+  background: linear-gradient(180deg, #05825c, #046b4c) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 24px rgba(4, 90, 64, 0.35) !important;
+}
+[data-theme="light"] .ant-tooltip .ant-tooltip-arrow::before {
+  background: #05825c !important;
+}
+[data-theme="light"] .ant-popover .ant-popover-inner {
+  background: linear-gradient(180deg, #05825c, #046b4c) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 30px rgba(4, 90, 64, 0.4) !important;
+}
+[data-theme="light"] .ant-popover .ant-popover-arrow::before {
+  background: #05825c !important;
+}
+[data-theme="light"] .ant-popover .ant-popover-title {
+  color: #ffffff !important;
+}
+[data-theme="light"] .ant-popover-inner-content {
+  color: #f2faf6 !important;
+}
+/* 消息通知（全局提示 / 操作反馈） */
+[data-theme="light"] .ant-message-notice-content,
+[data-theme="light"] .ant-notification-notice-content {
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(23, 58, 43, 0.14);
+}
+[data-theme="light"] .ant-notification-notice-title {
+  color: var(--text);
+}
+[data-theme="light"] .ant-notification-notice-description {
+  color: var(--text-2);
+}
+/* 图片预览遮罩 */
+[data-theme="light"] .ant-image-preview-root {
+  background: rgba(18, 33, 26, 0.88);
+}
+[data-theme="light"] .ant-image-preview-img {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+/* 日期选择器面板内的快捷按钮 */
+[data-theme="light"] .ant-picker-panel {
+  background: #ffffff;
+}
+[data-theme="light"] .ant-picker-content th {
+  color: var(--muted);
+}
+[data-theme="light"] .ant-picker-cell-in-view {
+  color: var(--text);
+}
+/* 徽标 / 标签 / 角标 */
+[data-theme="light"] .ant-tag {
+  border-color: rgba(23, 58, 43, 0.14);
+}
+[data-theme="light"] .ant-badge-count,
+[data-theme="light"] .ant-scroll-number-only-unit {
+  color: #ffffff;
+}
+/* 骨架屏：暗色默认的深灰块在白底上看不见 */
+[data-theme="light"] .ant-skeleton .ant-skeleton-paragraph > li,
+[data-theme="light"] .ant-skeleton .ant-skeleton-image,
+[data-theme="light"] .ant-skeleton .ant-skeleton-input,
+[data-theme="light"] .ant-skeleton .ant-skeleton-button {
+  background: linear-gradient(
+    90deg,
+    rgba(23, 58, 43, 0.06) 25%,
+    rgba(23, 58, 43, 0.1) 37%,
+    rgba(23, 58, 43, 0.06) 63%
+  );
+}
+/* 开关 / 复选 / 单选：轨道在白底上要能看见 */
+[data-theme="light"] .ant-switch {
+  background: rgba(23, 58, 43, 0.22);
+}
+[data-theme="light"] .ant-switch-checked {
+  background: var(--accent);
+}
+[data-theme="light"] .ant-checkbox-inner,
+[data-theme="light"] .ant-radio-inner {
+  background: #ffffff;
+  border-color: rgba(23, 58, 43, 0.24);
+}
+/* 卡片 / 列表的分割线与标题 */
+[data-theme="light"] .ant-card {
+  background: var(--panel);
+  border-color: rgba(23, 58, 43, 0.14);
+}
+[data-theme="light"] .ant-card-head {
+  border-bottom-color: rgba(23, 58, 43, 0.08);
+}
+[data-theme="light"] .ant-list-item {
+  border-bottom-color: rgba(23, 58, 43, 0.08);
+}
+[data-theme="light"] .ant-collapse {
+  background: var(--panel);
+  border-color: rgba(23, 58, 43, 0.14);
+}
+[data-theme="light"] .ant-collapse-header {
+  color: var(--text);
+}
+[data-theme="light"] .ant-collapse-content {
+  border-top-color: rgba(23, 58, 43, 0.08);
+}
+/* 进度条 / 滑动条 */
+[data-theme="light"] .ant-progress-inner {
+  background: rgba(23, 58, 43, 0.07);
+}
+/* 描述列表（概览页常用） */
+[data-theme="light"] .ant-descriptions-item-label {
+  color: var(--muted);
+}
+[data-theme="light"] .ant-descriptions-item-content {
+  color: var(--text);
+}
+[data-theme="light"] .ant-descriptions-bordered .ant-descriptions-view,
+[data-theme="light"] .ant-descriptions-bordered .ant-descriptions-item {
+  border-color: rgba(23, 58, 43, 0.14);
+}
+
+/* ============================================================
+   ★★ 亮色修正层· 第二轮（用户走查反馈后）
+   ============================================================
+   用户反馈的 11 个问题（圆环中心白字、弹窗黑底黑字、卡片颜色不统一、
+   下拉框黑底黑字、logo 副标题看不清…）**根因全是同一个**：
+   暗色主题用「半透明白」做装饰与分隔（rgba(255,255,255,.02~.05)），
+   这套值在白底上等于「什么都没有」，于是：
+     · 文字沿用暗色的浅色 → 白底白字
+     · 卡片沿用暗色的半透明 →白底上显脏、彼此还不一致
+     · 浮层沿用写死的深底 → 配上了浅色文字就成了「黑底黑字」
+
+   所以这里不做逐个打补丁，而是定三条**规则**覆盖全站：
+     规则1卡片：统一纯白 + 同一条边框 + 同一档阴影（不靠底色差区分）
+     规则2  文字：任何暗色里的浅色文字，白天一律换成 --text/--text-2/--muted
+     规则3  浮层：白底深字（不用深底，因为深底必然配深字）
+
+   ---------- 侧栏品牌绿（用户指定）----------
+   从用户截图取样得到：#047d57 / #048059 / #04845c 三个值都很接近，
+   取中间值 **#047d57** 作品牌绿（对白底 5.15:1 AA，全站及格）。
+   ============================================================ */
+
+/* ---------- 一、侧栏：品牌绿底（用户指定，取样自「进入系统」按钮） ----------
+   底色渐变 #05825c → #046b4c。为什么不直接用 #047d57 纯色或更亮的 #059669：
+   实测白字对比 —— #059669 只有 3.77:1（正文不合格），#05825c 起才 ≥4.8。
+   渐变两端白字 4.82 / 6.54，全部 AA。
+
+   ★ 核心手法：在侧栏作用域内**重定义 tokens 变量**。
+     侧栏里的 logo / 主题开关 / 折叠按钮 / 概览卡全部走 var(--text/--accent/...)
+     —— 重定义后这些组件**自动适配绿底**，不必逐个覆盖。
+     变量只在这一层生效，内容区不受影响。
+
+   层级策略：绿底上「降低透明度」做次级文字全部不合格
+     （白 85% 只有 4.19），所以文字一律接近纯白，
+     层级靠字号/字重/字距 + 「黑叠加」做区块深浅 —— 白字对比始终 ≥4.8。 */
+[data-theme="light"] .ant-layout-sider {
+  background: linear-gradient(180deg, #05825c 0%, #046b4c 100%) !important;
+  border-right: none;
+  /* ---- 侧栏作用域变量重定义（内容区不受影响）---- */
+  --text: #ffffff;
+  --text-2: #f2faf6;              /* 次级文字 4.54:1 AA */
+  --muted: #f2faf6;
+  --accent: #ffffff;              /* 侧栏内强调=白 */
+  --accent-2: #b8f5e9;            /* 图标/图形 3.97:1 AA-large */
+  --cyan: #b8f5e9;
+  --ok: #b8f5e9;
+  --warn: #ffe3ab;
+  --danger: #ffd4dd;
+  --panel: rgba(255, 255, 255, 0.12);
+  --panel-2: rgba(255, 255, 255, 0.1);
+  --panel-solid: #ffffff;
+  --border: rgba(255, 255, 255, 0.18);
+  --border-hi: rgba(255, 255, 255, 0.45);
+  --glow: rgba(255, 255, 255, 0.35);
+  --c-focus-ring: rgba(255, 255, 255, 0.65);
+  --c-focus-ring-offset: #05825c;
+  /* hover 深一档（黑叠加），而不是白叠加 —— 保持白字对比 */
+  --bg: rgba(0, 0, 0, 0.12);
+}
+
+/* 菜单项：纯白字（antd token 的深灰在绿底上不可读，必须显式覆盖） */
+[data-theme="light"] .ant-layout-sider .ant-menu-dark .ant-menu-item {
+  color: #ffffff;
+}
+[data-theme="light"] .ant-layout-sider .ant-menu-dark .ant-menu-item:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+/* 选中项：黑16%叠加（更深一档）+ 白字加粗 + 左侧白色竖条
+   白字对比 6.4~8.3 AAA；白色竖条在绿底上极其清晰 */
+[data-theme="light"] .ant-layout-sider .ant-menu-dark .ant-menu-item-selected {
+  color: #ffffff !important;
+  background: rgba(0, 0, 0, 0.16) !important;
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 #ffffff;
+}
+[data-theme="light"] .ant-layout-sider .sentinel-menu-group {
+  color: #f2faf6;
+}
+/* 分组标题的英文小字（WORKSPACE / MANAGEMENT） */
+[data-theme="light"] .ant-layout-sider .sentinel-menu-group em {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* logo：绿底上绿字会融掉，主标题改白→薄荷渐变，副标题近白 */
+[data-theme="light"] .ant-layout-sider .sentinel-logo-text b {
+  background: linear-gradient(120deg, #ffffff 10%, #b8f5e9 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 1px 2px rgba(0, 40, 28, 0.35));
+}
+[data-theme="light"] .ant-layout-sider .sentinel-logo-text small {
+  color: #f2faf6;
+  opacity: 1;
+}
+[data-theme="light"] .ant-layout-sider .sentinel-logo-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- 侧栏内组件适配（变量重定义后仍需覆盖的少数几处） ---------- */
+/* 底部「系统概览」区块：透明融入侧栏（用户反馈黑叠加是「深色区域」，去掉）。
+   只保留一道浅白分割线做分隔。 */
+[data-theme="light"] .ant-layout-sider .sentinel-side-foot {
+  background: transparent;
+  border-top-color: rgba(255, 255, 255, 0.16);
+}
+[data-theme="light"] .ant-layout-sider .sentinel-side-foot-title {
+  color: #f2faf6;
+}
+[data-theme="light"] .ant-layout-sider .sentinel-side-foot-line {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.3), transparent);
+}
+/* 图标底座：白14%底 + 白图标（原白天规则是浅绿底深绿字，绿底上会脏） */
+[data-theme="light"] .ant-layout-sider .sentinel-stat-ico {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.26);
+  color: #ffffff;
+}
+[data-theme="light"] .ant-layout-sider .sentinel-ico-cyan {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.26);
+  color: #ffffff;
+}
+[data-theme="light"] .ant-layout-sider .sentinel-ico-amber {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.26);
+  color: #ffffff;
+}
+[data-theme="light"] .ant-layout-sider .sentinel-stat-row:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+/* 占比条：轨道白14%，条用白→薄荷渐变（侧栏内 --accent/--cyan 已是浅色） */
+[data-theme="light"] .ant-layout-sider .sentinel-ratio-bar {
+  background: rgba(255, 255, 255, 0.14);
+}
+/* 状态药丸：绿底上的绿字绿点撞色（用户反馈）→ 改「白底 + 状态深字」。
+   白底与「黑夜主题/收起侧栏」两个白胶囊呼应；呼吸点 currentColor 跟随字色。
+   三个状态在白底上的字色均 ≥4.5:1（绿 5.15 / 琥珀深 4.9 / 灰绿 5.5）。 */
+[data-theme="light"] .ant-layout-sider .sentinel-live-text.is-running {
+  background: #ffffff;
+  border-color: rgba(4, 125, 87, 0.3);
+  color: #047d57 !important;
+}
+[data-theme="light"] .ant-layout-sider .sentinel-live-text.is-paused {
+  background: #ffffff;
+  border-color: rgba(180, 83, 9, 0.3);
+  color: #a05a00 !important;
+}
+[data-theme="light"] .ant-layout-sider .sentinel-live-text.is-off {
+  background: #ffffff;
+  border-color: rgba(23, 58, 43, 0.2);
+  color: #55645c !important;
+}
+/* 侧栏健康条：同样去掉深底（用户反馈不要深色区域） */
+[data-theme="light"] .ant-layout-sider .sentinel-side-health {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.16);
+}
+/* 折叠按钮：白12%玻璃底 + 白字（原白天规则的白70%底在绿底上突兀） */
+[data-theme="light"] .ant-layout-sider .sentinel-collapse-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+[data-theme="light"] .ant-layout-sider .sentinel-collapse-btn:hover,
+[data-theme="light"] .ant-layout-sider .sentinel-collapse-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+}
+/* 圆形图标底座：白底 + 品牌绿图标（反色点缀，呼应「进入系统」按钮）。
+   注意 hover 时不能跟随外层变白字 —— 白底白字会消失 */
+[data-theme="light"] .ant-layout-sider .sentinel-collapse-ico {
+  background: #ffffff;
+  border: none;
+  color: #047d57;
+}
+[data-theme="light"] .ant-layout-sider .sentinel-collapse-btn:hover .sentinel-collapse-ico {
+  background: #ffffff;
+  color: #047d57;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.45);
+}
+[data-theme="light"] .ant-layout-sider .sentinel-collapse-btn:focus-visible {
+  box-shadow:
+    0 0 0 2px #047d57,
+    0 0 0 4px rgba(255, 255, 255, 0.65);
+}
+/* 主题开关：同折叠按钮家族 */
+[data-theme="light"] .ant-layout-sider .sentinel-theme-toggle:hover,
+[data-theme="light"] .ant-layout-sider .sentinel-theme-toggle:focus-visible {
+  background: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+}
+[data-theme="light"] .ant-layout-sider .sentinel-theme-ico {
+  color: #047d57;
+}
+[data-theme="light"] .ant-layout-sider .sentinel-theme-toggle:hover .sentinel-theme-ico {
+  background: #ffffff;
+  color: #047d57;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.45);
+}
+[data-theme="light"] .ant-layout-sider .sentinel-theme-toggle:focus-visible {
+  box-shadow:
+    0 0 0 2px #047d57,
+    0 0 0 4px rgba(255, 255, 255, 0.65);
+}
+
+/* ---------- 二、logo 文字（截图 9：副标题看不清） ----------
+   暗色主标题是荧光渐变 #d4ff70→#4be1ec，白底只有 1.4:1 完全不可读。
+   白天换成同色系的品牌绿→情报青（都是深色，5.1:1 以上）。 */
+[data-theme="light"] .sentinel-logo-text b {
+  background: linear-gradient(120deg, #047d57 10%, #0e7490 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: none;
+}
+[data-theme="light"] .sentinel-logo-text small {
+  color: var(--text-2);
+  opacity: 1;
+  font-weight: 600;
+}
+
+/* ---------- 三、浮层：已统一并入文末「绿色浮层」段（用户指定绿底） ---------- */
+[data-theme="light"] .ant-select-selection-search-input {
+  color: var(--text) !important;
+}
+
+/* ---------- 四、卡片统一（截图 3/4/6/7/8：颜色不统一） ----------
+   现象：同一页里有的卡片纯白、有的灰、有的半透明深色。
+   统一为：纯白底 + 同一边框 + 同一档阴影。 */
+[data-theme="light"] .glass-panel,
+[data-theme="light"] .glass-interactive-card,
+[data-theme="light"] .glass-dock,
+[data-theme="light"] .ant-card {
+  background: #ffffff !important;
+  border: 1px solid rgba(23, 58, 43, 0.14);
+  box-shadow: 0 1px 4px rgba(23, 58, 43, 0.08);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+[data-theme="light"] .glass-panel:hover,
+[data-theme="light"] .glass-interactive-card:hover,
+[data-theme="light"] .ant-card:hover {
+  border-color: rgba(4, 125, 87, 0.32);
+  box-shadow: 0 4px 12px rgba(23, 58, 43, 0.08);
+}
+/* 卡片内的次级容器（图表卡片、提示条）比主卡片再浅一档 */
+[data-theme="light"] .ant-card-body {
+  background: #ffffff;
+}
+/* 表格：行hover / 选中统一浅绿 */
+[data-theme="light"] .ant-table-tbody > tr:hover > td {
+  background: rgba(4, 125, 87, 0.045) !important;
+}
+
+/* ---------- 五、暗色「半透明白」装饰的全量替换 ----------
+   这类值共 44 处，白底上全部失效。按用途分三类替换。 */
+
+/* 5.1 分隔线 / 描边（原本 rgba(255,255,255,.05~.09)） */
+[data-theme="light"] .ops-flow-detail {
+  background: rgba(23, 58, 43, 0.03);
+  border-color: rgba(23, 58, 43, 0.09);
+  color: var(--text-2);
+}
+/* 5.2 内嵌小面板（详情条、说明块） */
+[data-theme="light"] .ops-flow-d-name {
+  color: var(--text);
+}
+[data-theme="light"] .ops-flow-note,
+[data-theme="light"] .ops-flow-detail {
+  color: var(--text-2);
+}
+
+/* ---------- 六、圆形进度环中心（截图 1：白字白底） ----------
+   ECharts graphic 文本颜色在 SituationPage 里写死为浅色，
+   这里用 CSS 兜不住（SVG text 是属性）。见 SituationPage 的 chartPalette。 */
+
+/* ---------- 七、问答页气泡（截图 8）----------
+   用户提问：浅绿底（右对齐）；AI 回答：纯白底 + 边框（左对齐）。
+   类名是 sentinel-qa-bubble + is-user / is-assistant。 */
+/* 欢迎标题：白底上去掉暗色主题的深色 text-shadow（会显脏） */
+[data-theme="light"] .sentinel-qa-welcome-title {
+  text-shadow: none;
+}
+[data-theme="light"] .sentinel-qa-bubble.is-user {
+  background: rgba(4, 125, 87, 0.08) !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(4, 125, 87, 0.2);
+}
+[data-theme="light"] .sentinel-qa-bubble.is-assistant {
+  background: #ffffff !important;
+  color: var(--text) !important;
+  border: 1px solid rgba(23, 58, 43, 0.14);
+}
+/* 会话历史列表（左侧那条，截图 8）—— 真实类名是 sentinel-qa-history-* */
+[data-theme="light"] .sentinel-qa-history {
+  background: #ffffff;
+  border-color: rgba(23, 58, 43, 0.14);
+}
+[data-theme="light"] .sentinel-qa-history-item {
+  color: var(--text-2);
+}
+[data-theme="light"] .sentinel-qa-history-item:hover {
+  background: rgba(23, 58, 43, 0.04);
+}
+[data-theme="light"] .sentinel-qa-history-item.is-active {
+  background: rgba(4, 125, 87, 0.09);
+  color: var(--accent);
+  border-color: rgba(4, 125, 87, 0.24);
+}
+[data-theme="light"] .sentinel-qa-history-title {
+  color: var(--text);
+}
+[data-theme="light"] .sentinel-qa-history-time,
+[data-theme="light"] .sentinel-qa-eyebrow,
+[data-theme="light"] .sentinel-qa-hint {
+  color: var(--muted);
+}
+/* 输入框区域 */
+[data-theme="light"] .sentinel-qa-card {
+  /* !important：暗色规则 .sentinel-qa-card 的底带 important（黑 45%），不带压不住 */
+  background: #ffffff !important;
+  border: 1px solid rgba(23, 58, 43, 0.14) !important;
+}
+[data-theme="light"] .sentinel-qa-card:hover {
+  background: #f6faf7 !important;
+  border-color: rgba(4, 125, 87, 0.35) !important;
+}
+
+/* 侧栏内滚动条：白透明（深色滚动条在绿底上突兀） */
+[data-theme="light"] .ant-layout-sider ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.28);
+}
+[data-theme="light"] .ant-layout-sider ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.42);
+}
+
+
+/* ============================================================
+   ★ 绿色浮层（用户指定：与侧栏同色）
+   ------------------------------------------------------------
+   覆盖：Select 下拉 / Dropdown 菜单 / ECharts tooltip。
+   全部 !important —— 暗色规则（1106 行起）带 !important，
+   不加就压不住（前两轮的白天覆盖就是这样被压成摆设的）。
+   配色同侧栏：渐变绿底 + 白字，hover/选中黑16%叠加。
+   ============================================================ */
+[data-theme="light"] .ant-select-dropdown,
+[data-theme="light"] .ant-dropdown-menu {
+  background: linear-gradient(180deg, #05825c, #046b4c) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 12px 32px rgba(4, 90, 64, 0.4) !important;
+}
+[data-theme="light"] .ant-select-item,
+[data-theme="light"] .ant-select-item-option-content,
+[data-theme="light"] .ant-dropdown-menu-title-content {
+  color: #ffffff !important;
+}
+[data-theme="light"] .ant-select-item-option-active:not(.ant-select-item-option-disabled),
+[data-theme="light"] .ant-select-item-option-selected:not(.ant-select-item-option-disabled),
+[data-theme="light"] .ant-dropdown-menu-item:hover {
+  background: rgba(0, 0, 0, 0.16) !important;
+  color: #ffffff !important;
+}
+[data-theme="light"] .ant-select-item-option-selected:not(.ant-select-item-option-disabled)
+  .ant-select-item-option-content {
+  font-weight: 600;
+}
+/* 选中项的小勾 */
+[data-theme="light"] .ant-select-item-option-state {
+  color: #ffffff !important;
+}
+/* 无匹配项 */
+[data-theme="light"] .ant-select-item-empty {
+  color: #f2faf6 !important;
+}
+
+/* ECharts tooltip：绿底由 JS 写入（tooltipStyle），这里负责把
+   系列 marker 提亮 —— 白天系列色是深绿/深青，绿底上会融掉。
+   marker 是容器内的 span（带内联 background），用属性选择器命中，
+   filter 只作用于 marker，不碰容器自身的背景。 */
+[data-theme="light"] .sentinel-chart-tooltip span[style*="background"] {
+  filter: brightness(1.6) saturate(1.15);
+}
+
+/* ============================================================
+   ★ 亮色修正层 · 第三轮（00:09 用户截图反馈）
+   ============================================================ */
+
+/* ---------- ① 调度器节点（图外组件，虚线框）改白 ----------
+   ⚠️ 这里的坑：批次 D 只改了 JSX 里的 SVG fill 属性，
+   但 CSS 规则 .ops-flow-node.is-outside rect { fill: ... } 的
+   **优先级高于 SVG presentation attribute** —— 改属性等于没改。
+   必须在 CSS 层覆盖。 */
+[data-theme="light"] .ops-flow-node.is-outside rect {
+  fill: #ffffff;
+}
+/* 节点旁的「采集器 N 源」小标签：浅灰绿在白底只有 1.9:1 */
+[data-theme="light"] .ops-flow-lbl {
+  fill: #63746b;
+}
+
+/* ---------- ③ 问答会话历史的「今天/昨天」分组胶囊改白 ---------- */
+[data-theme="light"] .sentinel-qa-history-group {
+  background: #eef4ef;
+  border-color: rgba(23, 58, 43, 0.08);
+  color: #46584f;
+  font-weight: 600;
+}
+
+/* ---------- ⑤ ATLAS 攻击链阶段条改绿（黑条→绿条白字）---------- */
+[data-theme="light"] .atlas-chain-head {
+  background: linear-gradient(180deg, #05825c, #046b4c) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+}
+/* 阶段名（Text strong）与编号计数（Text secondary）：antd token 的深字在绿底不可读 */
+[data-theme="light"] .atlas-chain-head .ant-typography {
+  color: #ffffff !important;
+}
+[data-theme="light"] .atlas-chain-head span {
+  color: #f2faf6;
+}
+/* 阶段圆点（青/琥珀/粉）：绿底上加白描边保持可辨 */
+[data-theme="light"] .atlas-chain-dot {
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.55);
+}
+
+/* ---------- ④ 指标卡（白卡）内部适配 ----------
+   ⚠️ 警示案例：最初在这里用「.sentinel-metric 重定义 --text/--muted 为白」——
+   但态势页/图谱页的 9 张小卡（antd Card）也叫 sentinel-metric，
+   变量重定义把它们一起染成白底白字（用户截图：文字完全看不到）。
+   同名类不同物！正确做法见 tokens 的 --metric-fg-* 专用变量。 */
+/* HUD 角标括号：暗色是荧光绿，白卡上改品牌绿 */
+[data-theme="light"] .sentinel-metric .corner-mark {
+  border-color: rgba(4, 125, 87, 0.45) !important;
+}
+/* 图标底座：暗色的亮色系在白卡上发飘（#4edea3 对白底仅 1.7），加深一档 */
+[data-theme="light"] .sentinel-metric .sentinel-icon-tile-primary {
+  background: rgba(4, 125, 87, 0.08);
+  border-color: rgba(4, 125, 87, 0.22);
+  color: #047d57;
+}
+[data-theme="light"] .sentinel-metric .sentinel-icon-tile-secondary {
+  background: rgba(14, 116, 144, 0.08);
+  border-color: rgba(14, 116, 144, 0.22);
+  color: #0e7490;
+}
+[data-theme="light"] .sentinel-metric .sentinel-icon-tile-accent {
+  background: rgba(4, 125, 87, 0.08);
+  border-color: rgba(4, 125, 87, 0.22);
+  color: #047d57;
+}
+[data-theme="light"] .sentinel-metric .sentinel-icon-tile-rose {
+  background: rgba(216, 27, 64, 0.07);
+  border-color: rgba(216, 27, 64, 0.22);
+  color: #c2273a;
+}
+/* 悬停柔光斑：白天 tone 已是深色，radial 22α 在白卡上自然 ✓ 不动 */
