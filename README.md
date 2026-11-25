@@ -11,6 +11,9 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%20%2B%20pgvector-4169E1?logo=postgresql&logoColor=white)
 ![Neo4j](https://img.shields.io/badge/Neo4j-5-4581C3?logo=neo4j&logoColor=white)
 ![LangGraph](https://img.shields.io/badge/LangGraph-1.x-1C3C3C)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+![Release](https://img.shields.io/github/v/release/JoffinLu/Sentinel-AI-Security-Intelligence?label=release)
+![Downloads](https://img.shields.io/github/downloads/JoffinLu/Sentinel-AI-Security-Intelligence/total)
 
 ---
 
@@ -108,14 +111,16 @@ flowchart LR
 
 ### 方式一：便携运行包（免安装，推荐体验）
 
+📦 **[下载 Sentinel-v1.2.0-Full.zip](https://github.com/JoffinLu/Sentinel-AI-Security-Intelligence/releases/download/v1.2.0/Sentinel-v1.2.0-Full.zip)**（约 625MB）· [全部发布版本](https://github.com/JoffinLu/Sentinel-AI-Security-Intelligence/releases)
+
 发布包内置 Python、PostgreSQL、Neo4j、Java 与前端页面，**无需安装 Docker / Python / 数据库**：
 
-1. 解压发布包到任意目录（建议英文路径）；
-2. 双击 `Sentinel.exe`，等待初始化（首次约 1~3 分钟）；
+1. 解压到任意目录（建议英文路径），得到 `Sentinel/` 文件夹；
+2. 双击 `Sentinel.exe`，首次启动自动初始化数据库并导入演示数据（约 1~3 分钟）；
 3. 启动完成后自动弹出应用窗口。
 
-> 仓库不存放约 850MB 的运行包与演示数据库；可在 `app/` 下执行
-> `pyinstaller Sentinel.spec` 后用 `app/发布/组装发布包.sh` 自行组装，或联系作者获取。
+> 问答与富化依赖大模型，首次使用请在首页右上角「LLM 模型设置」中填入自己的 API Key
+> （支持 DeepSeek / 智谱 / 通义千问 / Kimi / OpenAI / Ollama）。
 
 ### 方式二：源码运行（开发者）
 
@@ -215,5 +220,9 @@ cd app
 ## 说明
 
 - 情报数据均来自公开漏洞库、安全公告、学术论文与政策法规，系统仅做聚合、富化与检索。
-- 仓库未包含运行包、演示数据库与嵌入模型（体积原因），`.gitignore` 已注明。
-- 本项目为赛事参赛作品，暂未附开源许可证；如需引用或二次开发请联系作者。
+- 仓库未包含运行包、演示数据库与嵌入模型（体积原因），运行包见 [Releases](https://github.com/JoffinLu/Sentinel-AI-Security-Intelligence/releases)。
+- 发布包中的 `.env` 已剔除，首次使用请在界面中配置自己的 LLM API Key。
+
+## 许可证
+
+本项目基于 [MIT License](LICENSE) 开源。
