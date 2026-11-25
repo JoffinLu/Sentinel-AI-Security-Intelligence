@@ -23,12 +23,12 @@
 |---|---|
 | ![态势总览](docs/screenshots/01-dashboard-dark.jpg) | ![情报中心](docs/screenshots/02-intelligence-center-dark.jpg) |
 
-| 运维与自愈 · LangGraph 编排链路 | 落地首页 · 黑夜 / 白天双主题 |
+| 运维与自愈 · LangGraph 编排链路 | 落地首页 · 白天主题 |
 |---|---|
-| ![运维与自愈](docs/screenshots/03-orchestration-dark.jpg) | ![落地首页](docs/screenshots/04-landing-dark.jpg) |
+| ![运维与自愈](docs/screenshots/03-orchestration-dark.jpg) | ![落地首页 · 白天主题](docs/screenshots/05-landing-light.jpg) |
 
 <p align="center">
-  <img src="docs/screenshots/05-landing-light.jpg" alt="落地首页 · 白天主题" width="82%" />
+  <img src="docs/screenshots/04-landing-dark.jpg" alt="落地首页 · 黑夜主题" width="82%" />
 </p>
 
 ---
